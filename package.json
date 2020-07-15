@@ -1,0 +1,18 @@
+{
+  "name": "pga2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "NODE_ENV=development node ./server.js",
+    "build": "next build",
+    "start": "next start",
+    "deploy-staging": "NODE_ENV=staging next build &&    NODE_ENV=staging node ./server.js",
+    "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "next": "^9.4.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
