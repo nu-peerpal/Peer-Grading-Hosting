@@ -6,15 +6,15 @@ branches:
     - staging
     - master
 deploy:
-  - provider: elasticbeanstalk
-    access_key_id: ${AWS_ACCESS_KEY_ID}
-    secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-    region: "us-east-2"
-    app: "pga-next-app"
-    env: "PgaNextApp-env"
-    bucket_name: ${AWS_S3_BUCKET}
-    on:
-      branch: "staging"
+  # - provider: elasticbeanstalk
+  #   access_key_id: ${AWS_ACCESS_KEY_ID}
+  #   secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+  #   region: "us-east-2"
+  #   app: "pga-next-app"
+  #   env: "PgaNextApp-env"
+  #   bucket_name: ${AWS_S3_BUCKET}
+  #   on:
+  #     branch: "staging"
 
   - provider: elasticbeanstalk
     access_key_id: ${AWS_ACCESS_KEY_ID}
