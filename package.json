@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node server.js",
-    "build": "next build",
-    "start": "next start"
+    "build": "next run build",
+    "start": "next run start"
   },
   "dependencies": {
     "express": "^4.17.1",
