@@ -1,16 +1,41 @@
 const express = require("express");
 const next = require("next");
-const port = 8080;
-//const port = process.env.PORT || 8081;
+//const port = 8080;
+const port = process.env.PORT || 8080;
+const { Client } = require("pg");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+//var sequelize = new Sequelize(process.env.RDS_CONNECTION_URL || [localhost]);
+
 app
   .prepare()
   .then(() => {
     const server = express();
+    // const client = new Client({
+    //   user: "pga",
+    //   host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
+    //   password: "Jas0n5468",
+    //   port: 5432,
+    // });
+
+    const client = new Client({
+      user: process.env.RDS_USERNAME,
+      host: process.env.RDS_HOSTNAME,
+      password: process.env.RDS_PASSWORD,
+      port: process.env.RDS_PORT,
+    });
+
+    client.connect(function (err) {
+      console.log("RUNNIN'");
+      if (!err) {
+        console.log("Database is connected ... ");
+      } else {
+        console.log(err);
+      }
+    });
 
     server.get("*", (req, res) => {
       return handle(req, res);
