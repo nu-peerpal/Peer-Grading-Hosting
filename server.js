@@ -22,11 +22,16 @@ app
     // });
 
     const client = new Client({
-      user: process.env.RDS_USERNAME,
-      host: process.env.RDS_HOSTNAME,
-      password: process.env.RDS_PASSWORD,
-      port: process.env.RDS_PORT,
+      connectionString: process.env.RDS_CONNECTION_STRING,
     });
+
+    // const client = new Client({
+    //   host: process.env.RDS_HOSTNAME,
+    //   user: process.env.RDS_USERNAME,
+    //   database: process.env.RDS_DB_NAME,
+    //   password: process.env.RDS_PASSWORD,
+    //   port: process.env.RDS_PORT,
+    // });
 
     client.connect(function (err) {
       console.log("RUNNIN'");
