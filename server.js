@@ -8,29 +8,25 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-//var sequelize = new Sequelize(process.env.RDS_CONNECTION_URL || [localhost]);
+require("./pages/api_routes")(app);
+
+const db = require("./models");
 
 app
   .prepare()
   .then(() => {
     const server = express();
-    // const client = new Client({
-    //   user: "pga",
-    //   host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
-    //   password: "Jas0n5468",
-    //   port: 5432,
-    // });
+    db.sequelize.sync();
 
+    //*****without sequelize******//
+    /*
     const client = new Client({
-      connectionString: process.env.RDS_CONNECTION_STRING,
+      connectionString:
+        "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres",
     });
 
     // const client = new Client({
-    //   host: process.env.RDS_HOSTNAME,
-    //   user: process.env.RDS_USERNAME,
-    //   database: process.env.RDS_DB_NAME,
-    //   password: process.env.RDS_PASSWORD,
-    //   port: process.env.RDS_PORT,
+    //   connectionString: process.env.RDS_CONNECTION_STRING,
     // });
 
     client.connect(function (err) {
@@ -41,6 +37,7 @@ app
         console.log(err);
       }
     });
+    */
 
     server.get("*", (req, res) => {
       return handle(req, res);
@@ -48,7 +45,7 @@ app
 
     server.listen(port, (err) => {
       if (err) throw err;
-      console.log(`> App running on http://localhost:${port}`);
+      console.log(`> App running on ${port}`);
     });
   })
   .catch((ex) => {
