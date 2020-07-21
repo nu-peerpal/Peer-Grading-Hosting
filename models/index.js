@@ -10,7 +10,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 //require all tables for database
-db.enrollment = require("./Enrollment.js")(sequelize, Sequelize);
+//db.enrollment = require("./Enrollment.js")(sequelize, Sequelize);
 
 //write all connections here. ex:
 /*

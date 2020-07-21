@@ -1,29 +1,58 @@
+//import nc from "next-connect";
+// const nc = require("next-connect");
+
+// const handler = nc()
+//   .use("/api/enrollments", fn)
+//   .get((req, res) => {
+//     res.send("Hello world");
+//   })
+//   .post((req, res) => {
+//     res.json({ hello: "world" });
+//   })
+//   .put(async (req, res) => {
+//     res.end("async/await is also supported!");
+//   })
+//   .patch(async (req, res) => {
+//     throw new Error("Throws me around! Error can be caught and handled.");
+//   });
+
+// module.exports = handler;
+//export default handler;
+
+/*
 module.exports = (app) => {
+
   //controllers are functions that set index tables
-  const tutorials = require("../controllers/tutorial.controller.js");
+  const enrollments = require("../../controllers/Enrollment.controller.js");
 
   var router = require("express").Router();
 
-  // Create a new Tutorial
-  router.post("/", tutorials.create);
+  // Create a new Enrollment
+  router.post("/", enrollments.create);
 
-  // Retrieve all Tutorials
-  router.get("/", tutorials.findAll);
+  // Retrieve all Enrollments
+  router.get("/", enrollments.findAll);
 
-  // Retrieve all published Tutorials
-  router.get("/published", tutorials.findAllPublished);
+  // Retrieve all published Enrollments
+  router.get("/published", enrollments.findAllPublished);
 
-  // Retrieve a single Tutorial with id
-  router.get("/:id", tutorials.findOne);
+  // Retrieve a single Enrollments with id
+  router.get("/:id", enrollments.findOne);
 
-  // Update a Tutorial with id
-  router.put("/:id", tutorials.update);
+  // Update a Enrollments with id
+  router.put("/:id", enrollments.update);
 
-  // Delete a Tutorial with id
-  router.delete("/:id", tutorials.delete);
+  // Delete a Enrollment with id
+  router.delete("/:id", enrollments.delete);
 
-  // Create a new Tutorial
-  router.delete("/", tutorials.deleteAll);
+  // Create an enrollment
+  router.delete("/", enrollments.deleteAll);
 
-  app.use("/api/tutorials", router);
+  //app.use("/api/enrollments", router);
 };
+*/
+
+// req = request data, res = response data
+// module.exports export default (req, res) => {
+//   res.status(200).json({ text: "Hello" });
+// };

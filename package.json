@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "next": "^9.4.4",
+    "next-connect": "^0.8.1",
     "pg": "^8.3.0",
     "postgres": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "sequelize": "^6.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
