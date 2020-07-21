@@ -8,7 +8,7 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-require("./pages/api_routes")(app);
+//require("./pages/api_routes")(app);
 
 const db = require("./models");
 
@@ -18,7 +18,7 @@ app
     const server = express();
     db.sequelize.sync();
 
-    //*****without sequelize******//
+    //without sequelize
     /*
     const client = new Client({
       connectionString:
