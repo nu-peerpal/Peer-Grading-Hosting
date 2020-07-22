@@ -1,14 +1,19 @@
 module.exports = (sequelize, Sequelize) => {
   const Enrollment = sequelize.define("enrollment", {
-    title: {
+    enrollment_type: {
       type: Sequelize.STRING,
     },
-    description: {
-      type: Sequelize.STRING,
-    },
-    // published: {
-    //   type: Sequelize.BOOLEAN,
-    // },
   });
+
+  Enrollment.associate = (db) => {
+    //enrollments belong to a course
+    Enrollment.belongsTo(db.course, {
+      foreignKey: "courseId",
+    });
+    //Enrollments belong to a user
+    Enrollment.belongsTo(db.users, {
+      foreignKey: "userId",
+    });
+  };
   return Enrollment;
 };

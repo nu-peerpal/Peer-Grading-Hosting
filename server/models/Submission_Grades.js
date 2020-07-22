@@ -1,18 +1,14 @@
 module.exports = (sequelize, Sequelize) => {
   const Submission_Grades = sequelize.define("submission_grades", {
-    assignment_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    user_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
     grade: {
       type: Sequelize.INTEGER,
-      allowNull: false,
     },
   });
-};
 
-return Review_Grades;
+  Submission_Grades.associate = (db) => {
+    Submission_Grades.belongsTo(db.assignment_submission, {
+      foreignKey: "submissionId",
+    });
+  };
+  return Submission_Grades;
+};
