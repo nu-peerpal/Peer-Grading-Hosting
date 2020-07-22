@@ -9,8 +9,10 @@
     "start": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
   },
   "dependencies": {
+    "@babel/core": "^7.10.5",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
+    "net": "^1.0.2",
     "next": "^9.4.4",
     "next-connect": "^0.8.1",
     "pg": "^8.3.0",

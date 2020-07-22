@@ -14,11 +14,9 @@ exports.create = (req, res) => {
 
   // Create an enrollment
   const enrollment = {
-    /*
-  title: req.body.title,
-  description: req.body.description,
-  published: req.body.published ? req.body.published : false
-*/
+    title: req.body.title,
+    description: req.body.description,
+    published: req.body.published ? req.body.published : false
   };
   // Save enrollment in the database
   Enrollment.create(enrollment)
@@ -35,6 +33,7 @@ exports.create = (req, res) => {
 
 // Retrieve all enrollments from database
 exports.findAll = (req, res) => {
+  console.log('find all found')
   const title = req.query.title;
   var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
 
@@ -65,7 +64,7 @@ exports.findOne = (req, res) => {
     });
 };
 
-// Update an enrollement by the id in the request
+// Update an enrollment by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
 
