@@ -9,6 +9,9 @@ module.exports = (sequelize, Sequelize) => {
     peer_review_due_date: {
       type: Sequelize.DATE,
     },
+    appeals_due_date: {
+      type: Sequelize.DATE,
+    },
   });
   Assignment.associate = (db) => {
     Assignment.belongsTo(db.rubric, {
@@ -25,6 +28,7 @@ module.exports = (sequelize, Sequelize) => {
     Assignment.hasMany(db.review_grades);
     Assignment.hasMany(db.group);
     Assignment.hasMany(db.peer_review_status);
+    Assignment.hasMany(db.announcements);
   };
   return Assignment;
 };
