@@ -7,12 +7,12 @@ const { Client } = require("pg");
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
+const db = require("./models");
 
 app
   .prepare()
   .then(() => {
     const server = express();
-    const db = require("./server/models");
     db.sequelize.sync();
     // //without sequelize
     // const client = new Client({
@@ -31,6 +31,9 @@ app
     //   }
     // });
     server.get("*", (req, res) => {
+      return handle(req, res);
+    });
+    server.post("*", (req, res) => {
       return handle(req, res);
     });
 

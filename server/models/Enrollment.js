@@ -10,10 +10,12 @@ module.exports = (sequelize, Sequelize) => {
     Enrollment.belongsTo(db.course, {
       foreignKey: "courseId",
     });
+    /*
     //Enrollments belong to a user
     Enrollment.belongsTo(db.users, {
       foreignKey: "userId",
     });
+    */
   };
   return Enrollment;
 };

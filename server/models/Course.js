@@ -1,5 +1,3 @@
-const Enrollment = require("../../models/Enrollment");
-
 module.exports = (sequelize, Sequelize) => {
   const Course = sequelize.define("course", {
     active: {
@@ -13,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
   });
   Course.associate = (db) => {
     Course.hasMany(db.enrollment);
-    Course.hasMany(db.assignments);
+    //Course.hasMany(db.assignments);
   };
 
   return Course;
