@@ -11,11 +11,12 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
   });
-  Course.associate = (db) => {
-    Course.hasMany(db.enrollment);
-    Course.hasMany(db.review_reports);
-    Course.hasMany(db.review_grades);
-    Course.hasMany(db.peer_matching);
+  Users.associate = (db) => {
+    Users.hasMany(db.enrollment);
+    Users.hasMany(db.review_reports);
+    Users.hasMany(db.review_grades);
+    Users.hasMany(db.peer_matching);
+    Users.hasMany(db.Enrollment);
   };
   return Users;
 };

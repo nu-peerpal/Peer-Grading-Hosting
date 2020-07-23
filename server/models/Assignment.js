@@ -3,6 +3,9 @@ module.exports = (sequelize, Sequelize) => {
     assignment_due_date: {
       type: Sequelize.DATE,
     },
+    name: {
+      type: Sequelize.STRING,
+    },
     canvas_id: {
       type: Sequelize.STRING,
     },
