@@ -4,8 +4,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
   });
-  Assignment_Submissions.associate = (db) => {
-    Assignment_Submissions.belongsTo(db.course, {
+  Announcements.associate = (db) => {
+    Announcements.belongsTo(db.course, {
       foreignKey: "courseId",
     });
   };

@@ -14,6 +14,7 @@ app
   .then(() => {
     const server = express();
     db.sequelize.sync();
+    console.log("connection tried");
     // //without sequelize
     // const client = new Client({
     //   connectionString:
@@ -45,6 +46,7 @@ app
     });
   })
   .catch((ex) => {
+    console.log("caught error");
     console.error(ex.stack);
     process.exit(1);
   });

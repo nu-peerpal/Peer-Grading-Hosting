@@ -17,20 +17,23 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Assignment.associate = (db) => {
+    /*
     Assignment.belongsTo(db.rubric, {
       foreignKey: "review_rubric_id",
     });
+    */
     Assignment.belongsTo(db.course, {
       foreignKey: "courseId",
     });
-    Assignment.belongsTo(db.rubric, {
+    /*Assignment.belongsTo(db.rubric, {
       foreignKey: "rubric_id",
     });
-    Assignment.hasMany(db.peer_matching);
-    Assignment.hasMany(db.assignment_submissions);
-    Assignment.hasMany(db.review_grades);
-    Assignment.hasMany(db.group);
-    Assignment.hasMany(db.peer_review_status);
+    */
+    //Assignment.hasMany(db.peer_matching);
+    //Assignment.hasMany(db.assignment_submissions);
+    //Assignment.hasMany(db.review_grades);
+    //Assignment.hasMany(db.group);
+    //Assignment.hasMany(db.peer_review_status);
     Assignment.hasMany(db.announcements);
   };
   return Assignment;

@@ -1,32 +1,24 @@
-const db = require("../../models/index.js");
-const Enrollment = db.enrollment;
+const db = require("../../../models/index.js");
+const Assignment = db.assignment;
 const Course = db.course;
 const Op = db.Sequelize.Op;
 
+//this route will return an array of assignment objects based on course
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      // getting the courseID of all Courses with enrollmenttype = student
-      if (req.body.q_type == "courseId") {
-        db.enrollment
-          .findAll({
-            attributes: ["courseId"],
-            where: {
-              enrollment_type: "student",
-            },
-          })
-          .then((result) => res.json(result));
-        break;
-      } else {
-        db.enrollment
-          .findByPk(req.params.courseID)
-          .then((result) => res.json(result));
-
-        break;
-      }
-
+      db.assignment
+        .findAll({
+          // if we wanted only specific attributes
+          //attributes: ["courseId"],
+          where: {
+            courseId: req.params.courseId,
+          },
+        })
+        .then((result) => res.json(result));
+      break;
     case "POST":
-      if (!req.body) {
+    /* if (!req.body) {
         res.status(400).send({
           message: "Content can not be empty!",
         });
@@ -51,7 +43,7 @@ export default (req, res) => {
           });
         });
 
-      break;
+      break; */
     default:
       res.status(405).end(); //Method Not Allowed
       break;
