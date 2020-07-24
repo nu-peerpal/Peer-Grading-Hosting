@@ -1,4 +1,4 @@
-const db = require("../../../models/index.js");
+const db = require("../../models/index");
 const Assignment = db.assignment;
 const Course = db.course;
 const Op = db.Sequelize.Op;

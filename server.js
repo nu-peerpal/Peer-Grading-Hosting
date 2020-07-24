@@ -13,7 +13,10 @@ app
   .prepare()
   .then(() => {
     const server = express();
-    db.sequelize.sync();
+
+    (async () => {
+      await db.connect();
+    })();
     console.log("connection tried");
     // //without sequelize
     // const client = new Client({

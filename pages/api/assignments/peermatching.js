@@ -1,4 +1,4 @@
-const db = require("../../models/index.js");
+const db = require("../../../models/index.js");
 const Assignments = db.assignments;
 const Assignment_Submission = db.assignment_submission;
 const Peer_Matching = db.peer_matching;

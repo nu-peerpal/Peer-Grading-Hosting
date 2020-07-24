@@ -5,7 +5,7 @@ const sequelize = new Sequelize(
   {
     pool: {
       max: 5,
-      min: 1,
+      min: 0,
       idle: 10000,
     },
   }
@@ -44,7 +44,30 @@ Object.keys(db).forEach((modelName) => {
   }
 });
 */
+
+const connect = async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+
+    console.log(
+      "Connection to the database has been established successfully."
+    );
+  } catch (error) {
+    console.log("me");
+    if (error.code === "ELIFECYCLE") {
+      console.log(
+        "My dish error: ",
+        util.inspect(error, { showHidden: true, depth: 2 })
+      );
+    }
+    //console.error("hi", error.message);
+    process.exit(-1);
+  }
+};
+db.connect = connect;
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 //exporting database
+
 module.exports = db;
