@@ -13,6 +13,7 @@ app
   .prepare()
   .then(() => {
     const server = express();
+    // connecting to database, connect function defined in /models/index.js
 
     (async () => {
       await db.connect();

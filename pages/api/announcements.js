@@ -10,7 +10,7 @@ export default (req, res) => {
         .findAll({
           attributes: ["announcement"],
           where: {
-            courseId: 1, //req.params.courseId,
+            courseId: req.params.courseId,
           },
         })
         .then((result) => res.json(result));
