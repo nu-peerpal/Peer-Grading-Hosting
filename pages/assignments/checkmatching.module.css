@@ -1,11 +1,8 @@
 .pms{
-    /* display: inline-block !important; */
-    /* margin: 40px !important; */
-    width: 80% !important;
-    margin: 0 10% !important;
-    align-items: center;
+    display: inline-block !important;
+    margin-right: 20px !important;
 }
 
-.child{
-    display: inline-block !important;
+.matching {
+    margin: 0 40px 40px !important;
 }

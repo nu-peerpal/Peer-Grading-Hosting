@@ -8,6 +8,8 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      // 
+      //IsStudent: false,
 
       Announcements: [
         { name: "Assignment 1 Graded", info: "" },
