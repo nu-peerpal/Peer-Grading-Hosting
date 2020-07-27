@@ -1,16 +1,16 @@
 const db = require("../../models/index.js");
-const Announcement = db.announcement;
+const Announcements = db.announcements;
 const Op = db.Sequelize.Op;
 
 //this route will return an array of announcement strings based on courseId
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      db.announcement
+      db.announcements
         .findAll({
           attributes: ["announcement"],
           where: {
-            courseId: req.params.courseId,
+            courseId: 1, //req.params.courseId,
           },
         })
         .then((result) => res.json(result));

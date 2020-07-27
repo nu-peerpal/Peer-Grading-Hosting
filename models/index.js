@@ -10,7 +10,6 @@ const sequelize = new Sequelize(
     },
   }
 ); // Example for postgres
-console.log("just made connect");
 const db = {};
 
 //require all tables for database
@@ -22,28 +21,32 @@ db.announcements = require("../server/models/Announcements.js")(
 );
 db.assignment = require("../server/models/Assignment.js")(sequelize, Sequelize);
 
-/* db.assignment_submissions = require("./Assignment_Submissions")(
-  sequelize,
-  Sequelize
-);
-db.group = require("./Group")(sequelize, Sequelize);
-db.peer_matching = require("./Peer_Matching")(sequelize, Sequelize);
-db.peer_review_status = require("./Peer_Review_Status")(sequelize, Sequelize);
-db.review_grades = require("./Review_Grades")(sequelize, Sequelize);
-db.review_reports = require("./Review_Reports")(sequelize, Sequelize);
-db.rubric = require("./Rubric")(sequelize, Sequelize);
-db.submission_grades = require("./Submission_Grades")(sequelize, Sequelize);
-db.submission_reports = require("./Submission_Reports")(sequelize, Sequelize);
-db.users = require("./Users")(sequelize, Sequelize);
-db.announcements = require("../server/models/Announcements.js")(sequelize, Sequelize); */
-//write all connections here. ex:
-/*
+// db.enrollment = require("./Enrollment")(sequelize, Sequelize);
+// db.assignment = require("./Assignment")(sequelize, Sequelize);
+// db.course = require("./Course")(sequelize, Sequelize);
+// db.assignment_submissions = require("./Assignment_Submissions")(
+//   sequelize,
+//   Sequelize
+// );
+// db.group = require("./Group")(sequelize, Sequelize);
+// db.peer_matching = require("./Peer_Matching")(sequelize, Sequelize);
+// db.peer_review_status = require("./Peer_Review_Status")(sequelize, Sequelize);
+// db.review_grades = require("./Review_Grades")(sequelize, Sequelize);
+// db.review_reports = require("./Review_Reports")(sequelize, Sequelize);
+// db.rubric = require("./Rubric")(sequelize, Sequelize);
+// db.submission_grades = require("./Submission_Grades")(sequelize, Sequelize);
+// db.submission_reports = require("./Submission_Reports")(sequelize, Sequelize);
+// db.users = require("./Users")(sequelize, Sequelize);
+// db.announcements = require("./Announcements")(sequelize, Sequelize);
+
+// db connections
+
 Object.keys(db).forEach((modelName) => {
+  console.log("look", db[modelName]);
   if ("associate" in db[modelName]) {
     db[modelName].associate(db);
   }
 });
-*/
 
 const connect = async () => {
   try {
@@ -54,7 +57,7 @@ const connect = async () => {
       "Connection to the database has been established successfully."
     );
   } catch (error) {
-    console.log("me");
+    console.log("me", error);
     if (error.code === "ELIFECYCLE") {
       console.log(
         "My dish error: ",
@@ -65,6 +68,7 @@ const connect = async () => {
     process.exit(-1);
   }
 };
+
 db.connect = connect;
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;

@@ -34,7 +34,6 @@ module.exports = (sequelize, Sequelize) => {
     //Assignment.hasMany(db.review_grades);
     //Assignment.hasMany(db.group);
     //Assignment.hasMany(db.peer_review_status);
-    Assignment.hasMany(db.announcements);
   };
   return Assignment;
 };

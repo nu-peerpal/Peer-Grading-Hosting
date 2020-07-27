@@ -17,7 +17,6 @@ app
     (async () => {
       await db.connect();
     })();
-    console.log("connection tried");
     // //without sequelize
     // const client = new Client({
     //   connectionString:

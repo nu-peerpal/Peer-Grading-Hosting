@@ -8,10 +8,14 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    course_name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   });
   Course.associate = (db) => {
     Course.hasMany(db.enrollment);
-    //Course.hasMany(db.assignments);
+    Course.hasMany(db.assignment);
   };
 
   return Course;
