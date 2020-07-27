@@ -1,0 +1,16 @@
+.nav{
+    position: absolute;
+    height: 32px;
+    margin: 0 5%;
+    width: 90%;
+    top: 100px;
+}
+
+.nav > a{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    padding-right: 20px;
+    text-decoration: none;
+}

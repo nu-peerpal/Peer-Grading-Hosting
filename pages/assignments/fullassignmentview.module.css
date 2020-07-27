@@ -1,0 +1,37 @@
+.view {
+  display: grid;
+  margin: 0 40px 40px;
+  /* padding: 20px; */
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  grid-template-areas: "i i i c c" "a a a c c" "a a a c c" "a a a c c"
+  "a a a c c" "a a a . ." "a a a . .";
+}
+
+.view > div{
+    padding: 20px;
+    line-height: 25px;
+}
+
+.att{
+    grid-area: a;
+    background: #E5E5E5;
+}
+
+.inf{
+    grid-area: i;
+    background: #E5E5E5 !important;
+    box-shadow: none !important;
+    position: static !important;
+    padding: 0 20px !important;
+}
+
+/* .acc {
+    margin: 0 !important;
+    min-height: 25px !important;
+} */
+
+.check{
+    grid-area: c;
+    padding: 0 20px 20px !important;
+}

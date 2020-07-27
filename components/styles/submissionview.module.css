@@ -1,0 +1,10 @@
+.sub{
+    margin: 0 40px 40px !important;
+}
+.acc{
+    background: #E5E5E5 !important;
+    box-shadow: none !important;
+    position: static !important;
+    padding: 0 20px !important;
+    border-radius: 0 !important;
+}
