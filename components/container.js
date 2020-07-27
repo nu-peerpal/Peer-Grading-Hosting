@@ -17,7 +17,7 @@ class Container extends React.Component {
     render() {
         return (
             <div className={styles.containers}>
-                <h1>Hey!</h1>
+                <h1>Page Name</h1>
                 <div className={styles.back} onClick={() => Router.back()}><KeyboardBackspaceIcon/></div>
                 {this.props.children}
                 {/* <Table.Header>
