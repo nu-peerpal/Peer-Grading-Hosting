@@ -12,7 +12,7 @@ export default (req, res) => {
         .findAll({
           attributes: ["announcement"],
           where: {
-            userId: req.params.userId,
+            userId: req.body.userId,
           },
         })
         .then((result) => res.json(result));
