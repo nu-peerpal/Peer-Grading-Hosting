@@ -2,6 +2,14 @@ import React from 'react';
 import Link from 'next/link'
 import styles from "./styles/dashboard.module.css";
 import ListContainer from "../components/listcontainer";
+//import useSWR from 'swr'
+
+//const fetcher = (url) => fetch(url).then((res) => res.json())
+// const {data3, error} = fetch('/api/enrollment', { method: 'POST', body: {  
+//      "courseId": 1
+//   }})
+
+// console.log(data3)
 
 
 class Dashboard extends React.Component {
@@ -25,6 +33,10 @@ class Dashboard extends React.Component {
         {'name': 'Peer Matching', 'info': "Assignment 4"},
       ],
     };
+    //const { data3, error } = useSWR('/api/announcements', fetcher);
+    // const {data3, error} = fetch('/api/announcements', { method: 'GET', body: {  
+    //      "courseId": 1
+    //   }})
   }
 
   render() {
@@ -32,8 +44,12 @@ class Dashboard extends React.Component {
     const data2 = this.state.Announcements;
     const data1 = this.state.PRs;
     const data = this.state.List;
-    ;
+    // console.log(fetch('/api/enrollment', { method: 'POST', body: {  
+    //      "courseId": 1
+    //   }}))
+    // ;
     // console.log(this.state)
+    //console.log(data3)
     let dash;
 
     if (isStudent) {
