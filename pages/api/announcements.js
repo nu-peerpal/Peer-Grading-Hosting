@@ -6,11 +6,12 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
+      console.log("hi", req.query);
       db.announcements
         .findAll({
           attributes: ["announcement"],
           where: {
-            courseId: req.body.courseId,
+            courseId: req.query.courseId,
           },
         })
         .then((result) => res.json(result));
