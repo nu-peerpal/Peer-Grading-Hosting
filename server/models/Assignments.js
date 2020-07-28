@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Assignments.associate = (db) => {
-    Assignments.belongsTo(db.course, {
+    Assignments.belongsTo(db.courses, {
       foreignKey: "courseId",
     });
     // Assignments.belongsTo(db.rubrics, {

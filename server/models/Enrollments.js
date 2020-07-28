@@ -12,9 +12,9 @@ module.exports = (sequelize, Sequelize) => {
     });
 
     //Enrollments belong to a user
-    Enrollments.belongsTo(db.users, {
-      foreignKey: "userId",
-    });
+    // Enrollments.belongsTo(db.users, {
+    //   foreignKey: "userId",
+    // });
   };
   return Enrollments;
 };

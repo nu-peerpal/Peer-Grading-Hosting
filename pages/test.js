@@ -14,6 +14,6 @@ async function testAPI() {
   const data = await res.json();
   console.log(data);
 }
-testAPI();
+//testAPI();
 
 export default Test;
