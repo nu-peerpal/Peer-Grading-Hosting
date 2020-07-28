@@ -4,10 +4,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       allowNull: false,
     },
-    canvas_id: {
+    canvasId: {
       type: Sequelize.STRING,
     },
-    course_name: {
+    courseName: {
       type: Sequelize.STRING,
       allowNull: false,
     },

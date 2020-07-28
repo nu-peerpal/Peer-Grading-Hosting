@@ -1,9 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
   const Assignment_Submissions = sequelize.define("assignment_submissions", {
-    s3link: {
+    s3Link: {
       type: Sequelize.STRING,
     },
-    canvas_id: {
+    canvasId: {
       type: Sequelize.STRING,
     },
   });

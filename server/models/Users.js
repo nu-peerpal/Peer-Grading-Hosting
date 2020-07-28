@@ -1,13 +1,13 @@
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define("users", {
-    canvas_id: {
+    canvasId: {
       //maybe unique?
       type: Sequelize.STRING,
     },
-    last_name: {
+    lastName: {
       type: Sequelize.STRING,
     },
-    first_name: {
+    firstName: {
       type: Sequelize.STRING,
     },
   });

@@ -3,7 +3,7 @@ module.exports = (sequelize, Sequelize) => {
     review: {
       type: Sequelize.JSON,
     },
-    matching_type: {
+    matchingType: {
       type: Sequelize.STRING,
     },
   });

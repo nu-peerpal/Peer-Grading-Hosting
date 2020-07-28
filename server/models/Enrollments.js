@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const Enrollments = sequelize.define("enrollments", {
-    enrollment_type: {
+    enrollmentType: {
       type: Sequelize.STRING,
     },
   });

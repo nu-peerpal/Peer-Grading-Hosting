@@ -1,18 +1,18 @@
 module.exports = (sequelize, Sequelize) => {
   const Assignments = sequelize.define("assignments", {
-    assignment_due_date: {
+    assignmentDueDate: {
       type: Sequelize.DATE,
     },
     name: {
       type: Sequelize.STRING,
     },
-    canvas_id: {
+    canvasId: {
       type: Sequelize.STRING,
     },
-    peer_review_due_date: {
+    peerreviewDueDate: {
       type: Sequelize.DATE,
     },
-    appeals_due_date: {
+    appealsDueDate: {
       type: Sequelize.DATE,
     },
   });
@@ -21,11 +21,11 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: "courseId",
     });
     // Assignments.belongsTo(db.rubrics, {
-    //   foreignKey: "review_rubric_id",
+    //   foreignKey: "reviewrubricId",
     // });
 
     // Assignments.belongsTo(db.rubrics, {
-    //   foreignKey: "rubric_id",
+    //   foreignKey: "rubricId",
     // });
 
     // Assignments.hasMany(db.peer_matchings);

@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const Groups = sequelize.define("groups", {
-    canvas_id: {
+    canvasId: {
       type: Sequelize.STRING,
     },
   });
