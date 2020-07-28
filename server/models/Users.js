@@ -12,11 +12,10 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Users.associate = (db) => {
-    Users.hasMany(db.enrollment);
+    Users.hasMany(db.enrollments);
     Users.hasMany(db.review_reports);
     Users.hasMany(db.review_grades);
-    Users.hasMany(db.peer_matching);
-    Users.hasMany(db.Enrollment);
+    Users.hasMany(db.peer_matchings);
   };
   return Users;
 };

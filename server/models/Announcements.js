@@ -5,7 +5,7 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Announcements.associate = (db) => {
-    Announcements.belongsTo(db.course, {
+    Announcements.belongsTo(db.courses, {
       foreignKey: "courseId",
     });
   };

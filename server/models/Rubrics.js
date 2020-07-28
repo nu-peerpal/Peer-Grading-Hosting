@@ -1,8 +1,8 @@
 module.exports = (sequelize, Sequelize) => {
-  const Rubric = sequelize.define("rubric", {
+  const Rubrics = sequelize.define("rubrics", {
     rubric: {
       type: Sequelize.JSON,
     },
   });
-  return Users;
+  return Rubrics;
 };

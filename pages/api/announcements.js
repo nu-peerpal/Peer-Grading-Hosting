@@ -6,7 +6,6 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      console.log("hi", req.query);
       db.announcements
         .findAll({
           attributes: ["announcement"],

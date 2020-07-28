@@ -6,11 +6,9 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Review_Grades.associate = (db) => {
-    //enrollments belong to a course
     Review_Grades.belongsTo(db.assignment, {
       foreignKey: "assignmentId",
     });
-    //Enrollments belong to a user
     Review_Grades.belongsTo(db.users, {
       foreignKey: "userId",
     });

@@ -6,21 +6,19 @@ module.exports = (sequelize, Sequelize) => {
     canvas_id: {
       type: Sequelize.STRING,
     },
-    peer_review_due_date: {
-      type: Sequelize.DATE,
-    },
   });
   Assignment_Submissions.associate = (db) => {
-    Assignment_Submissions.belongsTo(db.group, {
+    Assignment_Submissions.belongsTo(db.groups, {
       foreignKey: "groupId",
     });
-    Assignment_Submissions.belongsTo(db.assignment, {
+    Assignment_Submissions.belongsTo(db.assignments, {
       foreignKey: "assignmentId",
     });
 
     Assignment_Submissions.hasMany(db.submission_grades);
     Assignment_Submissions.hasMany(db.submission_reports);
     Assignment_Submissions.hasMany(db.review_reports);
+    Assignment_Submissions.hasMany(db.peer_matchings);
   };
   return Assignment_Submissions;
 };

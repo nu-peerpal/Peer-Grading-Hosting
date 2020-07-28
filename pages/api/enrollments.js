@@ -4,7 +4,8 @@ const Announcements = db.announcements;
 const Assignment = db.assignment;
 const Course = db.course;
 const Op = db.Sequelize.Op;
-//this api is to populate the db
+
+//this api is to populate the database!
 export default (req, res) => {
   switch (req.method) {
     case "GET":

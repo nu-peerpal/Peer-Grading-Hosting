@@ -1,22 +1,22 @@
 module.exports = (sequelize, Sequelize) => {
-  const Course = sequelize.define("course", {
+  const Courses = sequelize.define("courses", {
     active: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
     },
     canvas_id: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     course_name: {
       type: Sequelize.STRING,
       allowNull: false,
     },
   });
-  Course.associate = (db) => {
-    Course.hasMany(db.enrollment);
-    Course.hasMany(db.assignment);
+  Courses.associate = (db) => {
+    Courses.hasMany(db.enrollments);
+    Courses.hasMany(db.assignments);
+    Courses.hasMany(db.announcements);
   };
 
-  return Course;
+  return Courses;
 };
