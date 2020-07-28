@@ -44,11 +44,9 @@ class Dashboard extends React.Component {
     const data2 = this.state.Announcements;
     const data1 = this.state.PRs;
     const data = this.state.List;
-    // console.log(fetch('/api/enrollment', { method: 'POST', body: {  
-    //      "courseId": 1
-    //   }}))
-    // ;
-    // console.log(this.state)
+    console.log(fetch('/api/announcements/?courseId=1', { method: 'GET'}))
+    ;
+    //console.log(this.state)
     //console.log(data3)
     let dash;
 
