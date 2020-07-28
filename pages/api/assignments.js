@@ -12,7 +12,7 @@ export default (req, res) => {
           // if we wanted only specific attributes
           // attributes: ["courseId"],
           where: {
-            courseId: req.body.courseId,
+            courseId: req.query.courseId,
           },
         })
         .then((result) => res.json(result));
