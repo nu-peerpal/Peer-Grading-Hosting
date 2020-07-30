@@ -61,7 +61,7 @@ function ensureSufficientReviews (graders, reviews, matching){
 
 
 
-function submissionReports (graders, reviews, rubric, num_rounds, bonus){
+function submissionReports (graders, reviews, rubric, num_rounds=20, bonus=0.0){
     var json = formJson([["graders", graders], ["reviews", reviews], ["rubric", rubric], ["num_rounds",num_rounds],["bonus",bonus]])
     return axios.post('https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/submissionReports', json)
     .then((response) => {
