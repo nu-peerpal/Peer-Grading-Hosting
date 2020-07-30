@@ -9,10 +9,11 @@
     "start": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
   },
   "dependencies": {
+    "@babel/core": "^7.10.5",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@babel/core": "^7.10.5",
+    "axios": "^0.19.2",
     "express": "^4.17.1",
     "formik": "^2.1.5",
     "fs": "0.0.1-security",
