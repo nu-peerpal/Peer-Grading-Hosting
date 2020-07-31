@@ -17,6 +17,7 @@ export default (req, res) => {
           },
         })
         .then((result) => res.json(result));
+      db.sequelize.close();
       break;
     //case "POST":
     /* if (!req.body) {

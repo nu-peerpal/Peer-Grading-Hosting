@@ -104,10 +104,11 @@ export default (req, res) => {
               "Some error occurred while creating the assignment.",
           });
         });
-
+      db.sequelize.close();
       break;
     default:
       res.status(405).end(); //Method Not Allowed
+      db.sequelize.close();
       break;
   }
 };

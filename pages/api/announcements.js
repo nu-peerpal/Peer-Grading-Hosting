@@ -14,6 +14,7 @@ export default (req, res) => {
           },
         })
         .then((result) => res.json(result));
+      db.sequelize.close();
       break;
     //case "POST":
     /* if (!req.body) {
@@ -44,6 +45,7 @@ export default (req, res) => {
       break; */
     default:
       res.status(405).end(); //Method Not Allowed
+      db.sequelize.close();
       break;
   }
 };
