@@ -46,7 +46,7 @@ class ListContainer extends React.Component {
 
   render() {
     return (
-      <Table singleLine className={styles.tables}>
+      <Table className={styles.tables}>
         <TableHead className={styles.header}>
           <TableRow>
             <TableCell className={styles.hcell}>{this.props.name}</TableCell>

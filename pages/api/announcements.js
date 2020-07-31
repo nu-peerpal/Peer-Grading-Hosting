@@ -6,7 +6,7 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      console.log("hi", req.query);
+      //console.log("hi", req.query);
       db.announcements
         .findAll({
           attributes: ["announcement"],
@@ -14,35 +14,11 @@ export default (req, res) => {
             courseId: req.query.courseId,
           },
         })
-        .then((result) => res.json(result));
+        .then((result) => {
+          console.log(result) 
+          res.json(result)});
+        // console.log(result)
       break;
-    //case "POST":
-    /* if (!req.body) {
-        res.status(400).send({
-          message: "Content can not be empty!",
-        });
-        break;
-      }
-      // Create an announcement
-      const announcement = {
-        announcement: req.body.announcement,
-        courseId: req.params.courseId,
-      };
-      // Save enrollment in the database
-      Announcement.create(announcement)
-        .then((data) => {
-          res.send(data);
-          res.json(data);
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message:
-              err.message ||
-              "Some error occurred while creating the announcement.",
-          });
-        });
-
-      break; */
     default:
       res.status(405).end(); //Method Not Allowed
       break;

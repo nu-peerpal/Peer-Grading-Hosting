@@ -29,6 +29,7 @@ class Dashboard extends React.Component {
     // const {data3, error} = fetch('/api/announcements', { method: 'GET', body: {  
     //      "courseId": 1
     //   }})
+    fetch('/api/announcements/?courseId=1', { method: 'GET'});
   }
 
   // Algorithm Calls on sample data.  Calls AlgCalls API and prints to console
@@ -67,8 +68,7 @@ class Dashboard extends React.Component {
     const data2 = this.state.Announcements;
     const data1 = this.state.PRs;
     const data = this.state.List;
-    console.log(fetch('/api/announcements/?courseId=1', { method: 'GET'}))
-    ;
+    // console.log(fetch('/api/announcements/?courseId=1', { method: 'GET'}));
     //console.log(this.state)
     //console.log(data3)
     let dash;
