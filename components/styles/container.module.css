@@ -1,0 +1,29 @@
+.containers {
+    /* position: absolute; */
+    width: 90%;
+    margin: 30px 5%;
+    /* height: 284px; */
+    /* top: 120px; */
+    border-spacing: 0px;
+    border: 2px solid #e5e5e5;
+    margin-top: 150px;
+    
+  }
+
+  .containers > h1{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 19px;
+    line-height: 48px;
+    text-align: left;
+    font-weight: bold;
+  
+    color: #000000;
+    background: #e5e5e5;
+    padding: 1px 1px 1px 20px;
+    margin: 0;
+  }  
+
+  .back{
+    margin: 20px 40px 20px;
+  } 

@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "12.14.1"
+  - "11.6.0"
 deploy:
   - provider: elasticbeanstalk
     access_key_id: ${AWS_ACCESS_KEY_ID}

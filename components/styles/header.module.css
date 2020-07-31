@@ -1,0 +1,22 @@
+.name{
+    position: absolute !important;
+    height: 31px !important;
+    left: 20px !important;
+    top: -2px !important;
+    
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 30px !important;
+    line-height: 35px !important;
+    
+    color: #000000 !important;    
+}
+
+.header{
+    position: absolute;
+    height: 65px;
+    width: 100%;
+    left: 0px;
+    top: 0px;
+    background: rgba(146, 25, 188, 0.34);
+}
