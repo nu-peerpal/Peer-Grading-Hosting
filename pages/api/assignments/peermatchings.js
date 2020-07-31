@@ -1,21 +1,23 @@
 const db = require("../../../models/index.js");
 const Assignments = db.assignments;
-const Assignment_Submission = db.assignment_submission;
-const Peer_Matching = db.peer_matching;
+const Assignment_Submissions = db.assignment_submissions;
+const Peer_Matchings = db.peer_matchings;
 const Op = db.Sequelize.Op;
 
-//this route will return a specific peer review
+//this route will return all peer review matching with userId & assignmentId
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      db.peer_matching
+      db.peer_matchings
         .findAll({
-          attributes: ["announcement"],
+          attributes: ["courseId"],
           where: {
-            userId: req.body.userId,
+            userId: req.query.userId,
+            assignmentId: req.query.assignmentId,
           },
         })
         .then((result) => res.json(result));
+      db.sequelize.close();
       break;
     //case "POST":
     /* if (!req.body) {

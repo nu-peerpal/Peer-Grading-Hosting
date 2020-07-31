@@ -6,7 +6,6 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      console.log("hi", req.query);
       db.announcements
         .findAll({
           attributes: ["announcement"],
@@ -15,6 +14,7 @@ export default (req, res) => {
           },
         })
         .then((result) => res.json(result));
+      db.sequelize.close();
       break;
     //case "POST":
     /* if (!req.body) {
@@ -45,6 +45,7 @@ export default (req, res) => {
       break; */
     default:
       res.status(405).end(); //Method Not Allowed
+      db.sequelize.close();
       break;
   }
 };

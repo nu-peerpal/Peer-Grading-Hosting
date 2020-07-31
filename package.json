@@ -16,6 +16,8 @@
     "express": "^4.17.1",
     "formik": "^2.1.5",
     "fs": "0.0.1-security",
+    "ltijs": "^5.0.2",
+    "ltijs-sequelize": "^1.0.6",
     "grommet": "^2.14.0",
     "grommet-icons": "^4.4.0",
     "net": "^1.0.2",

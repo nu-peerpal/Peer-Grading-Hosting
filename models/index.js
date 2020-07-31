@@ -13,13 +13,19 @@ const sequelize = new Sequelize(
 const db = {};
 
 //require all tables for database
-db.course = require("../server/models/Course.js")(sequelize, Sequelize);
-db.enrollment = require("../server/models/Enrollment.js")(sequelize, Sequelize);
+db.courses = require("../server/models/Courses.js")(sequelize, Sequelize);
+db.enrollments = require("../server/models/Enrollments.js")(
+  sequelize,
+  Sequelize
+);
 db.announcements = require("../server/models/Announcements.js")(
   sequelize,
   Sequelize
 );
-db.assignment = require("../server/models/Assignment.js")(sequelize, Sequelize);
+db.assignments = require("../server/models/Assignments.js")(
+  sequelize,
+  Sequelize
+);
 
 // db.enrollment = require("../server/models/Enrollment")(sequelize, Sequelize);
 // db.assignment_submissions = require("../server/models/Assignment_Submissions")(

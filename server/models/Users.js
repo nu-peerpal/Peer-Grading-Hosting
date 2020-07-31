@@ -1,22 +1,21 @@
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define("users", {
-    canvas_id: {
+    canvasId: {
       //maybe unique?
       type: Sequelize.STRING,
     },
-    last_name: {
+    lastName: {
       type: Sequelize.STRING,
     },
-    first_name: {
+    firstName: {
       type: Sequelize.STRING,
     },
   });
   Users.associate = (db) => {
-    Users.hasMany(db.enrollment);
+    Users.hasMany(db.enrollments);
     Users.hasMany(db.review_reports);
     Users.hasMany(db.review_grades);
-    Users.hasMany(db.peer_matching);
-    Users.hasMany(db.Enrollment);
+    Users.hasMany(db.peer_matchings);
   };
   return Users;
 };
