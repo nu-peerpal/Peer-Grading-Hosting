@@ -9,24 +9,27 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      // getting the courseID of all Courses with enrollmenttype = student
-      if (req.body.q_type == "courseId") {
-        db.enrollment
-          .findAll({
-            attributes: ["courseId"],
-            where: {
-              enrollment_type: "student",
-            },
-          })
-          .then((result) => res.json(result));
-        break;
-      } else {
-        db.enrollment
-          .findByPk(req.params.courseID)
-          .then((result) => res.json(result));
+      console.log("yes");
+      break;
 
-        break;
-      }
+    // // getting the courseID of all Courses with enrollmenttype = student
+    // if (req.body.q_type == "courseId") {
+    //   db.enrollment
+    //     .findAll({
+    //       attributes: ["courseId"],
+    //       where: {
+    //         enrollment_type: "student",
+    //       },
+    //     })
+    //     .then((result) => res.json(result));
+    //   break;
+    // } else {
+    //   db.enrollment
+    //     .findByPk(req.params.courseID)
+    //     .then((result) => res.json(result));
+
+    //   break;
+    // }
 
     case "POST":
       if (!req.body) {
