@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "main": "server.js",
   "private": true,
+  "babelrc": false,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "NODE_ENV=development node ./server.js",
     "build": "next build",
-    "start": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
+    "start": "next start",
+    "deploy-staging": "NODE_ENV=staging next build &&    NODE_ENV=staging node ./server.js",
+    "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -34,6 +37,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
     "nodemon": "^2.0.4"
   }
 }
