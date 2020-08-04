@@ -6,8 +6,8 @@ deploy:
     access_key_id: ${AWS_ACCESS_KEY_ID}
     secret_access_key: ${AWS_SECRET_ACCESS_KEY}
     region: "us-east-2"
-    app: "pga-next-app"
-    env: "PgaNextApp-env"
+    app: "peerpalx10"
+    env: "peerpalx10-dev"
     bucket_name: ${AWS_S3_BUCKET}
     on:
       branch: "master"
