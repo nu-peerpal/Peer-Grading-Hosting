@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node ./server.js",
     "build": "next build",
-    "start": "next start",
-    "deploy-staging": "NODE_ENV=staging next build &&    NODE_ENV=staging node ./server.js",
+    "start": "NODE_ENV=staging next build &&    NODE_ENV=staging node ./server.js",
     "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
   },
   "dependencies": {
