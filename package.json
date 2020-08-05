@@ -1,14 +1,14 @@
 {
   "name": "pga2",
   "version": "0.1.0",
-  "main": "server.js",
+  "main": "main.js",
   "private": true,
   "babelrc": false,
   "scripts": {
-    "dev": "NODE_ENV=development node ./server.js",
+    "dev": "NODE_ENV=development node ./main.js",
     "build": "next build",
-    "start": "NODE_ENV=production next build && NODE_ENV=production node ./server.js",
-    "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./server.js"
+    "start": "NODE_ENV=production next build && NODE_ENV=production node ./main.js",
+    "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./main.js"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
