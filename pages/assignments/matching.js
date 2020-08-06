@@ -12,6 +12,7 @@ import { Field, Formik, Form } from "Formik";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from '@material-ui/core/Button'
 import Pray from '../../components/autocomplete'
+import { peerMatch } from "../api/AlgCalls.js";
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -26,21 +27,21 @@ class Matching extends React.Component {
     }
   }
   render() {
-    const ds = {114: [11, 12, 15, 2], 120: [11, 18], 118: [12, 16], 115: [13, 17, 18, 19, 1], 119: [13, 17], 113: [14], 117: [14, 16, 20, 3], 111: [15], 116: [19], 112: [20]}
+    const ds = { 114: [11, 12, 15, 2], 120: [11, 18], 118: [12, 16], 115: [13, 17, 18, 19, 1], 119: [13, 17], 113: [14], 117: [14, 16, 20, 3], 111: [15], 116: [19], 112: [20] }
     //const ds = {114: [11, 12, 15, 2], 120: [11, 18], 118: [12, 16], 115: [13, 17, 18, 19, 1], 119: [13, 17], 113: [14], 117: [14, 16, 20, 3], 111: [15], 116: [19], 112: [20]}
-  return(
-      <div className = "Content" >
-      <Container>
-        <Accordion className={styles.matching}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Settings
-            </AccordionSummary>
-          <AccordionDetails>
-            <Settings />
-          </AccordionDetails>
-        </Accordion>
-        <Tree response={ds} />
-      </Container>
+    return (
+      <div className="Content" >
+        <Container>
+          <Accordion className={styles.matching}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              Settings
+          </AccordionSummary>
+            <AccordionDetails>
+              <Settings />
+            </AccordionDetails>
+          </Accordion>
+          <Tree id="tree" response={ds} />
+        </Container>
       </div>
     )
   }
@@ -48,15 +49,27 @@ class Matching extends React.Component {
 
 export default Matching;
 
+var js = {
+  "graders": [1, 2, 3],
+  "peers": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "submissions": [[11, 111], [12, 112], [13, 113], [14, 114], [15, 115], [16, 116], [17, 117], [18, 118], [19, 119], [20, 120]],
+  "peer_load": 2,
+  "grader_load": 3
+}
+
 function Settings() {
   return (
-    <Formik
-      initialValues={{ PeerLoad: '', GraderLoad: '', TA: [] }}
-      onSubmit={(data, { setSubmitting }) => {
+    <Formik initialValues={{ PeerLoad: 0, GraderLoad: 0, TA: [] }}
+      onSubmit={
+        (data, { setSubmitting }) => {
         setSubmitting(true);
-        console.log(data)
+        peerMatch(js.graders, js.peers, js.submissions, Number(data.PeerLoad), Number(data.GraderLoad))
+          .then(data => { return data })
         setSubmitting(false);
-      }}>
+      }
+      }
+    >
+
       {({ values, isSubmitting }) =>
         (
           <Form>
@@ -86,9 +99,7 @@ function Settings() {
               name='TA'
               className={styles.pms}
               component={Pray}
-              // as={Autocomplete}
               required={true}
-              // value={values.TA}
               label="TA"
             />
             <Button disabled={isSubmitting} type="submit">Save</Button>
