@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "NODE_ENV=development node ./main.js",
     "build": "next build",
-    "start": "NODE_ENV=production next build && NODE_ENV=production node ./main.js",
+    "start": "NODE_ENV=production node main.js -p $PORT",
     "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./main.js"
   },
   "dependencies": {
