@@ -26,8 +26,8 @@ class assignmentchecklist extends React.Component {
         <div>Additional Matches: <Link href={"/assignments/checkmatching"}>View</Link>
         </div>
         <div>TA Grading: </div>{/*Will just be a list of submissions that shows if they have been graded or not*/}
-        <div>Review Grading: <Link href={""}>View</Link></div>
-        <div>Submission Grading: <Link href={""}>View</Link></div>
+        <div>Review Reports: <Link href={""}>View</Link></div>
+        <div>Submission Reports: <Link href={""}>View</Link></div>
         <div>Appeal Period: </div>{/*Either Not started, Ongoing or Passed*/}
       </div>
     )
