@@ -9,7 +9,7 @@ const Op = db.Sequelize.Op;
 export default (req, res) => {
   switch (req.method) {
     case "GET":
-      console.log("yes");
+      res.send("Hello World!");
       break;
 
     // // getting the courseID of all Courses with enrollmenttype = student
