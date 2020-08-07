@@ -13,8 +13,12 @@ export default (req, res) => {
             courseId: req.query.courseId,
           },
         })
-        .then((result) => res.json(result));
-      db.sequelize.close();
+        .then((result) => {
+          res.json(result);
+          console.log(result);
+        }
+        )
+      //db.sequelize.close();
       break;
     //case "POST":
     /* if (!req.body) {
@@ -45,7 +49,7 @@ export default (req, res) => {
       break; */
     default:
       res.status(405).end(); //Method Not Allowed
-      db.sequelize.close();
+      //db.sequelize.close();
       break;
   }
 };

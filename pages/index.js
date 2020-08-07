@@ -41,7 +41,7 @@ class Dashboard extends React.Component {
         { name: "Peer Matching", info: "Assignment 4" },
       ],
     };
-    //fetch('/api/announcements/?courseId=1', { method: 'GET'});
+    fetch('/api/announcements/?courseId=1', { method: 'GET'});
   }
 
   // Algorithm Calls on sample data.  Calls AlgCalls API and prints to console
