@@ -7,7 +7,7 @@ const { Client } = require("pg");
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
-//const db = require("./models");
+const db = require("./models");
 
 // LTI server stuff
 const lti = require("ltijs").Provider;
@@ -18,13 +18,13 @@ app
   .then(() => {
     // EXPRESS SERVER
     const server = express();
-    /*
+
     console.log(port);
     // connecting to database, connect function defined in /models/index.js
     (async () => {
       await db.connect();
     })();
-*/
+
     server.get("*", (req, res) => {
       return handle(req, res);
     });
