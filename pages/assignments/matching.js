@@ -32,7 +32,8 @@ class Matching extends React.Component {
       <Formik initialValues={{ PeerLoad: 0, GraderLoad: 0, TA: [] }}
         onSubmit={(data, { setSubmitting }) => {
           setSubmitting(true);
-          peerMatch(js.graders, js.peers, js.submissions, Number(data.PeerLoad), Number(data.GraderLoad)).then(data => {
+          peerMatch(js.graders, js.peers, js.submissions, Number(data.PeerLoad), Number(data.GraderLoad))
+          .then(data => {
             this.setState({ 'matching': data })
           });
           setSubmitting(false);

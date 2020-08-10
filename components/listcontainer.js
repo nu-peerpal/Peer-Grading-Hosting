@@ -28,10 +28,15 @@ class ListContainer extends React.Component {
 
   getData = function () {
     var information = this.props;
+    console.log(information)
     var list = "";
     var assignname = "";
     var student = information.student;
     return (
+      // <TableRow>
+      //   <TableCell className={styles.name}>Name</TableCell>
+      //   <TableCell className={styles.info}>Info</TableCell>
+      // </TableRow>
       information.data.map(x => {
         return (
           <TableRow className={styles.row}>

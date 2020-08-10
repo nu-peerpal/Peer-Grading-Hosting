@@ -4,9 +4,9 @@ const Op = db.Sequelize.Op;
 
 //this route will return an array of announcement strings based on courseId
 export default (req, res) => {
+  return new Promise(resolve => {
   switch (req.method) {
     case "GET":
-      //console.log("hi", req.query);
       db.announcements
         .findAll({
           attributes: ["announcement"],
@@ -15,12 +15,14 @@ export default (req, res) => {
           },
         })
         .then((result) => {
-          console.log(result) 
-          res.json(result)});
-        // console.log(result)
+          res.json(result)
+          resolve()
+        });
       break;
     default:
       res.status(405).end(); //Method Not Allowed
+      return resolve()
       break;
   }
-};
+
+})}
