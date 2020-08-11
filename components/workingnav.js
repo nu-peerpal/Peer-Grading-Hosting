@@ -14,15 +14,15 @@ class NavControl extends React.Component {
     let nav;
 
     if (isStudent) {
-      nav = <StudentView/>;
+      nav = <StudentView />;
     } else {
-      nav = <TeacherView/>;
+      nav = <TeacherView />;
     }
 
     return (
       <div>
         {nav}
-      </div>  
+      </div>
     );
   }
 }
@@ -32,12 +32,12 @@ function StudentView(props) {
     <div className={styles.working}>
       <a>Student Links</a>
       <Link href={"/peer_reviews/peerreview"}>
-        Peer Reviewing
+        <a>Peer Reviewing</a>
       </Link>
       <Link href={"/grades/viewgrade"}>
-        Grade View
+        <a>Grade View</a>
       </Link>
-    </div>  
+    </div>
   );
 }
 
@@ -46,14 +46,13 @@ function TeacherView(props) {
     <div className={styles.working}>
       <a>TA/Prof Links</a>
       <Link href={"/assignments/fullassignmentview"}>
-        View Assignment Details
+        <a>View Assignment Details</a>
       </Link>
       <Link href={"/grading/tagrading"}>
-        TA Grading
+        <a>TA Grading</a>
       </Link>
     </div>
   );
 }
 
 export default NavControl;
-  

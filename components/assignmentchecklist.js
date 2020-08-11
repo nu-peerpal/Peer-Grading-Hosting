@@ -23,11 +23,11 @@ class assignmentchecklist extends React.Component {
         <div>Peer Matching: <Link href={"/assignments/matching"}>View</Link>
         </div>
         <div>Review Due Date: </div>{/*Fill in*/}
-        <div>Check Reviews: <Link href={"/assignments/checkmatching"}>View</Link>
+        <div>Additional Matches: <Link href={"/assignments/checkmatching"}>View</Link>
         </div>
         <div>TA Grading: </div>{/*Will just be a list of submissions that shows if they have been graded or not*/}
-        <div>Review Grading: <Link href={""}>View</Link></div>
-        <div>Submission Grading: <Link href={""}>View</Link></div>
+        <div>Review Reports: <Link href={""}>View</Link></div>
+        <div>Submission Reports: <Link href={""}>View</Link></div>
         <div>Appeal Period: </div>{/*Either Not started, Ongoing or Passed*/}
       </div>
     )

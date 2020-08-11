@@ -36,6 +36,7 @@
     "react-dom": "^16.13.1",
     "sequelize": "^6.3.4",
     "styled-components": "^5.1.1",
+    "swr": "^0.3.0",
     "webpack": "^4.44.1"
   },
   "devDependencies": {

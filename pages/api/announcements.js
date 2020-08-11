@@ -4,6 +4,7 @@ const Op = db.Sequelize.Op;
 
 //this route will return an array of announcement strings based on courseId
 export default (req, res) => {
+  return new Promise(resolve => {
   switch (req.method) {
     case "GET":
       db.announcements
@@ -14,42 +15,14 @@ export default (req, res) => {
           },
         })
         .then((result) => {
-          res.json(result);
-          console.log(result);
-        }
-        )
-      //db.sequelize.close();
+          res.json(result)
+          resolve()
+        });
       break;
-    //case "POST":
-    /* if (!req.body) {
-        res.status(400).send({
-          message: "Content can not be empty!",
-        });
-        break;
-      }
-      // Create an announcement
-      const announcement = {
-        announcement: req.body.announcement,
-        courseId: req.params.courseId,
-      };
-      // Save enrollment in the database
-      Announcement.create(announcement)
-        .then((data) => {
-          res.send(data);
-          res.json(data);
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message:
-              err.message ||
-              "Some error occurred while creating the announcement.",
-          });
-        });
-
-      break; */
     default:
       res.status(405).end(); //Method Not Allowed
-      //db.sequelize.close();
+      return resolve()
       break;
   }
-};
+
+})}
