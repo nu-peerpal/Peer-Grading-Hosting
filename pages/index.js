@@ -17,12 +17,10 @@ const LIST = [
         ]
 
 function Dashboard(ISstudent) {
-  //console.log('Student?', ISstudent.ISstudent)
   if (ISstudent.ISstudent == true) {
     var announc = []
     const { data: announcement } = useSWR('/api/announcements/?courseId=1', fetcher)
     if(announcement){announcement.map(x => announc.push({name: x.announcement, info:""}))}
-    //console.log('is something?', announc)
     return (
       <div className="Content">
         <ListContainer name="Todos" data={announc} student={ISstudent.ISstudent} />
