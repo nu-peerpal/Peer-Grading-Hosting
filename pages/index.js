@@ -25,8 +25,8 @@ function Dashboard(ISstudent) {
     if(announcement){announcement.map(x => announc.push({name: x.announcement, info:""}))}
     return (
       <div className="Content">
-        <ListContainer name="Todos" data={announc} student={ISstudent.ISstudent} />
-        <ListContainer name="Announcements" data={PRS} student={ISstudent.ISstudent} />
+        <ListContainer name="Todos" data={PRS} student={ISstudent.ISstudent} />
+        <ListContainer name="Announcements" data={announc} student={ISstudent.ISstudent} />
       </div>
     )
   }
