@@ -4,7 +4,7 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Field, Formik, Form } from "Formik";
+import { Field, Formik, Form } from "formik";
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button'
 import Table from '@material-ui/core/Table';
