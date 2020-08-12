@@ -24,6 +24,7 @@
     box-shadow: none !important;
     position: static !important;
     padding: 0 20px !important;
+    margin-top: 0 !important;
 }
 
 /* .acc {

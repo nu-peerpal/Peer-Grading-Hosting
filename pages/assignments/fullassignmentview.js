@@ -31,7 +31,7 @@ class FullAssignment extends React.Component {
               <Attributes />
             </div>
             {/* <div className={styles.inf}> */}
-              <Accordion className={styles.inf}>
+              <Accordion className={styles.inf} >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <FullDetails />
                 </AccordionSummary>
