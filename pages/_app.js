@@ -5,7 +5,7 @@ import WorkingNav from '../components/workingnav'
 import GoogleFonts from "next-google-fonts";
 
 export default function MyApp({ Component, pageProps }) {
-  const student = true
+  const student = false
   return (
     <div>
       <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/>

@@ -5,6 +5,7 @@ const Op = db.Sequelize.Op;
 
 //this route will return an array of assignment objects based on course
 export default (req, res) => {
+  return new Promise(resolve => {
   switch (req.method) {
     case "GET":
       db.assignments
@@ -15,15 +16,16 @@ export default (req, res) => {
             courseId: req.query.courseId,
           },
         })
-        .then((result) => res.json(result));
+        .then((result) => {	
+          res.json(result)	
+          resolve()	
+        });
       db.sequelize.close();
       break;
-
-    case "POST":
 
     default:
       res.status(405).end(); //Method Not Allowed
-      db.sequelize.close();
+      return resolve()
       break;
   }
-};
+})}
