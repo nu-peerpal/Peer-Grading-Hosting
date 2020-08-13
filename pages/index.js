@@ -22,7 +22,7 @@ function Dashboard(ISstudent) {
   if (ISstudent.ISstudent == true) {
     var announc = []
     const { data: announcement } = useSWR('/api/announcements/?courseId=1', fetcher)
-    if(announcement){announcement.map(x => announc.push({name: x.announcement, info:""}))}
+    if(announcement){announcement.map(x => announc.push({name: x.announcement, info:"", data: x}))}
     return (
       <div className="Content">
         <ListContainer name="Todos" data={PRS} student={ISstudent.ISstudent} />
