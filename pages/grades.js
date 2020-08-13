@@ -5,7 +5,7 @@ import ListContainer from '../components/listcontainer';
 class Grades extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props)
+    //console.log(props)
     this.state = {
       
       PR: [
