@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Peer_Matchings.associate = (db) => {
-    Peer_Matching.belongsTo(db.users, {
+    Peer_Matchings.belongsTo(db.users, {
       foreignKey: "userId",
     });
     Peer_Matchings.belongsTo(db.assignments, {

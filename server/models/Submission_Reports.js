@@ -9,11 +9,10 @@ module.exports = (sequelize, Sequelize) => {
     Submission_Reports.belongsTo(db.assignment_submissions, {
       foreignKey: "submissionId",
     });
-    /*
+
     Submission_Reports.belongsTo(db.groups, {
       foreignKey: "groupId",
     });
-    */
   };
   return Submission_Reports;
 };
