@@ -27,20 +27,37 @@ db.assignments = require("../server/models/Assignments.js")(
   Sequelize
 );
 
-// db.enrollment = require("../server/models/Enrollment")(sequelize, Sequelize);
-// db.assignment_submissions = require("../server/models/Assignment_Submissions")(
-//   sequelize,
-//   Sequelize
-// );
-// db.group = require("../server/models/Group")(sequelize, Sequelize);
-// db.peer_matching = require("../server/models/Peer_Matching")(sequelize, Sequelize);
-// db.peer_review_status = require("../server/models/Peer_Review_Status")(sequelize, Sequelize);
-// db.review_grades = require("../server/models/Review_Grades")(sequelize, Sequelize);
-// db.review_reports = require("../server/models/Review_Reports")(sequelize, Sequelize);
-// db.rubric = require("../server/models/Rubric")(sequelize, Sequelize);
-// db.submission_grades = require("../server/models/Submission_Grades")(sequelize, Sequelize);
-// db.submission_reports = require("../server/models/Submission_Reports")(sequelize, Sequelize);
-// db.users = require("../server/models/Users")(sequelize, Sequelize);
+db.assignment_submissions = require("../server/models/Assignment_Submissions.js")(
+  sequelize,
+  Sequelize
+);
+db.groups = require("../server/models/Groups.js")(sequelize, Sequelize);
+db.peer_matchings = require("../server/models/Peer_Matchings.js")(
+  sequelize,
+  Sequelize
+);
+db.peer_review_status = require("../server/models/Peer_Review_Status.js")(
+  sequelize,
+  Sequelize
+);
+db.review_grades = require("../server/models/Review_Grades.js")(
+  sequelize,
+  Sequelize
+);
+db.review_reports = require("../server/models/Review_Reports.js")(
+  sequelize,
+  Sequelize
+);
+db.rubrics = require("../server/models/Rubrics.js")(sequelize, Sequelize);
+db.submission_grades = require("../server/models/Submission_Grades.js")(
+  sequelize,
+  Sequelize
+);
+db.submission_reports = require("../server/models/Submission_Reports.js")(
+  sequelize,
+  Sequelize
+);
+db.users = require("../server/models/Users.js")(sequelize, Sequelize);
 
 // setting up database connections
 
