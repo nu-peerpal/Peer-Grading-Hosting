@@ -1,7 +1,10 @@
 const db = require("../../models/index.js");
 const Enrollment = db.enrollment;
 const Announcements = db.announcements;
-const Assignment = db.assignments;
+const Peer_Matchings = db.peer_matchings;
+const Assignment_Submissions = db.assignment_submissions;
+const Users = db.users;
+const Groups = db.groups;
 const Course = db.course;
 const Op = db.Sequelize.Op;
 const Rubric = db.rubrics;
@@ -14,20 +17,43 @@ export default (req, res) => {
         break;
       case "POST":
         const rubric = {
-          rubric: { cat1: "please report how this student did in Y category" },
+          rubric: { cat1: "please report how this student did in Z category" },
         };
         // Create assignments
-        const assignment = {
-          assignmentDueDate: "2012-8-28",
-          name: "Course 2, Assignment 2: LTI Implementation",
-          canvasId: "random_canvas_string2",
-          peerreviewDueDate: "2012-10-28",
-          appealsDueDate: "2012-12-30",
-          courseId: 2,
-          reviewrubricId: 3,
-          rubricId: 2,
+        // const assignment = {
+        //   assignmentDueDate: "2019-8-28",
+        //   name: "Course 2, Assignment 3: LTI Testing",
+        //   canvasId: "random_canvas_string2",
+        //   peerreviewDueDate: "2019-10-28",
+        //   appealsDueDate: "2019-12-30",
+        //   courseId: 2,
+        //   reviewrubricId: 1,
+        //   rubricId: 1,
+        // };
+        const user = {
+          canvasId: "sae21",
+          lastName: "field",
+          firstName: "strawberry",
         };
 
+        const pr = {
+          matchingType: "initial",
+          userId: 1,
+          assignmentId: 2,
+          submissionId: 2,
+        };
+
+        const submission = {
+          s3Link: "www.google.com/hehe",
+          canvasId: "www.yahoo.com/news",
+          groupId: 2,
+          assignmentId: 2,
+        };
+
+        const group = {
+          assignmentId: 2,
+          canvasId: "group2",
+        };
         // Rubric.create(rubric)
         //   .then((data) => {
         //     res.send(data);
@@ -43,7 +69,7 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Assignment.create(assignment)
+        Peer_Matchings.create(pr)
           .then((data) => {
             res.send(data);
             res.json(data);
