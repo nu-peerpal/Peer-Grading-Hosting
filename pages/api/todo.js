@@ -6,13 +6,12 @@ export default (req, res) => {
   return new Promise((resolve) => {
     switch (req.method) {
       case "GET":
-        // var dateParam = new Date('3/20/19 0:21:22 PM +00:00')
         console.log(db.sequelize.fn("currdate"));
         db.assignments
           .findAll({
             where: {
               courseId: req.query.courseId,
-              peerreviewDueDate: { $lt: db.sequelize.fn("currdate") },
+              peerreviewDueDate: { [Op.lt]: db.Sequelize.literal("NOW()") },
             },
             attributes: ["id"],
           })
