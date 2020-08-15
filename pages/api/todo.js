@@ -1,3 +1,5 @@
+import { assignments } from "../../models/index.js";
+
 const db = require("../../models/index.js");
 const Op = db.Sequelize.Op;
 //this route gives PR assignments that haven’t passed for that course and student
@@ -6,29 +8,27 @@ export default (req, res) => {
   return new Promise((resolve) => {
     switch (req.method) {
       case "GET":
-        console.log(db.sequelize.fn("currdate"));
-        db.assignments
+        db.peer_matchings
           .findAll({
-            where: {
-              courseId: req.query.courseId,
-              peerreviewDueDate: { [Op.lt]: db.Sequelize.literal("NOW()") },
-            },
-            attributes: ["id"],
-          })
-          .then((results) => {
-            var ids = results.map((result) => result.id);
-            db.peer_matchings
-              .findAll({
+            include: [
+              {
+                model: assignments,
                 where: {
-                  assignmentId: ids,
-                  userId: req.query.userId,
+                  courseId: req.query.courseId,
+                  peerreviewDueDate: { [Op.lt]: db.Sequelize.literal("NOW()") },
                 },
-                //add date
-              })
-              .then((result) => {
-                res.json(result);
-                resolve();
-              });
+                required: true,
+                attributes: ["name", "peerreviewDueDate"],
+              },
+            ],
+            where: {
+              userId: req.query.userId,
+            },
+            //add date
+          })
+          .then((result) => {
+            res.json(result);
+            resolve();
           })
           .catch((err) => {
             res.status(500).send({
