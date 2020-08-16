@@ -1,6 +1,10 @@
-import { assignments } from "../../models/index.js";
+import {
+  assignments,
+  peer_review_status,
+  assignment_submissions,
+} from "../../../models/index.js";
 
-const db = require("../../models/index.js");
+const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 //this route gives PR assignments that haven’t passed for that course and student
 
@@ -17,6 +21,12 @@ export default (req, res) => {
             include: [
               {
                 model: assignments,
+                include: [
+                  {
+                    model: peer_review_status,
+                    attributes: ["status"],
+                  },
+                ],
                 where: {
                   courseId: req.query.courseId,
                   peerreviewDueDate: {

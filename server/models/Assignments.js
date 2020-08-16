@@ -15,6 +15,9 @@ module.exports = (sequelize, Sequelize) => {
     appealsDueDate: {
       type: Sequelize.DATE,
     },
+    graded: {
+      type: Sequelize.BOOLEAN,
+    },
   });
   Assignments.associate = (db) => {
     Assignments.belongsTo(db.courses, {

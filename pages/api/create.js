@@ -1,8 +1,8 @@
 const db = require("../../models/index.js");
 const Enrollment = db.enrollment;
 const Announcements = db.announcements;
-const Peer_Matchings = db.peer_matchings;
-const Assignment_Submissions = db.assignment_submissions;
+const Peer_Review_Status = db.peer_review_status;
+const Assignments = db.assignments;
 const Users = db.users;
 const Groups = db.groups;
 const Course = db.course;
@@ -20,22 +20,27 @@ export default (req, res) => {
           rubric: { cat1: "please report how this student did in Z category" },
         };
         // Create assignments
-        // const assignment = {
-        //   assignmentDueDate: "2019-8-28",
-        //   name: "Course 2, Assignment 3: LTI Testing",
-        //   canvasId: "random_canvas_string2",
-        //   peerreviewDueDate: "2019-10-28",
-        //   appealsDueDate: "2019-12-30",
-        //   courseId: 2,
-        //   reviewrubricId: 1,
-        //   rubricId: 1,
-        // };
+        const assignment = {
+          assignmentDueDate: "2019-8-28",
+          name: "Course 2, Assignment 3: LTI Testing",
+          canvasId: "random_canvas_string2",
+          peerreviewDueDate: "2019-10-28",
+          appealsDueDate: "2019-12-30",
+          courseId: 2,
+          reviewrubricId: 1,
+          rubricId: 1,
+          grade: true,
+        };
         const user = {
           canvasId: "sae21",
           lastName: "field",
           firstName: "strawberry",
         };
 
+        const prs = {
+          status: 1,
+          assignmentId: 1,
+        };
         const pr = {
           matchingType: "initial",
           userId: 1,
@@ -69,7 +74,7 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Peer_Matchings.create(pr)
+        Assignments.create(assignment)
           .then((data) => {
             res.send(data);
             res.json(data);
