@@ -8,6 +8,10 @@ export default (req, res) => {
   return new Promise((resolve) => {
     switch (req.method) {
       case "GET":
+        var curr = db.Sequelize.literal("NOW()");
+        if (req.query.current == 0) {
+          curr = db.Sequelize.literal("NOW() - INTERVAL '365d'");
+        }
         db.peer_matchings
           .findAll({
             include: [
@@ -15,7 +19,9 @@ export default (req, res) => {
                 model: assignments,
                 where: {
                   courseId: req.query.courseId,
-                  peerreviewDueDate: { [Op.lt]: db.Sequelize.literal("NOW()") },
+                  peerreviewDueDate: {
+                    [Op.gte]: curr,
+                  },
                 },
                 required: true,
                 attributes: ["name", "peerreviewDueDate"],
