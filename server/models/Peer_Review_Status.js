@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
   const Peer_Review_Status = sequelize.define("peer_review_status", {
     status: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
     },
   });
 

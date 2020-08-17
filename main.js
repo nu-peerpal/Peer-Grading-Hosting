@@ -7,21 +7,21 @@ const { Client } = require("pg");
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
-//const db = require("./models");
+const db = require("./models");
 
 // LTI server stuff
-const lti = require("ltijs").Provider;
-const Database = require("ltijs-sequelize");
+// const lti = require("ltijs").Provider;
+// const Database = require("ltijs-sequelize");
 
 app
   .prepare()
   .then(() => {
     // EXPRESS SERVER
     const server = express();
-    // connecting to database, connect function defined in /models/index.js
-    // (async () => {
-    //   await db.connect();
-    // })();
+    //connecting to database, connect function defined in /models/index.js
+    (async () => {
+      await db.connect();
+    })();
 
     server.get("*", (req, res) => {
       return handle(req, res);
@@ -36,7 +36,7 @@ app
 
     // LTI JS
     //postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres
-
+    /*
     // Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
     const lti_db = new Database("postgres", "pga", "Jas0n5468", {
       host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
@@ -90,8 +90,8 @@ app
     };
 
     setup();
+    */
   })
-
   .catch((ex) => {
     console.log("caught error");
     console.error(ex.stack);
