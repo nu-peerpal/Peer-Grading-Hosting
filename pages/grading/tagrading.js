@@ -2,6 +2,7 @@ import React from "react";
 import Link from 'next/link'
 import "./tagrading.module.css";
 import Container from '../../components/container'
+import TAsubmission from '../../components/TAgradingview'
 
 class TAGrading extends React.Component {
     constructor(props) {
@@ -17,7 +18,9 @@ class TAGrading extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-      <Container/>
+      <Container>
+        <TAsubmission/>
+      </Container>
       </div>
     )
     }
