@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
 
   Submission_Grades.associate = (db) => {
     Submission_Grades.belongsTo(db.assignment_submissions, {
-      foreignKey: "submissionId",
+      foreignKey: "assignmentSubmissionId",
     });
   };
   return Submission_Grades;

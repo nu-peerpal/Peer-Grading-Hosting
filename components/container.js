@@ -1,5 +1,4 @@
 import React from 'react';
-//import styles from "./styles/listcontainer.module.css";
 import styles from "./styles/container.module.css"
 import Link from 'next/link'
 import Router from 'next/router'
@@ -17,7 +16,7 @@ class Container extends React.Component {
     render() {
         return (
             <div className={styles.containers}>
-                <h1>Hey!</h1>
+                <h1 className={styles.header}>{this.props.name}</h1>
                 <div className={styles.back} onClick={() => Router.back()}><KeyboardBackspaceIcon/></div>
                 {this.props.children}
                 {/* <Table.Header>

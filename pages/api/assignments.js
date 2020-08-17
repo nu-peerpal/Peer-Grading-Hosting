@@ -5,27 +5,28 @@ const Op = db.Sequelize.Op;
 
 //this route will return an array of assignment objects based on course
 export default (req, res) => {
-  return new Promise(resolve => {
-  switch (req.method) {
-    case "GET":
-      db.assignments
-        .findAll({
-          // if we wanted only specific attributes
-          // attributes: ["courseId"],
-          where: {
-            courseId: req.query.courseId,
-          },
-        })
-        .then((result) => {	
-          res.json(result)	
-          resolve()	
-        });
-      db.sequelize.close();
-      break;
+  return new Promise((resolve) => {
+    switch (req.method) {
+      case "GET":
+        db.assignments
+          .findAll({
+            // if we wanted only specific attributes
+            // attributes: ["courseId"],
+            where: {
+              courseId: req.query.courseId,
+            },
+          })
+          .then((result) => {
+            res.json(result);
+            resolve();
+          });
+        // db.sequelize.close();
+        break;
 
-    default:
-      res.status(405).end(); //Method Not Allowed
-      return resolve()
-      break;
-  }
-})}
+      default:
+        res.status(405).end(); //Method Not Allowed
+        return resolve();
+        break;
+    }
+  });
+};
