@@ -6,7 +6,6 @@ import {
 
 const db = require("../../models/index.js");
 const Op = db.Sequelize.Op;
-//this route gives PR assignments that haven’t passed for that course and student
 
 export default (req, res) => {
   return new Promise((resolve) => {
@@ -16,8 +15,15 @@ export default (req, res) => {
         // fetch the assignment name and the grades associate with submissions
         // based on userId
         // assignmentSubmissionId based on userId and courseId
+
+        //where i am: trying to determine what to do with groups
         db.assignments
           .findAll({
+            //fetching graded assignments
+            where: {
+              graded: true,
+            },
+            //
             include: [
               {
                 model: assignments,
@@ -27,9 +33,7 @@ export default (req, res) => {
                     attributes: ["status"],
                   },
                 ],
-                where: {
-                  graded: true,
-                },
+
                 required: true,
                 attributes: ["name", "peerreviewDueDate"],
               },
