@@ -1,9 +1,9 @@
 import React from "react";
 import Link from 'next/link'
-import "./viewgrade.module.css";
+import "./tamatchinglist.module.css";
 import Container from '../../components/container'
 
-class ViewGrade extends React.Component {
+class TAMatchings extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -13,11 +13,11 @@ class ViewGrade extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-      <Container name="Grade for Assignment 1"/>
+      <Container name="TA Matchings for Assignment 1"/>
       </div>
     )
     }
   }
   
-  export default ViewGrade;
+  export default TAMatchings;
   
