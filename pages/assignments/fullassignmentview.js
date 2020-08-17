@@ -25,7 +25,7 @@ class FullAssignment extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-        <Container>
+        <Container name="Assignment Details">
           <div className={styles.view}>
             <div className={styles.att}>
               <Attributes />

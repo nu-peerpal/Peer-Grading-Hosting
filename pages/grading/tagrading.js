@@ -17,7 +17,7 @@ class TAGrading extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-      <Container/>
+      <Container name="TA Grading"/>
       </div>
     )
     }

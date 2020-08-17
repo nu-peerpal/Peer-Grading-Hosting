@@ -23,8 +23,8 @@ class Grades extends React.Component {
     // console.log(this.state)
     return (
       <div className="Content">
-        <ListContainer name="Graded Peer Reviews" data={PR}/>
-        <ListContainer name="Graded Assignments" data={Assign}/>
+        <ListContainer name="Graded Peer Reviews" data={PR} link="/grades/viewgrade"/>
+        <ListContainer name="Graded Assignments" data={Assign} link="/grades/viewgrade"/>
       </div>
     )
   }

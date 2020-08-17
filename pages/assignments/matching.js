@@ -60,7 +60,7 @@ class Matching extends React.Component {
   render() {
     return (
       <div className="Content" >
-        <Container>
+        <Container name="Peer Matching">
           <Accordion className={styles.matching}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               Settings

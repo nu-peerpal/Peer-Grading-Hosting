@@ -17,7 +17,7 @@ class ViewGrade extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-      <Container/>
+      <Container name="Grade for Assignment 1"/>
       </div>
     )
     }

@@ -53,8 +53,8 @@ function assignedPRS() {
   }
   return (
     <div className="Content">
-      <ListContainer name="Current Peer Reviews" data={current} />
-      <ListContainer name="Past Peer Reviews" data={past} />
+      <ListContainer name="Current Peer Reviews" data={current} link="/peer_reviews/peerreview"/>
+      <ListContainer name="Past Peer Reviews" data={past} link=""/>
     </div>
   )
 }
