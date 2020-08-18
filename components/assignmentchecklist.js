@@ -29,16 +29,16 @@ function getSteps() {
     ["Peer Matching: ", { 'link': "/assignments/matching" }], 
     ["Review Due Date: ", {'status': "status"}], 
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }], 
-    ["TA Grading: ", { 'link': "" }], 
-    ["Review Reports: ", { 'link': "" }], 
-    ["Submission Reports: ", { 'link': "" }], 
+    ["TA Grading: ", { 'link': "/assignments/tamatchinglist" }], 
+    ["Review Reports: ", { 'link': "/assignments/reviewreportlist" }], 
+    ["Submission Reports: ", { 'link': "/assignments/submissionreportlist" }], 
     ["Appeal Period: ", {'status': "Either Not started, Ongoing or Passed"}]
   ];
 }
 
 function assignmentchecklist() {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(5);
+  const [activeStep, setActiveStep] = React.useState(2);
   const steps = getSteps();
 
   return (

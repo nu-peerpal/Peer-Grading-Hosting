@@ -20,7 +20,7 @@ export default (req, res) => {
             res.json(result);
             resolve();
           });
-        db.sequelize.close();
+        // db.sequelize.close();
         break;
 
       default:
