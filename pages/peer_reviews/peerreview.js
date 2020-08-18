@@ -20,7 +20,7 @@ class PeerReview extends React.Component {
     //   const = this.state
     return (
       <div className="Content">
-      <Container>
+      <Container name="Grade User 1's Submission">
         <Submission/>
       </Container>
       </div>

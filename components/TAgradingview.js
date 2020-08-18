@@ -2,11 +2,11 @@ import React from "react";
 import styles from "./styles/submissionview.module.css";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize"
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Field, Formik, Form } from "formik";
 import TextField from '@material-ui/core/TextField';
-import TextareaAutosize from "@material-ui/core/TextareaAutosize"
 import Button from '@material-ui/core/Button'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-class Submission extends React.Component {
+class TAsubmission extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,7 +43,7 @@ class Submission extends React.Component {
   }
 }
 
-export default Submission;
+export default TAsubmission;
 
 
 function createRow(desc) {
@@ -59,7 +59,7 @@ const rows = [
 function Grading() {
   return (
     <Formik
-      initialValues={{  Grades: ([1,2,3]), Comments: ["","",""] }}
+      initialValues={{ Grades: ([1,2,3]), Comments: ["","",""]}}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
         console.log(data)
@@ -78,12 +78,12 @@ function Grading() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row,index) => (
+                  {rows.map((row, index) => (
                     <TableRow key={row.desc}>
                       <TableCell>{row.desc}</TableCell>
                       <TableCell align="center">
                         <Field
-                          name={"Grades["+index+"]"}
+                          name= {"Grades["+index+"]"}
                           type="number"
                           value={values.Grades[index]}
                           id="outlined-basic"

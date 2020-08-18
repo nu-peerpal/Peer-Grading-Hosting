@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import styles from "./styles/dashboard.module.css";
 import ListContainer from "../components/listcontainer";
+<<<<<<< HEAD
 import {
   peerMatch,
   ensureSufficientReviews,
@@ -11,6 +12,10 @@ import {
 } from "./api/AlgCalls.js";
 import useSWR from "swr";
 import Announcements from "../server/models/Announcements";
+=======
+import useSWR from 'swr'
+import Announcements from '../server/models/Announcements';
+>>>>>>> 46d44485552cb08e438af6376490c60ef0e32898
 
 const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
 
@@ -26,6 +31,7 @@ const LIST = [
 
 function Dashboard(ISstudent) {
   if (ISstudent.ISstudent == true) {
+<<<<<<< HEAD
     var announc = [];
     const { data: announcement } = useSWR(
       "/api/announcements/?courseId=1",
@@ -42,16 +48,26 @@ function Dashboard(ISstudent) {
           data={announc}
           student={ISstudent.ISstudent}
         />
+=======
+    var announc = []
+    const { data: announcement } = useSWR('/api/announcements/?courseId=1', fetcher)
+    if(announcement){announcement.map(x => announc.push({name: x.announcement, info:"", data: x}))}
+    return (
+      <div className="Content">
+        <ListContainer name="Todos" data={PRS} student={ISstudent.ISstudent} link="/peer_reviews/peerreview" />
+        <ListContainer name="Announcements" data={announc} student={ISstudent.ISstudent} link=""/> {/*link depends on the announcement*/}
+>>>>>>> 46d44485552cb08e438af6376490c60ef0e32898
       </div>
     );
   } else if (ISstudent.ISstudent == false) {
     return (
       <div className="Content">
-        <ListContainer name="Todos" data={LIST} student={ISstudent.ISstudent} />
+        <ListContainer name="Todos" data={LIST} student={ISstudent.ISstudent} link=""/> {/*link depends on the todo*/}
         <ListContainer
           name="View As Student"
           data={[{ name: "View As", info: "VIEW" }]}
-        />
+          link="" 
+        />{/*link needs to be figured out later, might always be blank*/}
       </div>
     );
   }

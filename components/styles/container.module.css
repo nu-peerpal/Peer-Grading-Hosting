@@ -26,4 +26,8 @@
 
   .back{
     margin: 20px 40px 20px;
-  } 
+  }
+  
+  .header {
+    font-weight: 500 !important;
+  }

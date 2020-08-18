@@ -17,7 +17,7 @@ class completedAssignments extends React.Component {
     
     return (
       <div className="Content">
-        <ListContainer name="Peer Assignments" data={Completed}/>
+        <ListContainer name="Peer Assignments" data={Completed} link="/assignments/fullassignmentview"/>
       </div>
     )
   }

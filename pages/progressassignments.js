@@ -18,7 +18,7 @@ class inProgress extends React.Component {
   
     return (
       <div className="Content">
-      <ListContainer name="Peer Assignments" data={Progress}/>
+      <ListContainer name="Peer Assignments" data={Progress} link={"/assignments/fullassignmentview"}/>
     </div>
     )
   }
