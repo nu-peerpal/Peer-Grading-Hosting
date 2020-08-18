@@ -3,19 +3,8 @@ import Link from "next/link";
 
 import styles from "./styles/dashboard.module.css";
 import ListContainer from "../components/listcontainer";
-<<<<<<< HEAD
-import {
-  peerMatch,
-  ensureSufficientReviews,
-  submissionReports,
-  reviewReports,
-} from "./api/AlgCalls.js";
 import useSWR from "swr";
 import Announcements from "../server/models/Announcements";
-=======
-import useSWR from 'swr'
-import Announcements from '../server/models/Announcements';
->>>>>>> 46d44485552cb08e438af6376490c60ef0e32898
 
 const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
 
