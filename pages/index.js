@@ -33,7 +33,7 @@ function Dashboard(ISstudent) {
     if (todo) {
       todo.map(x =>
         todoprs.push(
-          { name: x.assignment.name, info: "", data: x.assignment.peerreviewDueDate }
+          { name: x.assignment.name, info: x.assignment.peerreviewDueDate, data: x }
         )
       )
     }

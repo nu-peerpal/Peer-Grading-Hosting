@@ -37,9 +37,10 @@ function Grades() {
   var Assignments = []
   const { data: all } = useSWR('/api/graded/all?courseId=1&userId=1', fetcher)
   if (all) {
-    PRS.push(all.Graded_Peer_Reviews)
-    Assignments.push(all.Grade_Assignments)
+    all.Graded_Peer_Reviews.map(x => PRS.push({ name: x.name, info: x.review_grades[0].grade, data: x }))
+    all.Grade_Assignments.map(x => Assignments.push({ name: x.assignment.name, info: x.submission_grades[0].grade, data: x }))
   }
+  // console.log('lets see', Assignments)
   return (
     <div className="Content">
       <ListContainer name="Graded Peer Reviews" data={PRS} link="/grades/viewgrade" />
