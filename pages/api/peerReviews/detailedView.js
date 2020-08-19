@@ -1,8 +1,7 @@
-import { assignments } from "../../../models/index.js";
+import { assignments, review_grades } from "../../../models/index.js";
 
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
-//this route gives PR assignments that haven’t passed for that course and student
 
 export default (req, res) => {
   return new Promise((resolve) => {
@@ -36,6 +35,22 @@ export default (req, res) => {
             });
           });
         break;
+      case "POST":
+        db.peer_matchings
+          .update(
+            {
+              review: req.body,
+            },
+            {
+              where: { id: req.query.id },
+              returning: true,
+              plain: true,
+            }
+          )
+          .then(function (result) {
+            resolve();
+          });
+
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();

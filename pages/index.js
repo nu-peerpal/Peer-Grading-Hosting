@@ -1,13 +1,12 @@
-
 import React from "react";
 import Link from "next/link";
 
 import styles from "./styles/dashboard.module.css";
 import ListContainer from "../components/listcontainer";
-import useSWR from 'swr'
-import Announcements from '../server/models/Announcements';
+import useSWR from "swr";
+import Announcements from "../server/models/Announcements";
 
-const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
+const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
 
 const PRS = [{ 'name': 'Peer Review Assignment 3: Online Learning', 'info': "Due 1/12" }]
 const LIST = [
@@ -45,9 +44,8 @@ function Dashboard(ISstudent) {
         <ListContainer name="Todos" data={todoprs} student={ISstudent.ISstudent} link="/peer_reviews/peerreview" />
         <ListContainer name="Announcements" data={announc} student={ISstudent.ISstudent} link="" /> {/*link depends on the announcement*/}
       </div>
-    )
-  }
-  else if (ISstudent.ISstudent == false) {
+    );
+  } else if (ISstudent.ISstudent == false) {
     return (
       <div className="Content">
         <ListContainer name="Todos" data={LIST} student={ISstudent.ISstudent} link="" /> {/*link depends on the todo*/}
@@ -57,7 +55,7 @@ function Dashboard(ISstudent) {
           link=""
         />{/*link needs to be figured out later, might always be blank*/}
       </div>
-    )
+    );
   }
 }
 

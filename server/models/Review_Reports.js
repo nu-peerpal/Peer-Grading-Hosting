@@ -6,8 +6,8 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Review_Reports.associate = (db) => {
-    Review_Reports.belongsTo(db.assignment_submissions, {
-      foreignKey: "assignmentSubmissionId",
+    Review_Reports.belongsTo(db.assignments, {
+      foreignKey: "assignmentId",
     });
 
     Review_Reports.belongsTo(db.users, {

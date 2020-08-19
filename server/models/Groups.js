@@ -8,7 +8,9 @@ module.exports = (sequelize, Sequelize) => {
     Groups.belongsTo(db.assignments, {
       foreignKey: "assignmentId",
     });
-    Groups.hasMany(db.users);
+    Groups.belongsToMany(db.users, {
+      through: "UserGroup",
+    });
 
     Groups.hasMany(db.assignment_submissions);
   };
