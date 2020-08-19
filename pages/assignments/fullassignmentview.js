@@ -10,6 +10,8 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
+const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
+
 
 class FullAssignment extends React.Component {
   constructor(props) {
