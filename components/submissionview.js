@@ -16,6 +16,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import getRubric from '../pages/getRubric.js'
 
 class Submission extends React.Component {
   constructor(props) {
@@ -48,9 +49,10 @@ export default Submission;
 
 
 //const rubric = [[5,"accuracy"],[5,"creativity"]]
-const rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
+var rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
 
 function getInitialValues(rubric){
+  //console.log("rubric", getRubric(1,7))
   var len = rubric.length
   var comments = []
   var grades = []
@@ -87,6 +89,7 @@ function Grading() {
         setSubmitting(true);
         console.log(data)
         setSubmitting(false);
+        document.getElementById('submitted').style.display=''
       }}>
       {({ values, isSubmitting }) =>
         (
@@ -133,6 +136,7 @@ function Grading() {
                       </TableCell>
                     </TableRow>
                   ))}
+                </TableBody>
                   <TableFooter>
                     <TableRow>
                       <TableCell className = {styles.save} style = {{color:"black"}}  >
@@ -141,9 +145,11 @@ function Grading() {
                       <TableCell>
                           <Button className={styles.save} disabled={isSubmitting}  type="submit">Save</Button>
                       </TableCell>
+                      <TableCell id = "submitted" className = {styles.save} style={{color:"black", display:"none"}}>
+                      Submitted
+                      </TableCell>
                   </TableRow>
                   </TableFooter>
-                </TableBody>
               </Table>
             </TableContainer>
           </Form>

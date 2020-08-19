@@ -86,6 +86,7 @@ function Grading() {
         setSubmitting(true);
         console.log(data)
         setSubmitting(false);
+        document.getElementById('submitted').style.display=''
       }}>
       {({ values, isSubmitting }) =>
         (
@@ -132,6 +133,7 @@ function Grading() {
                       </TableCell>
                     </TableRow>
                   ))}
+                </TableBody>
                   <TableFooter>
                     <TableRow>
                       <TableCell className = {styles.save} style = {{color:"black"}}  >
@@ -140,9 +142,11 @@ function Grading() {
                       <TableCell>
                           <Button className={styles.save} disabled={isSubmitting}  type="submit">Save</Button>
                       </TableCell>
+                      <TableCell id = "submitted" className = {styles.save} style={{color:"black", display:"none"}}>
+                      Submitted
+                      </TableCell>
                   </TableRow>
                   </TableFooter>
-                </TableBody>
               </Table>
             </TableContainer>
           </Form>
