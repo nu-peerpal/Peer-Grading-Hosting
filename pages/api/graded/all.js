@@ -9,9 +9,7 @@ import {
 
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
-//this route gives all graded assignments, both peer reviews and assignments
-// assignments-- courseId & graded boolean as true
-// peer matching-- assignments with peer matching at step 8, then the grade for the assignment
+// this route gives all graded assignments, both peer reviews and assignments
 
 export default (req, res) => {
   return new Promise((resolve) => {
@@ -27,14 +25,14 @@ export default (req, res) => {
               },
               {
                 model: review_grades,
-                where: { userId: req.query.courseId },
+                where: { userId: req.query.userId },
                 attributes: ["grade"],
               },
             ],
             where: {
               courseId: req.query.courseId,
             },
-            attributes: ["name"],
+            attributes: ["name", "id"],
           })
           .then((result) => {
             db.users
@@ -44,6 +42,9 @@ export default (req, res) => {
                 include: [
                   {
                     model: groups,
+                    through: {
+                      where: { userId: req.query.userId },
+                    },
                     attributes: ["id"],
                     include: [
                       {

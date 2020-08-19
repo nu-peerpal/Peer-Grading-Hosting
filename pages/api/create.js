@@ -1,3 +1,5 @@
+import { review_reports } from "../../models/index.js";
+
 const db = require("../../models/index.js");
 const Enrollment = db.enrollment;
 const Announcements = db.announcements;
@@ -18,8 +20,13 @@ export default (req, res) => {
         res.send("Hello World!");
         break;
       case "POST":
-        const rubric = {
-          rubric: { cat1: "please report how this student did in Z category" },
+        const review_report = {
+          report: {
+            assignmentId: 2,
+            userId: 1,
+            reportBody:
+              '# Review Report (Grade: 100)\n\n<submission id="111" />\n\n|        Rubric        |  TA Scores [[?]][1]  | Your Scores [[?]][2] |\n| :------------------: | :------------------: | :------------------: | \n|       Content        |      6 [[?]][3]      |      6 [[?]][4]      |\n|   Writing Quality    |      4 [[?]][5]      |      4 [[?]][6]      |\n\n[1]: # "T\n​\n​r\n​\n​y\n​\n​ \n​\n​h\n​\n​a\n​\n​r\n​\n​d\n​\n​e\n​\n​r"\n[2]: # "T\n​\n​r\n​\n​y\n​\n​ \n​\n​h\n​\n​a\n​\n​r\n​\n​d\n​\n​e\n​\n​r"\n[3]: # "okay"\n[4]: # "okay"\n[5]: # "bad"\n[6]: # "bad"',
+          },
         };
         // Create assignments
         const assignment = {
@@ -76,7 +83,7 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Assignments.create(assignment)
+        Review_Reports.create(review_report)
           .then((data) => {
             res.send(data);
             res.json(data);
