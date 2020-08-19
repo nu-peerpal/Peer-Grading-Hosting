@@ -1,3 +1,5 @@
+const Groups = require("./Groups");
+
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define("users", {
     canvasId: {
@@ -12,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
   Users.associate = (db) => {
+    Users.belongsToMany(db.groups, {
+      through: "UserGroup",
+    });
     Users.hasMany(db.enrollments);
     Users.hasMany(db.review_reports);
   };
