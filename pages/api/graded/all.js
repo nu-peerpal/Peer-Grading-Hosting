@@ -38,13 +38,15 @@ export default (req, res) => {
             db.users
               .findOne({
                 where: { id: req.query.userId },
-                attributes: [],
-                include: [
-                  {
-                    model: groups,
-                    through: {
-                      where: { userId: req.query.userId },
-                    },
+                attributes: ["groupId"],
+              })
+              .then((result2) => {
+                var r = result2.get().groupId;
+                console.log(r);
+                db.groups
+                  //need to re-do now that users have group affilitation--> will have group information passed?
+                  .findOne({
+                    where: { id: r },
                     attributes: ["id"],
                     include: [
                       {
@@ -66,18 +68,18 @@ export default (req, res) => {
                         ],
                       },
                     ],
-                  },
-                ],
-              })
-              .then((result2) => {
-                res.json({
-                  Graded_Peer_Reviews: result,
-                  Grade_Assignments: result2.get({ plain: true }).groups[0]
-                    .assignment_submissions,
-                });
-                resolve();
+                  })
+                  .then((result3) => {
+                    res.json({
+                      Graded_Peer_Reviews: result,
+                      Graded_Assignments: result3.get({ plain: true })
+                        .assignment_submissions[0],
+                    });
+                    resolve();
+                  });
               });
           });
+
         break;
       default:
         res.status(405).end(); //Method Not Allowed
