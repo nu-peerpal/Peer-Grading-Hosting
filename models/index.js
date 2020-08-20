@@ -14,10 +14,6 @@ const db = {};
 
 //require all tables for database
 db.courses = require("../server/models/Courses.js")(sequelize, Sequelize);
-db.enrollments = require("../server/models/Enrollments.js")(
-  sequelize,
-  Sequelize
-);
 db.announcements = require("../server/models/Announcements.js")(
   sequelize,
   Sequelize

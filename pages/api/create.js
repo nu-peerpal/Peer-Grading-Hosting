@@ -41,9 +41,11 @@ export default (req, res) => {
           grade: true,
         };
         const user = {
-          canvasId: "sae21",
-          lastName: "field",
-          firstName: "strawberry",
+          canvasId: "gg",
+          lastName: "gry",
+          firstName: "dylan",
+          courseId: 1,
+          enrollment: "ta",
         };
 
         const prs = {
@@ -65,7 +67,7 @@ export default (req, res) => {
         };
 
         const group = {
-          assignmentId: 2,
+          assignmentId: 1,
           canvasId: "group2",
         };
         // Rubric.create(rubric)
@@ -83,10 +85,10 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Review_Reports.create(review_report)
+        Users.create(user)
           .then((data) => {
             res.send(data);
-            res.json(data);
+            //res.json(data);
             resolve();
           })
           .catch((err) => {

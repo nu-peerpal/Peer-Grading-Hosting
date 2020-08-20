@@ -12,12 +12,17 @@ module.exports = (sequelize, Sequelize) => {
     firstName: {
       type: Sequelize.STRING,
     },
+    enrollment: {
+      type: Sequelize.STRING,
+    },
   });
   Users.associate = (db) => {
-    Users.belongsToMany(db.groups, {
-      through: "UserGroup",
+    Users.belongsTo(db.groups, {
+      foreignKey: "groupId",
     });
-    Users.hasMany(db.enrollments);
+    Users.belongsTo(db.courses, {
+      foreignKey: "courseId",
+    });
     Users.hasMany(db.review_reports);
   };
   return Users;
