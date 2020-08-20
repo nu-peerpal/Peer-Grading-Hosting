@@ -3,7 +3,7 @@ import { assignments, review_grades } from "../../../models/index.js";
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 
-export default (req, res) => {
+const Name = (req, res) => {
   return new Promise((resolve) => {
     switch (req.method) {
       case "GET":
@@ -36,6 +36,7 @@ export default (req, res) => {
           });
         break;
       case "POST":
+        console.log('whats wrong', req.query.id)
         db.peer_matchings
           .update(
             {
@@ -47,10 +48,16 @@ export default (req, res) => {
               plain: true,
             }
           )
-          .then(function (result) {
-            resolve();
+          .then((result) =>
+            res.json(result
+            ))
+          .catch((err) => {
+            res.status(500).send({
+              message:
+                err.message,
+            });
           });
-
+        break;
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();
@@ -58,3 +65,5 @@ export default (req, res) => {
     }
   });
 };
+
+export default Name;

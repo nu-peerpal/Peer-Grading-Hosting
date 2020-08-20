@@ -17,6 +17,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+const fetcher = url => fetch(url, { method: 'POST' }).then(r => r.json())
+
 class Submission extends React.Component {
   constructor(props) {
     super(props);
@@ -24,9 +26,8 @@ class Submission extends React.Component {
     }
   }
   render() {
-    var holder = this.props.rubric
-    console.log(holder, Object.entries(holder))
-    // holder.map(x => console.log('well', x))
+    var gradingrubric = []
+    Object.entries(this.props.rubric).map(x => gradingrubric.push([x[1], x[0]]))
     return (
       <div className={styles.sub}>
         <Accordion className={styles.acc}>
@@ -38,7 +39,7 @@ class Submission extends React.Component {
           </AccordionDetails>
         </Accordion>
         <br />
-        {Grading(Object.entries(this.props.rubric))}
+        {Grading(gradingrubric)}
       </div>
     )
   }
@@ -47,25 +48,23 @@ class Submission extends React.Component {
 export default Submission;
 
 
-//const rubric = [[5,"accuracy"],[5,"creativity"]]
-//console.log('whyyyy', this.props.data.RubricData[0].rubric) 
-//var rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
-
 function getInitialValues(rubric) {
   var len = rubric.length
   var comments = []
   var grades = []
+  var finalcomment = ''
   for (var i = 0; i < len; i++) {
     comments.push("")
     grades.push(0)
   }
-  return { Grades: grades, Comments: comments }
+  return { Grades: grades, Comments: comments, FinalComment: finalcomment }
 }
+
 function getMaxScore(rubric) {
   var len = rubric.length
   var score = 0
   for (var i = 0; i < len; i++) {
-    score = score + rubric[i][1]
+    score = score + rubric[i][0]
   }
   return score
 }
@@ -79,15 +78,30 @@ function getTotalScore(grades) {
   return score
 }
 
+function getFinalScore(data, rubric){
+  var len = rubric.length
+  var body = {'reviewBody': {"scores": [], "comments": []}}
+  for (var i = 0; i < len; i++) {
+    body.reviewBody.scores.push([data.Grades[i], data.Comments[i]])
+  }
+  body.reviewBody.comments = data.FinalComment
+  return body
+}
+
+var js = {
+  "graders": [3, 1, 2],
+  "reviews": [[11, 112, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [11, 118, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [12, 119, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [12, 114, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [13, 112, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [13, 118, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [14, 113, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [14, 120, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [15, 119, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [15, 114, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [16, 115, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [16, 113, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [17, 118, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [17, 116, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [18, 114, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [18, 111, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [19, 113, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [19, 117, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [20, 117, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [20, 113, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [1, 114, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [2, 118, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [3, 113, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [1, 115, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [2, 120, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }], [2, 111, { "scores": [[0.6, "okay"], [0.4, "bad"]], "comments": "Try harder" }], [3, 116, { "scores": [[0.9, "good"], [0.8, "decent"]], "comments": "Nice Work" }]],
+  "rubric": [[50, "Content"], [50, "Writing Quality"]]
+}
+console.log('what reviews should look like', js.reviews[0])
 function Grading(rubric) {
-  console.log(rubric, 'fun?')
   var maxScore = getMaxScore(rubric)
   return (
     <Formik
       initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        console.log(data)
+        fetch('/api/peerReviews/detailedView?id=4', { method: "POST", body: getFinalScore(data, rubric)})
         setSubmitting(false);
         document.getElementById('submitted').style.display = ''
       }}>
@@ -104,28 +118,28 @@ function Grading(rubric) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rubric.map((row,index) => (
-                    <TableRow key={row[0]}>
-                      <TableCell>{row[0]}</TableCell>
+                  {rubric.map((row, index) => (
+                    <TableRow key={row[1]}>
+                      <TableCell>{row[1]}</TableCell>
                       <TableCell style={{ width: 80 }} align="center">
                         <Field
-                          name={"Grades["+index+"]"}
+                          name={"Grades[" + index + "]"}
                           type="number"
-                          value={values.Grades[index]}
-                          InputProps={{ inputProps: { min: 0, max: row[1], step: 1} }}
+                          value={values.Grades[index] || ''}
+                          InputProps={{ inputProps: { min: 0, max: row[0], step: 1 } }}
                           id="outlined-basic"
                           variant="outlined"
                           required={true}
                           as={TextField}
                           className={styles.pms}
                         />
-                        <br></br>/{row[1]}
+                        <br></br>/{row[0]}
                       </TableCell>
                       <TableCell align="center" style={{ width: 600 }}>
                         <Field
-                          name={"Comments["+index+"]"}
+                          name={"Comments[" + index + "]"}
                           type="input"
-                          rowsMin = {4}
+                          rowsMin={4}
                           value={values.Comments[index]}
                           id="outlined-basic"
                           variant="outlined"
@@ -136,6 +150,23 @@ function Grading(rubric) {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {/* <TableRow>
+                    <TableCell>Comments:</TableCell>
+                    <TableCell align="center" colspan="2">
+                      <Field
+                        name="Overall Comments"
+                        type="input"
+                        label="Overall Comments"
+                        rowsMin={4}
+                        value={values.FinalComment[0]}
+                        id="outlined-basic"
+                        variant="outlined"
+                        required={true}
+                        as={TextareaAutosize}
+                        className={styles.pms}
+                      />
+                    </TableCell>
+                  </TableRow> */}
                 </TableBody>
                 <TableFooter>
                   <TableRow>

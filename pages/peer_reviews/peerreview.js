@@ -11,10 +11,11 @@ function PeerReview() {
   var submission = []
   var rubric = []
   const { data: info } = useSWR('/api/peerReviews/detailedView?submissionId=1&rubricId=1', fetcher)
+  // console.log(info)
   if (info) {
     submission = info.SubmissionData[0].s3Link
     rubric = info.RubricData[0].rubric
-    //console.log(rubric, 'tell me')
+    console.log(rubric, 'tell me')
   }
   return (
     <div className="Content">

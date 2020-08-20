@@ -50,7 +50,7 @@ export default (req, res) => {
           .then(function (result) {
             resolve();
           });
-
+        break;
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();
