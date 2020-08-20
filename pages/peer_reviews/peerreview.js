@@ -3,30 +3,26 @@ import Link from 'next/link'
 import styles from "./peerreview.module.css";
 import Container from '../../components/container';
 import Submission from '../../components/submissionview';
-//import TextField from '@material-ui/core/TextField';
+import useSWR from 'swr'
 
+const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
 
-class PeerReview extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        // :[
-        //   {'name': '', 'info':""},
-        //   {'name': '', 'info':""},
-        // ],
-      }
-    }
-    render() {
-    //   const = this.state
-    return (
-      <div className="Content">
-      <Container name="Grade User 1's Submission">
-        <Submission/>
-      </Container>
-      </div>
-    )
-    }
+function PeerReview() {
+  var submission = []
+  var rubric = []
+  const { data: info } = useSWR('/api/peerReviews/detailedView?submissionId=1&rubricId=1', fetcher)
+  if (info) {
+    submission = info.SubmissionData[0].s3Link
+    rubric = info.RubricData[0].rubric
+    //console.log(rubric, 'tell me')
   }
-  
-  export default PeerReview;
-  
+  return (
+    <div className="Content">
+      <Container name="Grade User 1's Submission">
+        <Submission sublink={submission} rubric={rubric}/>
+      </Container>
+    </div>
+  )
+}
+
+export default PeerReview;

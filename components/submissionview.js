@@ -16,30 +16,29 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import getRubric from '../pages/getRubric.js'
 
 class Submission extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // :[
-      //   {'name': '', 'info':""},
-      //   {'name': '', 'info':""},
-      // ],
     }
   }
   render() {
+    var holder = this.props.rubric
+    console.log(holder, Object.entries(holder))
+    // holder.map(x => console.log('well', x))
     return (
       <div className={styles.sub}>
         <Accordion className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             User 1's Submission
-                    </AccordionSummary>
+          </AccordionSummary>
           <AccordionDetails>
+            {this.props.sublink}
           </AccordionDetails>
         </Accordion>
         <br />
-        <Grading />
+        {Grading(Object.entries(this.props.rubric))}
       </div>
     )
   }
@@ -49,47 +48,48 @@ export default Submission;
 
 
 //const rubric = [[5,"accuracy"],[5,"creativity"]]
-var rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
+//console.log('whyyyy', this.props.data.RubricData[0].rubric) 
+//var rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
 
-function getInitialValues(rubric){
-  //console.log("rubric", getRubric(1,7))
+function getInitialValues(rubric) {
   var len = rubric.length
   var comments = []
   var grades = []
-  for(var i = 0; i < len; i++) {
+  for (var i = 0; i < len; i++) {
     comments.push("")
     grades.push(0)
-  } 
-  return { Grades: grades, Comments: comments}
+  }
+  return { Grades: grades, Comments: comments }
 }
-function getMaxScore(rubric){
+function getMaxScore(rubric) {
   var len = rubric.length
   var score = 0
-  for(var i = 0; i < len; i++) {
-     score = score + rubric[i][0]
-  } 
+  for (var i = 0; i < len; i++) {
+    score = score + rubric[i][1]
+  }
   return score
 }
 
-function getTotalScore(grades){
+function getTotalScore(grades) {
   var len = grades.length
   var score = 0
-  for(var i = 0; i < len; i++) {
-     score = score + grades[i]
-  } 
+  for (var i = 0; i < len; i++) {
+    score = score + grades[i]
+  }
   return score
 }
 
-function Grading() {
+function Grading(rubric) {
+  console.log(rubric, 'fun?')
   var maxScore = getMaxScore(rubric)
   return (
     <Formik
-      initialValues={ getInitialValues(rubric) }
+      initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
         console.log(data)
         setSubmitting(false);
-        document.getElementById('submitted').style.display=''
+        document.getElementById('submitted').style.display = ''
       }}>
       {({ values, isSubmitting }) =>
         (
@@ -105,21 +105,21 @@ function Grading() {
                 </TableHead>
                 <TableBody>
                   {rubric.map((row,index) => (
-                    <TableRow key={row[1]}>
-                      <TableCell>{row[1]}</TableCell>
+                    <TableRow key={row[0]}>
+                      <TableCell>{row[0]}</TableCell>
                       <TableCell style={{ width: 80 }} align="center">
                         <Field
                           name={"Grades["+index+"]"}
                           type="number"
                           value={values.Grades[index]}
-                          InputProps={{ inputProps: { min: 0, max: row[0], step: 1} }}
+                          InputProps={{ inputProps: { min: 0, max: row[1], step: 1} }}
                           id="outlined-basic"
                           variant="outlined"
                           required={true}
                           as={TextField}
                           className={styles.pms}
                         />
-                        <br></br>/{row[0]}
+                        <br></br>/{row[1]}
                       </TableCell>
                       <TableCell align="center" style={{ width: 600 }}>
                         <Field
@@ -137,19 +137,19 @@ function Grading() {
                     </TableRow>
                   ))}
                 </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell className = {styles.save} style = {{color:"black"}}  >
-                      Total Score: { getTotalScore(values.Grades)} / {maxScore}
-                      </TableCell>
-                      <TableCell>
-                          <Button className={styles.save} disabled={isSubmitting}  type="submit">Save</Button>
-                      </TableCell>
-                      <TableCell id = "submitted" className = {styles.save} style={{color:"black", display:"none"}}>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell className={styles.save} style={{ color: "black" }}  >
+                      Total Score: {getTotalScore(values.Grades)} / {maxScore}
+                    </TableCell>
+                    <TableCell>
+                      <Button className={styles.save} disabled={isSubmitting} type="submit">Save</Button>
+                    </TableCell>
+                    <TableCell id="submitted" className={styles.save} style={{ color: "black", display: "none" }}>
                       Submitted
                       </TableCell>
                   </TableRow>
-                  </TableFooter>
+                </TableFooter>
               </Table>
             </TableContainer>
           </Form>
