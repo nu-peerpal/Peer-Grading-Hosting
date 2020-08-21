@@ -5,9 +5,9 @@ import {
   review_grades,
   submission_grades,
   groups,
-} from "../../../models/index.js";
+} from "../../../../models/index.js";
 
-const db = require("../../../models/index.js");
+const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
 // this route gives all graded assignments, both peer reviews and assignments
 
@@ -20,7 +20,7 @@ export default (req, res) => {
             include: [
               {
                 model: peer_review_status,
-                where: { status: 8 },
+                where: { status: { [Op.gte]: 8 } },
                 attributes: [],
               },
               {

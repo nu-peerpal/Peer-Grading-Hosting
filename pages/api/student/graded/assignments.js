@@ -6,9 +6,9 @@ import {
   submission_grades,
   groups,
   submission_reports,
-} from "../../../models/index.js";
+} from "../../../../models/index.js";
 
-const db = require("../../../models/index.js");
+const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
 // this route returns submission report for specific assignment
 // called with ID returned in the /all call

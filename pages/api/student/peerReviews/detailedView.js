@@ -1,6 +1,4 @@
-import { assignments, review_grades } from "../../../models/index.js";
-
-const db = require("../../../models/index.js");
+const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
 
 export default (req, res) => {

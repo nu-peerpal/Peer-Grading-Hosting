@@ -1,4 +1,4 @@
-const db = require("../../../models/index.js");
+const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
 // this route returns review report for specific peer review
 // called with ID returned in the /all call
