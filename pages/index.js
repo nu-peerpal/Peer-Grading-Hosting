@@ -22,7 +22,6 @@ function Dashboard(ISstudent) {
     var todoprs = []
     const { data: announcement } = useSWR('/api/announcements/?courseId=1', fetcher)
     const { data: todo } = useSWR('/api/peerReviews/all?courseId=1&userId=1&current=1', fetcher)
-    console.log(todo)
     if (announcement) {
       announcement.map(x =>
         announc.push(
@@ -58,7 +57,6 @@ function Dashboard(ISstudent) {
         )
       )
     }
-    console.log('well well well', ToDos)
     return (
       <div class="Content">
         <ListContainer name="Todos" data={ToDos} student={ISstudent.ISstudent} link="" /> {/*link depends on the todo*/}
