@@ -14,12 +14,13 @@ function PeerReview() {
   // console.log(info)
   if (info) {
     submission = info.SubmissionData[0].s3Link
-    rubric = info.RubricData[0].rubric
-    console.log(rubric, 'tell me')
+    rubric = info.RubricData[0].rubric.rubricBody
+    // console.log(rubric, 'tell me')
   }
   return (
     <div className="Content">
       <Container name="Grade User 1's Submission">
+        {/* {console.log(rubric)} */}
         <Submission sublink={submission} rubric={rubric}/>
       </Container>
     </div>

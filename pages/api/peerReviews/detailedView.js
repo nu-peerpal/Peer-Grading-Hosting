@@ -36,7 +36,7 @@ const Name = (req, res) => {
           });
         break;
       case "POST":
-        console.log('whats wrong', req.query.id)
+        //console.log('whats wrong', req.query.id)
         db.peer_matchings
           .update(
             {

@@ -51,29 +51,6 @@ const AutoComplete = ({ textFieldProps, ...props }) => {
 
 export default AutoComplete;
 
-function Settings() {
-  return (
-    <Autocomplete
-      options={top100Films}
-      disableCloseOnSelect
-      getOptionLabel={(option) => option.title}
-      renderOption={(option, { selected }) => (
-        <React.Fragment>
-          <Checkbox
-            icon={icon}
-            checkedIcon={checkedIcon}
-            checked={selected}
-          />
-          {option.title}
-        </React.Fragment>
-      )}
-      style={{ width: 500 }}
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" label="TAs to be assigned reviews" />
-      )}
-    />
-  )
-}
 
 const top100Films = [
   { title: 'The Shawshank Redemption', year: 1994 },
