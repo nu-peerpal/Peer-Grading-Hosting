@@ -37,18 +37,31 @@ function Dashboard(ISstudent) {
         )
       )
     }
-
-
     return (
-      <div className="Content">
+      <div class="Content">
         <ListContainer name="Todos" data={todoprs} student={ISstudent.ISstudent} link="/peer_reviews/peerreview" />
         <ListContainer name="Announcements" data={announc} student={ISstudent.ISstudent} link="" /> {/*link depends on the announcement*/}
       </div>
     );
   } else if (ISstudent.ISstudent == false) {
+    var ToDos = []
+    const { data: todos } = useSWR('/api/ta/to-dos?courseId=1&userId=1', fetcher)
+    if (todos) {
+      todos.Peer_Review_ToDo.map(x =>
+        ToDos.push(
+          { name: ('Grade Submission ' + x.id), info: x.assignment.name, data: x }
+        )
+      )
+      todos.Status_Updates.map(x =>
+        ToDos.push(
+          { name: 'Status '+ x.peer_review_statuses[0].status, info: x.name, data: x }
+        )
+      )
+    }
+    console.log('well well well', ToDos)
     return (
-      <div className="Content">
-        <ListContainer name="Todos" data={LIST} student={ISstudent.ISstudent} link="" /> {/*link depends on the todo*/}
+      <div class="Content">
+        <ListContainer name="Todos" data={ToDos} student={ISstudent.ISstudent} link="" /> {/*link depends on the todo*/}
         <ListContainer
           name="View As Student"
           data={[{ name: "View As", info: "VIEW" }]}
