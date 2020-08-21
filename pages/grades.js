@@ -23,9 +23,9 @@ import useSWR from 'swr'
 
 //     // console.log(this.state)
 //     return (
-//       <div className="Content">
-//         <ListContainer name="Graded Peer Reviews" data={PR} link="/grades/viewgrade"/>
-//         <ListContainer name="Graded Assignments" data={Assign} link="/grades/viewgrade"/>
+//       <div class="Content">
+//         <ListContainer name="Graded Peer Reviews" data={PR} link="/grades/viewprgrade"/>
+//         <ListContainer name="Graded Assignments" data={Assign} link="/grades/viewassignmentgrade"/>
 //       </div>
 //     )
 //   }
@@ -37,14 +37,15 @@ function Grades() {
   var Assignments = []
   const { data: all } = useSWR('/api/graded/all?courseId=1&userId=1', fetcher)
   if (all) {
+    // console.log('Ok', all.Graded_Peer_Reviews, all.Graded_Assignments)
     all.Graded_Peer_Reviews.map(x => PRS.push({ name: x.name, info: x.review_grades[0].grade, data: x }))
-    all.Grade_Assignments.map(x => Assignments.push({ name: x.assignment.name, info: x.submission_grades[0].grade, data: x }))
+    all.Graded_Assignments.map(x => Assignments.push({ name: x.assignment.name, info: x.submission_grades[0].grade, data: x }))
   }
   // console.log('lets see', Assignments)
   return (
-    <div className="Content">
-      <ListContainer name="Graded Peer Reviews" data={PRS} link="/grades/viewgrade" />
-      <ListContainer name="Graded Assignments" data={Assignments} link="/grades/viewgrade" />
+    <div class="Content">
+      <ListContainer name="Graded Peer Reviews" data={PRS} link="/grades/viewprgrade" />
+      <ListContainer name="Graded Assignments" data={Assignments} link="/grades/viewassignmentgrade" />
     </div>
   )
 

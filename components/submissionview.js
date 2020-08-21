@@ -29,8 +29,8 @@ class Submission extends React.Component {
     var gradingrubric = []
     Object.entries(this.props.rubric).map(x => gradingrubric.push([x[1], x[0]]))
     return (
-      <div className={styles.sub}>
-        <Accordion className={styles.acc}>
+      <div class={styles.sub}>
+        <Accordion class={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             User 1's Submission
           </AccordionSummary>
@@ -101,7 +101,7 @@ function Grading(rubric) {
       initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        fetch('/api/peerReviews/detailedView?id=4', { method: "POST", body: getFinalScore(data, rubric)})
+        fetch('/api/peerReviews/detailedView?id=4', { method: "POST", body: JSON.stringify(getFinalScore(data, rubric))})
         setSubmitting(false);
         document.getElementById('submitted').style.display = ''
       }}>
@@ -131,7 +131,7 @@ function Grading(rubric) {
                           variant="outlined"
                           required={true}
                           as={TextField}
-                          className={styles.pms}
+                          class={styles.pms}
                         />
                         <br></br>/{row[0]}
                       </TableCell>
@@ -145,7 +145,7 @@ function Grading(rubric) {
                           variant="outlined"
                           required={true}
                           as={TextareaAutosize}
-                          className={styles.pms}
+                          class={styles.pms}
                         />
                       </TableCell>
                     </TableRow>
@@ -163,20 +163,20 @@ function Grading(rubric) {
                         variant="outlined"
                         required={true}
                         as={TextareaAutosize}
-                        className={styles.pms}
+                        class={styles.pms}
                       />
                     </TableCell>
                   </TableRow> */}
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                    <TableCell className={styles.save} style={{ color: "black" }}  >
+                    <TableCell class={styles.save} style={{ color: "black" }}  >
                       Total Score: {getTotalScore(values.Grades)} / {maxScore}
                     </TableCell>
                     <TableCell>
-                      <Button className={styles.save} disabled={isSubmitting} type="submit">Save</Button>
+                      <Button class={styles.save} disabled={isSubmitting} type="submit">Save</Button>
                     </TableCell>
-                    <TableCell id="submitted" className={styles.save} style={{ color: "black", display: "none" }}>
+                    <TableCell id="submitted" class={styles.save} style={{ color: "black", display: "none" }}>
                       Submitted
                       </TableCell>
                   </TableRow>
