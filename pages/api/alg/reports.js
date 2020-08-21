@@ -1,4 +1,4 @@
-import { assignments, review_grades } from "../../../models/index.js";
+import { assignments, review_grades, rubrics } from "../../../models/index.js";
 
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
@@ -23,18 +23,24 @@ export default (req, res) => {
                 },
               })
               .then((reviews) => {
-                db.peer_matchings
-                  .findAll({
-                    attributes: ["userId", "submissionId"],
+                db.assignments
+                  .findOne({
                     where: {
-                      assignmentId: req.query.assignmentId,
+                      id: req.query.assignmentId,
                     },
+                    include: [
+                      {
+                        model: rubrics,
+                        attributes: ["rubric"],
+                      },
+                    ],
+                    attributes: [],
                   })
-                  .then((matchings) => {
+                  .then((rubric) => {
                     res.json({
                       Graders: ta,
                       Reviews: reviews,
-                      Matchings: matchings,
+                      Rubric: rubric,
                     });
                     resolve();
                   });
@@ -44,7 +50,7 @@ export default (req, res) => {
             res.status(500).send({
               message:
                 err.message ||
-                "Some error occurred while retrieving the peerMatching requirements.",
+                "Some error occurred while retrieving the submissionReport requirements.",
             });
           });
         break;

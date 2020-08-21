@@ -73,7 +73,7 @@ export default (req, res) => {
                     res.json({
                       Graded_Peer_Reviews: result,
                       Graded_Assignments: result3.get({ plain: true })
-                        .assignment_submissions[0],
+                        .assignment_submissions,
                     });
                     resolve();
                   });

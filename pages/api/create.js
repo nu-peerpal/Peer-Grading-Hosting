@@ -1,4 +1,4 @@
-import { review_reports } from "../../models/index.js";
+import { review_reports, assignments } from "../../models/index.js";
 
 const db = require("../../models/index.js");
 const Enrollment = db.enrollment;
@@ -31,11 +31,11 @@ export default (req, res) => {
         // Create assignments
         const assignment = {
           assignmentDueDate: "2019-8-28",
-          name: "Course 2, Assignment 3: LTI Testing",
+          name: "Course 1, Assignment 3: Canvas LTI 1.0 Integration",
           canvasId: "random_canvas_string2",
           peerreviewDueDate: "2019-10-28",
           appealsDueDate: "2019-12-30",
-          courseId: 2,
+          courseId: 1,
           reviewrubricId: 1,
           rubricId: 1,
           grade: true,
@@ -85,10 +85,11 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Users.create(user)
+        db.assignments
+          .create(assignment)
           .then((data) => {
             res.send(data);
-            //res.json(data);
+            res.json(data);
             resolve();
           })
           .catch((err) => {
