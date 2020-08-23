@@ -24,15 +24,18 @@ var graders = []
 var peers = []
 var submissions = []
 
-function Matching(){
+function Matching() {
   const { data: matchingdata } = useSWR('/api/alg/peerMatching?courseId=1&assignmentId=1', fetcher)
-  if (matchingdata){
+  if (matchingdata) {
+    graders = []
+    peers = []
+    submissions = []
     console.log('Well well well', matchingdata.Submissions)
     matchingdata.Graders.map(x => graders.push(x.id))
     matchingdata.Peers.map(x => peers.push(x.id))
     matchingdata.Submissions.map(x => submissions.push([x.groupId, x.id]))
   }
-  return(
+  return (
     <div className="Content" >
       <Container name="Peer Matching">
         <Accordion className={styles.matching}>
@@ -49,47 +52,38 @@ function Matching(){
   )
 }
 
-// class Matching extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//     }
-//     this.Settings = this.Settings.bind(this);
-//   }
-
-
 function Settings() {
   console.log('Graders', graders, 'Peers', peers)
-    return (
-      <Formik initialValues={{ PeerLoad: 0, GraderLoad: 0, TA: [] }}
-        onSubmit={(data, { setSubmitting }) => {
-          setSubmitting(true);
-          peerMatch(graders, peers, js.submissions, Number(data.PeerLoad), Number(data.GraderLoad))
+  return (
+    <Formik initialValues={{ PeerLoad: 0, GraderLoad: 0, TA: [] }}
+      onSubmit={(data, { setSubmitting }) => {
+        setSubmitting(true);
+        peerMatch(graders, peers, js.submissions, Number(data.PeerLoad), Number(data.GraderLoad))
           .then(data => {
             // this.setState({ 'matching': data })
-            console.log({'Settings': data})
+            console.log({ 'Settings': data })
           });
-          setSubmitting(false);
-        }}>
-          
-        {({ values, isSubmitting }) =>
-          (
-            <Form>
-              <Field name="PeerLoad" type="input" value={values.PeerLoad} id="outlined-basic" label="Peer Load" variant="outlined" 
-              required={true} as={TextField} className={styles.pms}/>
-              <Field name="GraderLoad" type="input" value={values.GraderLoad} id="outlined-basic" label="Grader Load" variant="outlined"
-                required={true} as={TextField} className={styles.pms}/>
-              <Field name='TA' className={styles.pms} component={Pray}
-                required={true} label="TA" options={graders}/>
-              <Button disabled={isSubmitting} type="submit">Save</Button>
-              <Button>Recompute Matching</Button>
-              <Button>Clear</Button>
-            </Form>
-          )
-        }
-      </Formik>
-    )
-  }
+        setSubmitting(false);
+      }}>
+
+      {({ values, isSubmitting }) =>
+        (
+          <Form>
+            <Field name="PeerLoad" type="input" value={values.PeerLoad} id="outlined-basic" label="Peer Load" variant="outlined"
+              required={true} as={TextField} className={styles.pms} />
+            <Field name="GraderLoad" type="input" value={values.GraderLoad} id="outlined-basic" label="Grader Load" variant="outlined"
+              required={true} as={TextField} className={styles.pms} />
+            <Field name='TA' className={styles.pms} component={Pray}
+              required={true} label="TA" options={graders} />
+            <Button disabled={isSubmitting} type="submit">Save</Button>
+            <Button>Recompute Matching</Button>
+            <Button>Clear</Button>
+          </Form>
+        )
+      }
+    </Formik>
+  )
+}
 
 //   render() {
 //     return (
