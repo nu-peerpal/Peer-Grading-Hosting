@@ -7,7 +7,7 @@ import useSWR from "swr";
 const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
 
 function ViewAssignmentGrade() {
-  const { data: submissionreport } = useSWR('/api/graded/assignments?id=1', fetcher)
+  const { data: submissionreport } = useSWR('/api/student/graded/assignments?id=1', fetcher)
   return (
     <div class="Content">
       <Container name="Grade for Assignment 1">

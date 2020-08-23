@@ -35,7 +35,7 @@ const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
 function Grades() {
   var PRS = []
   var Assignments = []
-  const { data: all } = useSWR('/api/graded/all?courseId=1&userId=1', fetcher)
+  const { data: all } = useSWR('/api/student/graded/all?courseId=1&userId=1', fetcher)
   if (all) {
     // console.log('Ok', all.Graded_Peer_Reviews, all.Graded_Assignments)
     all.Graded_Peer_Reviews.map(x => PRS.push({ name: x.name, info: x.review_grades[0].grade, data: x }))

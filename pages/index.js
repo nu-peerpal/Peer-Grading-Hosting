@@ -20,8 +20,8 @@ function Dashboard(ISstudent) {
   if (ISstudent.ISstudent == true) {
     var announc = []
     var todoprs = []
-    const { data: announcement } = useSWR('/api/announcements/?courseId=1', fetcher)
-    const { data: todo } = useSWR('/api/peerReviews/all?courseId=1&userId=1&current=1', fetcher)
+    const { data: announcement } = useSWR('/api/student/announcements/?courseId=1', fetcher)
+    const { data: todo } = useSWR('/api/student/peerReviews/all?courseId=1&userId=1&current=1', fetcher)
     if (announcement) {
       announcement.map(x =>
         announc.push(

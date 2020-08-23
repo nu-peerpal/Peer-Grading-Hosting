@@ -10,7 +10,7 @@ const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
 function PeerReview() {
   var submission = []
   var rubric = []
-  const { data: info } = useSWR('/api/peerReviews/detailedView?submissionId=1&rubricId=1', fetcher)
+  const { data: info } = useSWR('/api/student/peerReviews/detailedView?submissionId=1&rubricId=1', fetcher)
   // console.log(info)
   if (info) {
     submission = info.SubmissionData[0].s3Link
