@@ -48,10 +48,6 @@ export default (req, res) => {
             });
           });
         break;
-      case "POST":
-        resolve();
-        break;
-
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();

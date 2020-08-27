@@ -47,8 +47,12 @@ export default (req, res) => {
           )
           .then(function (result) {
             resolve();
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: err.message || "Some error occurred.",
+            });
           });
-
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();
