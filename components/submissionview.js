@@ -16,7 +16,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import getRubric from '../pages/getRubric.js'
+// import getRubric from '../pages/getRubric.js'
 
 class Submission extends React.Component {
   constructor(props) {
