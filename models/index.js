@@ -1,15 +1,20 @@
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize(
-  "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres",
-  {
-    pool: {
-      max: 5,
-      min: 0,
-      idle: 10000,
-    },
-  }
-); // Example for postgres
+const testing = process.env.NODE_ENV === "test";
+const dbUri = testing
+  ? `sqlite:///${process.cwd()}/pages/api/__tests__/test.db`
+  : "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres";
+const options = testing
+  ? {}
+  : {
+      pool: {
+        max: 5,
+        min: 0,
+        idle: 10000,
+      },
+    };
+
+const sequelize = new Sequelize(dbUri, options); // Example for postgres
 const db = {};
 
 //require all tables for database
