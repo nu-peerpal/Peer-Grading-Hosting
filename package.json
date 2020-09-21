@@ -13,7 +13,7 @@
     "build": "next build",
     "start": "NODE_ENV=production node main.js -p $PORT",
     "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./main.js",
-    "test": "jest"
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -31,11 +31,13 @@
     "next": "^9.5.1",
     "next-connect": "^0.8.1",
     "next-google-fonts": "^1.2.1",
+    "next-server": "^9.0.5",
     "pg": "^8.3.0",
     "postgres": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "sequelize": "^6.3.4",
+    "sqlite3": "^5.0.0",
     "styled-components": "^5.1.1",
     "swr": "^0.3.0",
     "webpack": "^4.44.1"
@@ -45,7 +47,9 @@
     "@babel/core": "^7.10.4",
     "@babel/node": "^7.10.4",
     "@babel/polyfill": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
+    "babel-jest": "^26.3.0",
+    "cross-env": "^7.0.2",
     "jest": "^26.4.2",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
@@ -54,6 +58,10 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
+    ],
+    "testPathIgnorePatterns": [
+      "/pages/test.js",
+      "/pages/api/__tests__/testclient.js"
     ]
   }
 }
