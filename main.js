@@ -10,8 +10,8 @@ const handle = app.getRequestHandler();
 const db = require("./models");
 
 // LTI server stuff
-// const lti = require("ltijs").Provider;
-// const Database = require("ltijs-sequelize");
+const lti = require("ltijs").Provider;
+const Database = require("ltijs-sequelize");
 
 app
   .prepare()
@@ -36,7 +36,7 @@ app
 
     // LTI JS
     //postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres
-    /*
+
     // Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
     const lti_db = new Database("postgres", "pga", "Jas0n5468", {
       host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
@@ -90,7 +90,7 @@ app
     };
 
     setup();
-    */
+
   })
   .catch((ex) => {
     console.log("caught error");
