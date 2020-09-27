@@ -2,156 +2,70 @@ import React from "react";
 import styles from "./styles/submissionview.module.css";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize"
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Field, Formik, Form } from "formik";
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import PeerReviewMatrix from "./UI/PeerReviewMatrix";
 
-class TAsubmission extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      // :[
-      //   {'name': '', 'info':""},
-      //   {'name': '', 'info':""},
-      // ],
-    }
-  }
-  render() {
-    return (
-      <div className={styles.sub}>
-        <Accordion className={styles.acc}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            User 1's Submission
-                    </AccordionSummary>
-          <AccordionDetails>
-          </AccordionDetails>
-        </Accordion>
-        <br />
-        <Grading />
-      </div>
-    )
-  }
-}
+const peerMatchings = [
+  {
+    user_id: 1,
+    review: [
+      { points: 9, maxPoints: 10, element: "Answer/Algorithm" },
+      { points: 8, maxPoints: 10, element: "Proof Analysis" },
+      { points: 8.5, maxPoints: 10, element: "Clarity" },
+    ],
+    lastName: "Ramos",
+    firstName: "Bradley",
+  },
+  {
+    user_id: 2,
+    review: [
+      { points: 7, maxPoints: 10, element: "Answer/Algorithm" },
+      { points: 7.5, maxPoints: 10, element: "Proof Analysis" },
+      { points: 9.5, maxPoints: 10, element: "Clarity" },
+    ],
+    lastName: "Chung",
+    firstName: "Andrew",
+  },
+  {
+    user_id: 3,
+    review: [
+      { points: 10, maxPoints: 10, element: "Answer/Algorithm" },
+      { points: 8.5, maxPoints: 10, element: "Proof Analysis" },
+      { points: 8, maxPoints: 10, element: "Clarity" },
+    ],
+    lastName: "Liu",
+    firstName: "Jonathan",
+  },
+];
+
+const assignmentRubric = [
+  { maxPoints: 10, element: "Answer/Algorithm" },
+  { maxPoints: 10, element: "Proof Analysis" },
+  { maxPoints: 10, element: "Clarity" },
+];
+
+const reviewRubric = [
+  { maxPoints: 10, element: "Quantitative" },
+  { maxPoints: 10, element: "Qualitative" },
+];
+
+const TAsubmission = () => {
+  return (
+    <div className={styles.sub}>
+      <Accordion className={styles.acc}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          User 1's submission
+        </AccordionSummary>
+        <AccordionDetails>Should display assignment PDF...</AccordionDetails>
+      </Accordion>
+      <PeerReviewMatrix
+        assignmentRubric={assignmentRubric}
+        reviewRubric={reviewRubric}
+        peerMatchings={peerMatchings}
+      />
+    </div>
+  );
+};
 
 export default TAsubmission;
-
-//const rubric = [[5,"accuracy"],[5,"creativity"]]
-const rubric = [[10,"Answer/Algorithm"],[10,"Proof Analysis"],[10,"Clarity"]]
-
-function getInitialValues(rubric){
-  var len = rubric.length
-  var comments = []
-  var grades = []
-  for(var i = 0; i < len; i++) {
-    comments.push("")
-    grades.push(0)
-  } 
-  return { Grades: grades, Comments: comments}
-}
-function getMaxScore(rubric){
-  var len = rubric.length
-  var score = 0
-  for(var i = 0; i < len; i++) {
-     score = score + rubric[i][0]
-  } 
-  return score
-}
-
-function getTotalScore(grades){
-  var len = grades.length
-  var score = 0
-  for(var i = 0; i < len; i++) {
-     score = score + grades[i]
-  } 
-  return score
-}
-
-function Grading() {
-  var maxScore = getMaxScore(rubric)
-  return (
-    <Formik
-      initialValues={getInitialValues(rubric)}
-      onSubmit={(data, { setSubmitting }) => {
-        setSubmitting(true);
-        console.log(data)
-        setSubmitting(false);
-        document.getElementById('submitted').style.display=''
-      }}>
-      {({ values, isSubmitting }) =>
-        (
-          <Form>
-            <TableContainer component={Paper}>
-              <Table aria-label="spanning table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Criteria</TableCell>
-                    <TableCell align="center">Grade</TableCell>
-                    <TableCell align="center">Comments</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rubric.map((row, index) => (
-                    <TableRow key={row[1]}>
-                      <TableCell>{row[1]}</TableCell>
-                      <TableCell align="center" style={{ width: 80 }} >
-                        <Field
-                          name= {"Grades["+index+"]"}
-                          type="number"
-                          InputProps={{ inputProps: { min: 0, max: row[0], step: 1} }}
-                          value={values.Grades[index]}
-                          id="outlined-basic"
-                          variant="outlined"
-                          required={true}
-                          as={TextField}
-                          className={styles.pms}
-                        />
-                           <br></br>/{row[0]}
-                      </TableCell>
-                      <TableCell align="center" style={{ width: 600 }}>
-                        <Field
-                          name={"Comments["+index+"]"}
-                          type="input"
-                          rowsMin = {4}
-                          value={values.Comments[index]}
-                          id="outlined-basic"
-                          variant="outlined"
-                          required={true}
-                          as={TextareaAutosize}
-                          className={styles.pms}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell className = {styles.save} style = {{color:"black"}}  >
-                      Total Score: { getTotalScore(values.Grades)} / {maxScore}
-                      </TableCell>
-                      <TableCell>
-                          <Button className={styles.save} disabled={isSubmitting}  type="submit">Save</Button>
-                      </TableCell>
-                      <TableCell id = "submitted" className = {styles.save} style={{color:"black", display:"none"}}>
-                      Submitted
-                      </TableCell>
-                  </TableRow>
-                  </TableFooter>
-              </Table>
-            </TableContainer>
-          </Form>
-        )
-      }
-    </Formik >
-  )
-}
