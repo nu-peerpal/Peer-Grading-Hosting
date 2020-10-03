@@ -10,9 +10,24 @@ const peerMatchings = [
   {
     user_id: 1,
     review: [
-      { points: 9, maxPoints: 10, element: "Answer/Algorithm" },
-      { points: 8, maxPoints: 10, element: "Proof Analysis" },
-      { points: 8.5, maxPoints: 10, element: "Clarity" },
+      {
+        points: 9,
+        maxPoints: 10,
+        element: "Answer/Algorithm",
+        comment: "Great algorithm!",
+      },
+      {
+        points: 8,
+        maxPoints: 10,
+        element: "Proof Analysis",
+        comment: "Proof could be better...",
+      },
+      {
+        points: 8.5,
+        maxPoints: 10,
+        element: "Clarity",
+        comment: "Fairly clear",
+      },
     ],
     lastName: "Ramos",
     firstName: "Bradley",
@@ -20,9 +35,24 @@ const peerMatchings = [
   {
     user_id: 2,
     review: [
-      { points: 7, maxPoints: 10, element: "Answer/Algorithm" },
-      { points: 7.5, maxPoints: 10, element: "Proof Analysis" },
-      { points: 9.5, maxPoints: 10, element: "Clarity" },
+      {
+        points: 7,
+        maxPoints: 10,
+        element: "Answer/Algorithm",
+        comment: "Doesn't make sense.",
+      },
+      {
+        points: 7.5,
+        maxPoints: 10,
+        element: "Proof Analysis",
+        comment: "Unclear analysis",
+      },
+      {
+        points: 9.5,
+        maxPoints: 10,
+        element: "Clarity",
+        comment: "Good clarity overall",
+      },
     ],
     lastName: "Chung",
     firstName: "Andrew",
@@ -30,9 +60,24 @@ const peerMatchings = [
   {
     user_id: 3,
     review: [
-      { points: 10, maxPoints: 10, element: "Answer/Algorithm" },
-      { points: 8.5, maxPoints: 10, element: "Proof Analysis" },
-      { points: 8, maxPoints: 10, element: "Clarity" },
+      {
+        points: 10,
+        maxPoints: 10,
+        element: "Answer/Algorithm",
+        comment: "Algorithm is efficient",
+      },
+      {
+        points: 8.5,
+        maxPoints: 10,
+        element: "Proof Analysis",
+        comment: "Ok proof analysis",
+      },
+      {
+        points: 8,
+        maxPoints: 10,
+        element: "Clarity",
+        comment: "Could be little clearer",
+      },
     ],
     lastName: "Liu",
     firstName: "Jonathan",
