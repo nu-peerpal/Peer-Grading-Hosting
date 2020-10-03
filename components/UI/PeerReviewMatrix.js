@@ -9,9 +9,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
 import ReviewDisplayTable from "./ReviewDisplayTable";
-import ReviewGradingTable from "./ReviewGradingTable";
 
 const getInitialValues = (peerMatchings, reviewRubric) => {
   const values = {};
@@ -42,29 +40,23 @@ const PeerReviewMatrix = ({
     >
       {({ values, isSubmitting }) => (
         <Form>
-          <TableContainer component={Paper} style={{ overflowX: "auto" }}>
+          <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ minWidth: "350px", fontSize: "16px" }}>
-                    Rubric Element
-                  </TableCell>
-                  {peerMatchings.map(({ firstName, lastName }) => (
-                    <TableCell style={{ minWidth: "350px", fontSize: "16px" }}>
-                      {firstName} {lastName}
-                    </TableCell>
+                  <TableCell>Rubric Element</TableCell>
+                  {assignmentRubric.map(({ element }) => (
+                    <TableCell>{element}</TableCell>
                   ))}
+                  <TableCell>Total</TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
                 <ReviewDisplayTable
-                  rubric={assignmentRubric}
-                  peerMatchings={peerMatchings}
-                />
-                <ReviewGradingTable
                   values={values}
-                  rubric={reviewRubric}
+                  assignmentRubric={assignmentRubric}
+                  reviewRubric={reviewRubric}
                   peerMatchings={peerMatchings}
                 />
               </TableBody>
