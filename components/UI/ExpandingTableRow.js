@@ -3,12 +3,19 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Collapse from "@material-ui/core/Collapse";
 
-const ExpandingTableRow = ({ details, children, numCols }) => {
+const ExpandingTableRow = ({ details, children, numCols, disabled }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <TableRow hover onClick={() => setOpen(!open)}>
+      <TableRow
+        hover
+        onClick={() => {
+          if (!disabled) {
+            setOpen(!open);
+          }
+        }}
+      >
         {children}
       </TableRow>
 
