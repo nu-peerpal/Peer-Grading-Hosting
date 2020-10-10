@@ -1,0 +1,29 @@
+.sub {
+  margin: 0 40px 40px !important;
+}
+
+.acc {
+  background: #e5e5e5 !important;
+  box-shadow: none !important;
+  position: static !important;
+  padding: 0 20px !important;
+  border-radius: 0 !important;
+}
+
+.err {
+  position: absolute;
+  color: red;
+  font-size: 12px;
+}
+
+.copyavg {
+  display: inline-block;
+  position: absolute;
+  top: 30px;
+  left: calc(70% - 100px);
+}
+
+.upvoteavg {
+  display: inline-block;
+  width: calc(100% - 100px);
+}

@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import styles from "./styles/submissionview.module.css";
+import React from "react";
+import styles from "./styles/tagrading.module.css";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import PeerReviewMatrix from "./UI/PeerReviewMatrix";
 
 const peerMatchings = [
@@ -98,17 +96,8 @@ const reviewRubric = [
 ];
 
 const TAsubmission = () => {
-  const [upvotesAveraged, setUpvotesAveraged] = useState(false);
-
   return (
     <div className={styles.sub}>
-      <FormControlLabel
-        checked={upvotesAveraged}
-        onChange={(e) => setUpvotesAveraged(e.target.checked)}
-        control={<Switch color='primary' />}
-        label='Average upvotes to instructor grade'
-        labelPlacement='start'
-      />
       <Accordion className={styles.acc}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           User 1's submission
@@ -119,7 +108,6 @@ const TAsubmission = () => {
         assignmentRubric={assignmentRubric}
         reviewRubric={reviewRubric}
         peerMatchings={peerMatchings}
-        upvotesAveraged={upvotesAveraged}
       />
     </div>
   );

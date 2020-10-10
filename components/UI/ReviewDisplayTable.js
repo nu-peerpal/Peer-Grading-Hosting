@@ -22,6 +22,7 @@ const ReviewDisplayTable = ({
   reviewRubric,
   peerMatchings,
   values,
+  errors,
   state,
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
@@ -60,6 +61,7 @@ const ReviewDisplayTable = ({
               <ReviewGradingTable
                 reviewRubric={reviewRubric}
                 values={values}
+                errors={errors}
                 userId={user_id}
               />
             }
