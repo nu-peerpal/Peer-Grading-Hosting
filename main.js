@@ -9,7 +9,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 const db = require("./models");
 
-// LTI server stuff
+// // LTI server stuff
 // const lti = require("ltijs").Provider;
 // const Database = require("ltijs-sequelize");
 
@@ -34,63 +34,63 @@ app
       console.log(`> App running on ${port}`);
     });
 
-    // LTI JS
-    //postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres
-    /*
-    // Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
-    const lti_db = new Database("postgres", "pga", "Jas0n5468", {
-      host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
-      dialect: "postgres",
-      logging: console.log,
-    });
+    // // LTI JS
+    // //postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres
 
-    // Setup provider
-    lti.setup(
-      "LTIKEY", // Key used to sign cookies and tokens
-      {
-        plugin: lti_db, // Passing db object to plugin field
-      },
-      {
-        // Options
-        appRoute: "/",
-        loginRoute: "/login", // Optionally, specify some of the reserved routes
-        cookies: {
-          secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
-          sameSite: "", // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
-        },
-        devMode: false, // Set DevMode to true if the testing platform is in a different domain and https is not being used
-      }
-    );
+    // // Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
+    // const lti_db = new Database("postgres", "pga", "Jas0n5468", {
+    //   host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
+    //   dialect: "postgres",
+    //   logging: console.log,
+    // });
 
-    // Set lti launch callback
-    lti.onConnect((token, req, res) => {
-      console.log(token);
-      return res.send("It's alive!");
-    });
+    // // Setup provider
+    // lti.setup(
+    //   "LTIKEY", // Key used to sign cookies and tokens
+    //   {
+    //     plugin: lti_db, // Passing db object to plugin field
+    //   },
+    //   {
+    //     // Options
+    //     appRoute: "/",
+    //     loginRoute: "/login", // Optionally, specify some of the reserved routes
+    //     cookies: {
+    //       secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
+    //       sameSite: "", // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
+    //     },
+    //     devMode: false, // Set DevMode to true if the testing platform is in a different domain and https is not being used
+    //   }
+    // );
 
-    const setup = async () => {
-      // Deploy server and open connection to the database
-      await lti.deploy({ port: 3000 }); // Specifying port. Defaults to 3000
+    // // Set lti launch callback
+    // lti.onConnect((token, req, res) => {
+    //   console.log(token);
+    //   return res.send("It's alive!");
+    // });
 
-      // Register platform
-      await lti.registerPlatform({
-        url: "https://lti-ri.imsglobal.org/platforms/1181",
-        name: "PGA-Test",
-        clientId: "12345",
-        authenticationEndpoint:
-          "https://lti-ri.imsglobal.org/platforms/1181/authorizations/new",
-        accesstokenEndpoint:
-          "https://lti-ri.imsglobal.org/platforms/1181/access_tokens",
-        authConfig: {
-          method: "JWK_SET",
-          key:
-            "https://lti-ri.imsglobal.org/platforms/1181/platform_keys/1177.json",
-        },
-      });
-    };
+    // const setup = async () => {
+    //   // Deploy server and open connection to the database
+    //   await lti.deploy({ port: 3000 }); // Specifying port. Defaults to 3000
 
-    setup();
-    */
+    //   // Register platform
+    //   await lti.registerPlatform({
+    //     url: "https://lti-ri.imsglobal.org/platforms/1181",
+    //     name: "PGA-Test",
+    //     clientId: "12345",
+    //     authenticationEndpoint:
+    //       "https://lti-ri.imsglobal.org/platforms/1181/authorizations/new",
+    //     accesstokenEndpoint:
+    //       "https://lti-ri.imsglobal.org/platforms/1181/access_tokens",
+    //     authConfig: {
+    //       method: "JWK_SET",
+    //       key:
+    //         "https://lti-ri.imsglobal.org/platforms/1181/platform_keys/1177.json",
+    //     },
+    //   });
+    // };
+
+    // setup();
+
   })
   .catch((ex) => {
     console.log("caught error");
