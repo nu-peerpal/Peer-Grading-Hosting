@@ -54,46 +54,28 @@ export default (req, res) => {
           });
         break;
       case "POST":
-        //post must take the matchings outputted and store with correct assignmentId
+        // post must take the matchings outputted and store with correct assignmentId
         //  & peerMatching with match type specificed in query
-        var index;
-        console.log("hi");
-        var pm = req.body.peerMatchings;
-        var args = [].splice.call(pm, 0);
-        var argsString = args.join("/");
-
-        function parseTuple(t) {
-          var items = t.replace(/^\(|\)$/g, "").split("),(");
-          items.forEach(function (val, index, array) {
-            array[index] = val.split(",").map(Number);
+        var pm = req.body.peer_matchings;
+        pm.map((g) => {
+          const matching = {
+            submissionId: g[1],
+            userId: g[0],
+            matchingType: req.query.type,
+            assignmentId: req.query.assignmentId,
+          };
+          db.peer_matchings.create(matching).catch((err) => {
+            res.status(500).send({
+              message:
+                err.message ||
+                "Some error occurred while updating peer matching table.",
+            });
           });
-          return items;
-        }
-
-        var data = "(4,7,1),(8,9,6),(3,5,7)";
-        console.log(data);
-        console.log(argsString);
-        var result = parseTuple(data);
-        //console.log(JSON.stringify(result));
-        // for (index = 0; index < pm.length; ++index) {
-        //   console.log(a[index]);
-        // }
+        });
+        res.status(500).send({ message: "post request complete" });
+        res.end();
         resolve();
         break;
-
-      // db.peer_matchings
-      //   .update(
-      //     {
-      //       review: req.body,
-      //     },
-      //     {
-      //       where: { id: req.query.id },
-      //       returning: true,
-      //       plain: true,
-      //     }
-      //   )
-      //   .then(function (result) {});
-
       default:
         res.status(405).end(); //Method Not Allowed
         return resolve();

@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
   const Submission_Grades = sequelize.define("submission_grades", {
     grade: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.FLOAT,
     },
   });
 

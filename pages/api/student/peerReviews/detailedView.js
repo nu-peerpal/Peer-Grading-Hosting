@@ -29,12 +29,17 @@ export default async (req, res) => {
               plain: true,
             }
           )
-          .then((result) => res.json(result))
+          .then(function (result) {
+            resolve();
+          })
           .catch((err) => {
             res.status(500).send({
-              message: err.message,
+              message: err.message || "Some error occurred.",
             });
           });
+      default:
+        res.status(405).end(); //Method Not Allowed
+        return resolve();
         break;
       default:
         res.status(405).end();
