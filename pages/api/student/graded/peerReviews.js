@@ -1,28 +1,23 @@
-const db = require("../../models/index.js");
+const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
+// this route returns review report for specific peer review
+// called with ID returned in the /all call
 
-//this route will return an array of announcement strings based on courseId
 export default (req, res) => {
   return new Promise((resolve) => {
     switch (req.method) {
       case "GET":
-        db.rubrics
+        db.review_reports
           .findOne({
-            attributes: ["rubric"],
+            attributes: ["report"],
             where: {
-              id: req.query.id,
+              assignmentId: req.query.assignmentId,
+              userId: req.query.userId,
             },
           })
           .then((result) => {
             res.json(result);
             resolve();
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message:
-                err.message ||
-                "Some error occurred while retrieving the rubric.",
-            });
           });
         break;
       default:

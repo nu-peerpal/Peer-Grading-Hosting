@@ -8,8 +8,8 @@ module.exports = (sequelize, Sequelize) => {
     Groups.belongsTo(db.assignments, {
       foreignKey: "assignmentId",
     });
-    Groups.hasMany(db.users);
 
+    Groups.hasMany(db.users);
     Groups.hasMany(db.assignment_submissions);
   };
   return Groups;

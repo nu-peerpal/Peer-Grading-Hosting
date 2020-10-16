@@ -17,7 +17,6 @@ module.exports = (sequelize, Sequelize) => {
 
     Assignment_Submissions.hasMany(db.submission_grades);
     Assignment_Submissions.hasMany(db.submission_reports);
-    Assignment_Submissions.hasMany(db.review_reports);
     Assignment_Submissions.hasMany(db.peer_matchings);
   };
   return Assignment_Submissions;

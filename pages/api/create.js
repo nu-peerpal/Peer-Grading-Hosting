@@ -1,3 +1,5 @@
+import { review_reports, assignments } from "../../models/index.js";
+
 const db = require("../../models/index.js");
 const Enrollment = db.enrollment;
 const Announcements = db.announcements;
@@ -5,6 +7,8 @@ const Peer_Review_Status = db.peer_review_status;
 const Assignments = db.assignments;
 const Users = db.users;
 const Groups = db.groups;
+const Review_Reports = db.review_reports;
+const Submission_Report = db.submission_reports;
 const Course = db.course;
 const Op = db.Sequelize.Op;
 const Rubric = db.rubrics;
@@ -16,25 +20,32 @@ export default (req, res) => {
         res.send("Hello World!");
         break;
       case "POST":
-        const rubric = {
-          rubric: { cat1: "please report how this student did in Z category" },
+        const review_report = {
+          report: {
+            assignmentId: 2,
+            userId: 1,
+            reportBody:
+              '# Review Report (Grade: 100)\n\n<submission id="111" />\n\n|        Rubric        |  TA Scores [[?]][1]  | Your Scores [[?]][2] |\n| :------------------: | :------------------: | :------------------: | \n|       Content        |      6 [[?]][3]      |      6 [[?]][4]      |\n|   Writing Quality    |      4 [[?]][5]      |      4 [[?]][6]      |\n\n[1]: # "T\n​\n​r\n​\n​y\n​\n​ \n​\n​h\n​\n​a\n​\n​r\n​\n​d\n​\n​e\n​\n​r"\n[2]: # "T\n​\n​r\n​\n​y\n​\n​ \n​\n​h\n​\n​a\n​\n​r\n​\n​d\n​\n​e\n​\n​r"\n[3]: # "okay"\n[4]: # "okay"\n[5]: # "bad"\n[6]: # "bad"',
+          },
         };
         // Create assignments
         const assignment = {
           assignmentDueDate: "2019-8-28",
-          name: "Course 2, Assignment 3: LTI Testing",
+          name: "Course 1, Assignment 3: Canvas LTI 1.0 Integration",
           canvasId: "random_canvas_string2",
           peerreviewDueDate: "2019-10-28",
           appealsDueDate: "2019-12-30",
-          courseId: 2,
+          courseId: 1,
           reviewrubricId: 1,
           rubricId: 1,
           grade: true,
         };
         const user = {
-          canvasId: "sae21",
-          lastName: "field",
-          firstName: "strawberry",
+          canvasId: "gg",
+          lastName: "gry",
+          firstName: "dylan",
+          courseId: 1,
+          enrollment: "ta",
         };
 
         const prs = {
@@ -56,7 +67,7 @@ export default (req, res) => {
         };
 
         const group = {
-          assignmentId: 2,
+          assignmentId: 1,
           canvasId: "group2",
         };
         // Rubric.create(rubric)
@@ -74,7 +85,8 @@ export default (req, res) => {
         //   });
 
         // Save enrollment in the database
-        Assignments.create(assignment)
+        db.assignments
+          .create(assignment)
           .then((data) => {
             res.send(data);
             res.json(data);
