@@ -3,6 +3,11 @@ exports.response200 = (res, data) => {
   return res;
 };
 
+exports.msgResponse200 = (res, msg) => {
+  res.status(200).json({ status: "success", message: msg });
+  return res;
+};
+
 exports.response400 = (res, err) => {
   res.status(400).json({
     status: "fail",

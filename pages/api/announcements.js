@@ -1,0 +1,27 @@
+const db = require("../../models");
+const responseHandler = require("./utils/responseHandler");
+const includeExcludeProps = require("./utils/includeExcludeProps");
+
+//this route will return an array of announcement strings based on courseId
+export default async (req, res) => {
+  try {
+    switch (req.method) {
+      case "GET":
+        if (!req.query.courseId) {
+          throw new Error("Query parameter courseId required");
+        }
+        let announcements = await db.announcements.findAll({
+          where: { courseId: req.query.courseId },
+        });
+        announcements = announcements.map((announcement) =>
+          includeExcludeProps(req, announcement)
+        );
+        responseHandler.response200(announcements);
+        break;
+      default:
+        throw new Error("Invalid HTTP method");
+    }
+  } catch (err) {
+    responseHandler.response400(res, err);
+  }
+};
