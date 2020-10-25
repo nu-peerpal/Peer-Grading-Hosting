@@ -4,12 +4,12 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
   });
+
   Groups.associate = (db) => {
     Groups.belongsTo(db.assignments, {
       foreignKey: "assignmentId",
     });
-
-    Groups.hasMany(db.users);
+    Groups.hasMany(db.group_enrollments);
     Groups.hasMany(db.assignment_submissions);
   };
   return Groups;

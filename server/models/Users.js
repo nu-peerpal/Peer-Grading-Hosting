@@ -1,9 +1,6 @@
-const Groups = require("./Groups");
-
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define("users", {
     canvasId: {
-      //maybe unique?
       type: Sequelize.STRING,
     },
     lastName: {
@@ -16,14 +13,15 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
   });
+
   Users.associate = (db) => {
-    Users.belongsTo(db.groups, {
-      foreignKey: "groupId",
-    });
     Users.belongsTo(db.courses, {
       foreignKey: "courseId",
     });
-    Users.hasMany(db.review_reports);
+    Users.hasMany(db.peer_matchings);
+    Users.hasMany(db.review_grades_reports);
+    Users.hasMany(db.group_enrollments);
   };
+
   return Users;
 };
