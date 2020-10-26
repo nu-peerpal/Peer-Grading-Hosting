@@ -22,7 +22,7 @@ export default async (req, res) => {
         peerMatchings = peerMatchings.map((matching) =>
           includeExcludeProps(req, matching)
         );
-        responseHandler.response200(peerMatchings);
+        responseHandler.response200(res, peerMatchings);
         break;
 
       case "POST":

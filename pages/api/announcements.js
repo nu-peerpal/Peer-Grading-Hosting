@@ -16,7 +16,7 @@ export default async (req, res) => {
         announcements = announcements.map((announcement) =>
           includeExcludeProps(req, announcement)
         );
-        responseHandler.response200(announcements);
+        responseHandler.response200(res, announcements);
         break;
       default:
         throw new Error("Invalid HTTP method");

@@ -8,14 +8,17 @@ export default async (req, res) => {
     switch (req.method) {
       case "GET":
         assignment = includeExcludeProps(req, assignment);
-        responseHandler.response200(assignment);
+        responseHandler.response200(res, assignment);
         break;
       case "PATCH":
         for (const property in req.body) {
           assignment[property] = req.body[property];
         }
         await assignment.save();
-        responseHandler.msgResponse200("Successfully updated database entry.");
+        responseHandler.msgResponse200(
+          res,
+          "Successfully updated database entry."
+        );
         break;
       default:
         throw new Error("Invalid HTTP method");

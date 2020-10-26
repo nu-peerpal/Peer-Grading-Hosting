@@ -8,14 +8,17 @@ export default async (req, res) => {
     switch (req.method) {
       case "GET":
         peerMatching = includeExcludeProps(req, peerMatching);
-        responseHandler.response200(peerMatching);
+        responseHandler.response200(res, peerMatching);
         break;
       case "PATCH":
         for (const property in req.body) {
           peerMatching[property] = req.body[property];
         }
         await peerMatching.save();
-        responseHandler.msgResponse200("Successfully updated database entry.");
+        responseHandler.msgResponse200(
+          res,
+          "Successfully updated database entry."
+        );
         break;
       default:
         throw new Error("Invalid HTTP method");

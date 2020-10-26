@@ -25,7 +25,7 @@ export default async (req, res) => {
         assignments = assignments.map((assignment) =>
           includeExcludeProps(req, assignment)
         );
-        responseHandler.response200(assignments);
+        responseHandler.response200(res, assignments);
         break;
       default:
         throw new Error("Invalid HTTP method");

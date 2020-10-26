@@ -13,7 +13,7 @@ export default async (req, res) => {
           where: { courseId: req.query.assignmentId },
         });
         groups = groups.map((group) => includeExcludeProps(req, group));
-        responseHandler.response200(groups);
+        responseHandler.response200(res, groups);
         break;
       default:
         throw new Error("Invalid HTTP method");

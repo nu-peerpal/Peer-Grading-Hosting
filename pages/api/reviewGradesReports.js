@@ -19,7 +19,7 @@ export default async (req, res) => {
         reviewGradesReports = reviewGradesReports.map((gradeReport) =>
           includeExcludeProps(req, gradeReport)
         );
-        responseHandler.response200(reviewGradesReports);
+        responseHandler.response200(res, reviewGradesReports);
         break;
 
       case "POST":
