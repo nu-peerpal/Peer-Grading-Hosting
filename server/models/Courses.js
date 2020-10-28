@@ -1,5 +1,3 @@
-const { courses } = require("../../models");
-
 module.exports = (sequelize, Sequelize) => {
   const Courses = sequelize.define("courses", {
     active: {
