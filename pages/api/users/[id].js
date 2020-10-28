@@ -7,31 +7,6 @@ export default async (req, res) => {
 
     switch (req.method) {
       case "PATCH":
-        if (req.body.groupIds) {
-          const enrollments = await db.group_enrollments.findAll({
-            where: { userId: req.query.id },
-          });
-          // create new enrollments for new groupIds
-          await Promise.all(
-            req.body.groupIds
-              .filter(
-                (groupId) =>
-                  !enrollments.map((obj) => obj.groupId).includes(groupId)
-              )
-              .map((groupId) =>
-                db.group_enrollments.create({ userId: req.query.id, groupId })
-              )
-          );
-          // delete old groupIds for user
-          await Promise.all(
-            enrollments
-              .filter(
-                (enrollment) => !req.body.groupIds.includes(enrollment.groupId)
-              )
-              .map((enrollment) => enrollment.destroy())
-          );
-          delete req.body.groupIds;
-        }
         for (const property in req.body) {
           user[property] = req.body[property];
         }

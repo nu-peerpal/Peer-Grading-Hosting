@@ -27,6 +27,21 @@ export default async (req, res) => {
         );
         responseHandler.response200(res, assignments);
         break;
+
+      case "POST":
+        if (req.query.type === "multiple") {
+          await Promise.all(
+            req.body.map((assignment) => db.assignments.create(assignment))
+          );
+        } else {
+          await db.assignments.create(req.body);
+        }
+        responseHandler.msgResponse201(
+          res,
+          "Successfully created database entries."
+        );
+        break;
+
       default:
         throw new Error("Invalid HTTP method");
     }
