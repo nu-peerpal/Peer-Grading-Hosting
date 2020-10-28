@@ -14,17 +14,18 @@ export default async (req, res) => {
           params.enrollment = req.query.enrollment;
         }
 
-        const extraParams = {};
+        let extraParams = {};
         if (req.query.groupId) {
-          extraParams.include = {
-            model: db.group_enrollments,
-            where: { groupId: req.query.groupId },
-          };
+          extraParams = { where: { groupId: req.query.groupId } };
         }
 
         let users = await db.users.findAll({
           where: params,
-          ...extraParams,
+          include: {
+            model: db.group_enrollments,
+            attributes: ["groupId"],
+            ...extraParams,
+          },
         });
         users = users.map((user) => includeExcludeProps(req, user));
         responseHandler.response200(res, users);

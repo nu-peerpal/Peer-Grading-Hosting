@@ -11,6 +11,10 @@ export default async (req, res) => {
         }
         let groups = await db.groups.findAll({
           where: { courseId: req.query.assignmentId },
+          include: {
+            model: db.group_enrollments,
+            attributes: ["userId"],
+          },
         });
         groups = groups.map((group) => includeExcludeProps(req, group));
         responseHandler.response200(res, groups);
