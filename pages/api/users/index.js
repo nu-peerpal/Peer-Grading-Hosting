@@ -30,6 +30,19 @@ export default async (req, res) => {
         users = users.map((user) => includeExcludeProps(req, user));
         responseHandler.response200(res, users);
         break;
+
+      case "POST":
+        if (req.query.type === "multiple") {
+          await Promise.all(req.body.map((user) => db.users.create(user)));
+        } else {
+          await db.users.create(req.body);
+        }
+        responseHandler.msgResponse201(
+          res,
+          "Successfully created database entries."
+        );
+        break;
+
       default:
         throw new Error("Invalid HTTP method");
     }

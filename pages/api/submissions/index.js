@@ -27,6 +27,22 @@ export default async (req, res) => {
         responseHandler.response200(res, submissions);
         break;
 
+      case "POST":
+        if (req.query.type === "multiple") {
+          await Promise.all(
+            req.body.map((submission) =>
+              db.assignment_submissions.create(submission)
+            )
+          );
+        } else {
+          await db.assignment_submissions.create(req.body);
+        }
+        responseHandler.msgResponse201(
+          res,
+          "Successfully created database entries."
+        );
+        break;
+
       case "PATCH":
         if (req.query.type === "multiple") {
           await Promise.all(
