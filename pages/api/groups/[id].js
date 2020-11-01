@@ -31,7 +31,7 @@ export default async (req, res) => {
     }
     await group.save();
     responseHandler.msgResponse200(res, "Successfully updated database entry.");
-    break;
+    // break; //What does this break do?
   } catch (err) {
     responseHandler.response400(res, err);
   }
