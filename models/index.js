@@ -1,23 +1,30 @@
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize(
-  "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres",
-  {
+let dbUri, options;
+
+if (process.env.NODE_ENV === "test") {
+  dbUri = `sqlite:///${process.cwd()}/pages/api/__tests__/test.db`;
+  options = {};
+} else if (process.env.NODE_ENV === "local") {
+  dbUri = `sqlite:///${process.cwd()}/server/models/test.db`;
+  options = {};
+} else {
+  dbUri =
+    "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres";
+  options = {
     pool: {
       max: 5,
       min: 0,
       idle: 10000,
     },
-  }
-); // Example for postgres
+  };
+}
+
+const sequelize = new Sequelize(dbUri, options); // Example for postgres
 const db = {};
 
 //require all tables for database
 db.courses = require("../server/models/Courses.js")(sequelize, Sequelize);
-db.enrollments = require("../server/models/Enrollments.js")(
-  sequelize,
-  Sequelize
-);
 db.announcements = require("../server/models/Announcements.js")(
   sequelize,
   Sequelize
@@ -26,34 +33,20 @@ db.assignments = require("../server/models/Assignments.js")(
   sequelize,
   Sequelize
 );
-
 db.assignment_submissions = require("../server/models/Assignment_Submissions.js")(
   sequelize,
   Sequelize
 );
 db.groups = require("../server/models/Groups.js")(sequelize, Sequelize);
+db.group_enrollments = require("../server/models/Group_Enrollments.js")(
+  sequelize,
+  Sequelize
+);
 db.peer_matchings = require("../server/models/Peer_Matchings.js")(
   sequelize,
   Sequelize
 );
-db.peer_review_status = require("../server/models/Peer_Review_Status.js")(
-  sequelize,
-  Sequelize
-);
-db.review_grades = require("../server/models/Review_Grades.js")(
-  sequelize,
-  Sequelize
-);
-db.review_reports = require("../server/models/Review_Reports.js")(
-  sequelize,
-  Sequelize
-);
-db.rubrics = require("../server/models/Rubrics.js")(sequelize, Sequelize);
-db.submission_grades = require("../server/models/Submission_Grades.js")(
-  sequelize,
-  Sequelize
-);
-db.submission_reports = require("../server/models/Submission_Reports.js")(
+db.review_grades_reports = require("../server/models/Review_Grades_Reports.js")(
   sequelize,
   Sequelize
 );

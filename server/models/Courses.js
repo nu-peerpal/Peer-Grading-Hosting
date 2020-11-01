@@ -12,10 +12,11 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
   });
+
   Courses.associate = (db) => {
-    Courses.hasMany(db.enrollments);
     Courses.hasMany(db.assignments);
     Courses.hasMany(db.announcements);
+    Courses.hasMany(db.users);
   };
 
   return Courses;

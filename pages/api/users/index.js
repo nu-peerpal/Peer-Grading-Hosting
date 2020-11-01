@@ -2,7 +2,6 @@ const db = require("../../models");
 const responseHandler = require("./utils/responseHandler");
 const includeExcludeProps = require("./utils/includeExcludeProps");
 
-//this route will return an array of announcement strings based on courseId
 export default async (req, res) => {
   try {
     switch (req.method) {
@@ -10,24 +9,33 @@ export default async (req, res) => {
         if (!req.query.courseId) {
           throw new Error("Query parameter courseId required");
         }
-        let announcements = await db.announcements.findAll({
-          where: { courseId: req.query.courseId },
+        const params = { courseId: req.query.courseId };
+        if (req.query.enrollment) {
+          params.enrollment = req.query.enrollment;
+        }
+
+        let extraParams = {};
+        if (req.query.groupId) {
+          extraParams = { where: { groupId: req.query.groupId } };
+        }
+
+        let users = await db.users.findAll({
+          where: params,
+          include: {
+            model: db.group_enrollments,
+            attributes: ["groupId"],
+            ...extraParams,
+          },
         });
-        announcements = announcements.map((announcement) =>
-          includeExcludeProps(req, announcement)
-        );
-        responseHandler.response200(res, announcements);
+        users = users.map((user) => includeExcludeProps(req, user));
+        responseHandler.response200(res, users);
         break;
 
       case "POST":
         if (req.query.type === "multiple") {
-          await Promise.all(
-            req.body.map((announcement) =>
-              db.announcements.create(announcement)
-            )
-          );
+          await Promise.all(req.body.map((user) => db.users.create(user)));
         } else {
-          await db.announcements.create(req.body);
+          await db.users.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
