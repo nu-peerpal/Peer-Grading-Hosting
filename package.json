@@ -29,7 +29,7 @@
     "ltijs": "^5.0.3",
     "ltijs-sequelize": "^1.0.6",
     "net": "^1.0.2",
-    "next": "^9.5.1",
+    "next": "^9.5.4",
     "next-connect": "^0.8.1",
     "next-google-fonts": "^1.2.1",
     "next-server": "^9.0.5",
