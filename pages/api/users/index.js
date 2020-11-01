@@ -9,23 +9,34 @@ export default async (req, res) => {
         if (!req.query.courseId) {
           throw new Error("Query parameter courseId required");
         }
-        const params = { courseId: req.query.courseId };
+
+        const courseEnrollmentParams = {
+          where: { courseId: req.query.courseId },
+        };
         if (req.query.enrollment) {
-          params.enrollment = req.query.enrollment;
+          courseEnrollmentParams.where.enrollment = req.query.enrollment;
         }
 
-        let extraParams = {};
+        let groupEnrollmentParams = {};
         if (req.query.groupId) {
-          extraParams = { where: { groupId: req.query.groupId } };
+          groupEnrollmentParams = { where: { groupId: req.query.groupId } };
         }
 
         let users = await db.users.findAll({
-          where: params,
-          include: {
-            model: db.group_enrollments,
-            attributes: ["groupId"],
-            ...extraParams,
-          },
+          include: [
+            {
+              model: db.course_enrollments,
+              as: "courseEnrollments",
+              attributes: ["courseId", "enrollment"],
+              ...courseEnrollmentParams,
+            },
+            {
+              model: db.group_enrollments,
+              as: "groupEnrollments",
+              attributes: ["groupId"],
+              ...groupEnrollmentParams,
+            },
+          ],
         });
         users = users.map((user) => includeExcludeProps(req, user));
         responseHandler.response200(res, users);
