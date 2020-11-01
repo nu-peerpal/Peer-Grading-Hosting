@@ -3,7 +3,7 @@ module.exports = (sequelize, Sequelize) => {
     review: {
       type: Sequelize.JSON,
     },
-    reviewTAComments: {
+    gradedReviewRubric: {
       type: Sequelize.JSON,
     },
     matchingType: {

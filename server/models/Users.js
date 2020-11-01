@@ -1,3 +1,5 @@
+const { User } = require("grommet-icons");
+
 module.exports = (sequelize, Sequelize) => {
   const Users = sequelize.define("users", {
     canvasId: {
@@ -9,18 +11,13 @@ module.exports = (sequelize, Sequelize) => {
     firstName: {
       type: Sequelize.STRING,
     },
-    enrollment: {
-      type: Sequelize.STRING,
-    },
   });
 
   Users.associate = (db) => {
-    Users.belongsTo(db.courses, {
-      foreignKey: "courseId",
-    });
     Users.hasMany(db.peer_matchings);
     Users.hasMany(db.review_grades_reports);
     Users.hasMany(db.group_enrollments);
+    Users.hasMany(db.course_enrollments);
   };
 
   return Users;
