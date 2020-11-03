@@ -1,6 +1,6 @@
-const db = require("../../models");
-const responseHandler = require("./utils/responseHandler");
-const includeExcludeProps = require("./utils/includeExcludeProps");
+const db = require("../../../models");
+const responseHandler = require("../utils/responseHandler");
+const includeExcludeProps = require("../utils/includeExcludeProps");
 
 export default async (req, res) => {
   try {
