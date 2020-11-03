@@ -11,16 +11,16 @@ function assignedPRS() {
   //all = []
   var current = []
   var past = []
-  const { data: all } = useSWR('/api/assignments/?courseId=1', fetcher)
-  console.log(all)
+  const { data: all } = useSWR('/api/student/peerReviews/all?courseId=1&userId=1&current=0', fetcher)
+  console.log('okey', all)
   if (all) {
     all.map(
       x => 
       {
-        if (new Date() < new Date(x.assignmentDueDate))
-          current.push({ name: x.name, info: 'Due: ' + new Date(x.assignmentDueDate).toString(), data: x})
+        if (new Date() < new Date(x.assignment.peerreviewDueDate))
+          current.push({ name: x.assignment.name, info: 'Due: ' + new Date(x.assignment.peerreviewDueDate).toString(), data: x})
         else
-          past.push({ name: x.name, info: 'Due: ' + new Date(x.assignmentDueDate).toString(), data: x})
+          past.push({ name: x.assignment.name, info: 'Due: ' + new Date(x.assignment.peerreviewDueDate).toString(), data: x})
       }
     )
     console.log('lets try',current)

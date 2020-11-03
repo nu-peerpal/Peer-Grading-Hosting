@@ -1,29 +1,44 @@
-const db = require("../../models/index.js");
-const Announcements = db.announcements;
-const Op = db.Sequelize.Op;
+const db = require("../../models");
+const responseHandler = require("./utils/responseHandler");
+const includeExcludeProps = require("./utils/includeExcludeProps");
 
 //this route will return an array of announcement strings based on courseId
-export default (req, res) => {
-  return new Promise((resolve) => {
+export default async (req, res) => {
+  try {
     switch (req.method) {
       case "GET":
-        console.log("got it");
-        db.announcements
-          .findAll({
-            attributes: ["announcement"],
-            where: {
-              courseId: req.query.courseId,
-            },
-          })
-          .then((result) => {
-            res.json(result);
-            resolve();
-          });
+        if (!req.query.courseId) {
+          throw new Error("Query parameter courseId required");
+        }
+        let announcements = await db.announcements.findAll({
+          where: { courseId: req.query.courseId },
+        });
+        announcements = announcements.map((announcement) =>
+          includeExcludeProps(req, announcement)
+        );
+        responseHandler.response200(res, announcements);
         break;
+
+      case "POST":
+        if (req.query.type === "multiple") {
+          await Promise.all(
+            req.body.map((announcement) =>
+              db.announcements.create(announcement)
+            )
+          );
+        } else {
+          await db.announcements.create(req.body);
+        }
+        responseHandler.msgResponse201(
+          res,
+          "Successfully created database entries."
+        );
+        break;
+
       default:
-        res.status(405).end(); //Method Not Allowed
-        return resolve();
-        break;
+        throw new Error("Invalid HTTP method");
     }
-  });
+  } catch (err) {
+    responseHandler.response400(res, err);
+  }
 };

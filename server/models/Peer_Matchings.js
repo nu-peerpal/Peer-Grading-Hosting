@@ -3,10 +3,14 @@ module.exports = (sequelize, Sequelize) => {
     review: {
       type: Sequelize.JSON,
     },
+    reviewTAComments: {
+      type: Sequelize.JSON,
+    },
     matchingType: {
       type: Sequelize.STRING,
     },
   });
+
   Peer_Matchings.associate = (db) => {
     Peer_Matchings.belongsTo(db.users, {
       foreignKey: "userId",
@@ -18,5 +22,6 @@ module.exports = (sequelize, Sequelize) => {
       foreignKey: "submissionId",
     });
   };
+
   return Peer_Matchings;
 };

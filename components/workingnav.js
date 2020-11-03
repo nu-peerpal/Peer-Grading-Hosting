@@ -29,13 +29,16 @@ class NavControl extends React.Component {
 
 function StudentView(props) {
   return (
-    <div className={styles.working}>
+    <div class={styles.working}>
       <a>Student Links</a>
       <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
       </Link>
-      <Link href={"/grades/viewgrade"}>
-        <a>Grade View</a>
+      <Link href={"/grades/viewprgrade"}>
+        <a>PR Grade View</a>
+      </Link>
+      <Link href={"/grades/viewassignmentgrade"}>
+        <a>Assignment Grade View</a>
       </Link>
     </div>
   );
@@ -43,7 +46,7 @@ function StudentView(props) {
 
 function TeacherView(props) {
   return (
-    <div className={styles.working}>
+    <div class={styles.working}>
       <a>TA/Prof Links</a>
       <Link href={"/assignments/fullassignmentview"}>
         <a>View Assignment Details</a>

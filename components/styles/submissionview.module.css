@@ -1,21 +1,21 @@
-.sub{
-    margin: 0 40px 40px !important;
+.sub {
+  margin: 0 40px 40px !important;
 }
-.acc{
-    background: #E5E5E5 !important;
-    box-shadow: none !important;
-    position: static !important;
-    padding: 0 20px !important;
-    border-radius: 0 !important;
+.acc {
+  background: #e5e5e5 !important;
+  box-shadow: none !important;
+  position: static !important;
+  padding: 0 20px !important;
+  border-radius: 0 !important;
 }
 
-.save{
-    margin: 10px !important;
+.save {
+  margin: 10px !important;
 }
-.pms{
-    width: 80%;
-    padding-left: 10px;
+.pms {
+  width: 80%;
+  padding-left: 10px;
 }
-.bottom{
-    width:80%;
+.bottom {
+  width: 80%;
 }
