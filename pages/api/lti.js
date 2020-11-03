@@ -24,6 +24,12 @@ export default (req, res) => {
             if (!is_valid || !provider.ext_content) return false;
             console.log(provider.outcome_service.supports_result_data('text'));
             });
+
+            res.writeHead(302, {
+              'Location': '/'
+              //add other headers here...
+            });
+            res.end();
             // .catch((err) => {
             //     res.status(500).send({
             //     message:
