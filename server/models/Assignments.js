@@ -24,12 +24,6 @@ module.exports = (sequelize, Sequelize) => {
     graded: {
       type: Sequelize.BOOLEAN,
     },
-    rubricId: {
-      type: Sequelize.INTEGER,
-    },
-    reviewRubricId: {
-      type: Sequelize.INTEGER,
-    },
   });
 
   Assignments.associate = (db) => {
