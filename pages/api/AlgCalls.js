@@ -1,4 +1,4 @@
-import axios from "axios";
+const axios = require("axios");
 
 // ToDo: change input from json to parameters and form json
 //       create filters to replace tuples with arrays
@@ -46,7 +46,7 @@ function peerMatch(graders, peers, submissions, peer_load, grader_load) {
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/peerMatch",
-      json
+      json,
     )
     .then(
       response => {
@@ -66,7 +66,7 @@ function peerMatch(graders, peers, submissions, peer_load, grader_load) {
       },
       error => {
         console.log(error);
-      }
+      },
     );
 }
 
@@ -79,7 +79,7 @@ function ensureSufficientReviews(graders, reviews, matching) {
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/ensureSufficientReviews",
-      json
+      json,
     )
     .then(
       response => {
@@ -99,7 +99,7 @@ function ensureSufficientReviews(graders, reviews, matching) {
       },
       error => {
         console.log(error);
-      }
+      },
     );
 }
 
@@ -108,7 +108,7 @@ function submissionReports(
   reviews,
   rubric,
   num_rounds = 20,
-  bonus = 0.0
+  bonus = 0.0,
 ) {
   var json = formJson([
     ["graders", graders],
@@ -120,7 +120,7 @@ function submissionReports(
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/submissionReports",
-      json
+      json,
     )
     .then(
       response => {
@@ -143,7 +143,7 @@ function submissionReports(
       },
       error => {
         console.log(error);
-      }
+      },
     );
 }
 
@@ -155,7 +155,7 @@ async function reviewReports(graders, reviews, rubric) {
   ]);
   const res = await axios.post(
     "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/reviewReports",
-    json
+    json,
   );
 
   if (res.status !== 200) {
@@ -171,4 +171,9 @@ async function reviewReports(graders, reviews, rubric) {
   }
 }
 
-export { peerMatch, ensureSufficientReviews, submissionReports, reviewReports };
+module.exports = {
+  peerMatch,
+  ensureSufficientReviews,
+  submissionReports,
+  reviewReports,
+};
