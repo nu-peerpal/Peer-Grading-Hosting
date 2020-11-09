@@ -3,20 +3,7 @@ import ListContainer from "../components/listcontainer";
 
 function Dashboard(props) {
   const [announcements, setAnnouncements] = useState([]);
-  const [toDoReviews, setToDoReviews] = useState([
-    {
-      name: "Assignment 1",
-      info: "2020-11-30", // review due date
-      data: {
-        matchingType: "initial",
-        review: "",
-        reviewReview: "",
-        assignmentId: 1,
-        submissionId: 1,
-        userId: 1,
-      },
-    },
-  ]);
+  const [toDoReviews, setToDoReviews] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -33,16 +20,25 @@ function Dashboard(props) {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const today = new Date().toISOString().split("T")[0];
-  //     const res = await fetch(
-  //       `/api/assignments?courseId=1&minReviewDueDate=${today}`,
-  //     );
-  //     const resData = await res.json();
-  //     console.log(resData);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      let res, resData;
+      const today = new Date().toISOString().split("T")[0];
+      res = await fetch(
+        `/api/assignments?courseId=1&minReviewDueDate=${today}`,
+      );
+      resData = await res.json();
+      const assignments = resData.data;
+
+      const toDoReviews = [];
+      for (const { id, name, reviewDueDate } of assignments) {
+        res = await fetch(`/api/peerReviews?userId=1&assignmentId=${id}`);
+        resData = await res.json();
+        toDoReviews.push({ name, info: reviewDueDate, data: resData.data });
+      }
+      setToDoReviews(toDoReviews);
+    })();
+  }, []);
 
   return (
     <div className="Content">
