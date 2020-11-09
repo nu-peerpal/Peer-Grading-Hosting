@@ -3,7 +3,7 @@ const responseHandler = require("./utils/responseHandler");
 const includeExcludeProps = require("./utils/includeExcludeProps");
 
 //this route will return an array of announcement strings based on courseId
-export default async (req, res) => {
+const announcementsHandler = async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
@@ -13,8 +13,8 @@ export default async (req, res) => {
         let announcements = await db.announcements.findAll({
           where: { courseId: req.query.courseId },
         });
-        announcements = announcements.map((announcement) =>
-          includeExcludeProps(req, announcement)
+        announcements = announcements.map(announcement =>
+          includeExcludeProps(req, announcement),
         );
         responseHandler.response200(res, announcements);
         break;
@@ -22,16 +22,14 @@ export default async (req, res) => {
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(
-            req.body.map((announcement) =>
-              db.announcements.create(announcement)
-            )
+            req.body.map(announcement => db.announcements.create(announcement)),
           );
         } else {
           await db.announcements.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries."
+          "Successfully created database entries.",
         );
         break;
 
@@ -42,3 +40,5 @@ export default async (req, res) => {
     responseHandler.response400(res, err);
   }
 };
+
+export default announcementsHandler;
