@@ -26,3 +26,5 @@ const includeExcludeProps = (req, dbResult) => {
 
   return dbResult;
 };
+
+module.exports = includeExcludeProps;

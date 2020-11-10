@@ -18,14 +18,11 @@ module.exports = (sequelize, Sequelize) => {
     canvasId: {
       type: Sequelize.STRING,
     },
+    reviewCanvasId: {
+      type: Sequelize.STRING,
+    },
     graded: {
       type: Sequelize.BOOLEAN,
-    },
-    rubric: {
-      type: Sequelize.JSON,
-    },
-    reviewRubric: {
-      type: Sequelize.JSON,
     },
   });
 
@@ -33,6 +30,8 @@ module.exports = (sequelize, Sequelize) => {
     Assignments.belongsTo(db.courses, {
       foreignKey: "courseId",
     });
+    Assignments.belongsTo(db.rubrics, { as: "rubric" });
+    Assignments.belongsTo(db.rubrics, { as: "reviewRubric" });
     Assignments.hasMany(db.peer_matchings);
     Assignments.hasMany(db.assignment_submissions);
     Assignments.hasMany(db.review_grades_reports);
