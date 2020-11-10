@@ -27,10 +27,10 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
             <TableCell style={{ position: "relative" }}>
               <Field
                 as={TextField}
-                type='number'
+                type="number"
                 name={`user_${userId}[${i}]["points"]`}
                 style={{ width: "60px" }}
-                label='Points'
+                label="Points"
                 value={values[`user_${userId}`][i].points}
                 validate={createGradeValidator(maxPoints)}
               />
@@ -44,13 +44,12 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
             <TableCell>
               <Field
                 as={TextField}
-                name={element}
                 multiline
                 name={`user_${userId}[${i}]["comment"]`}
                 style={{ width: "75%" }}
                 rows={4}
-                label='Comments'
-                variant='outlined'
+                label="Comments"
+                variant="outlined"
               />
             </TableCell>
           </TableRow>
