@@ -3,7 +3,7 @@ const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
 const includeExcludeProps = require("../utils/includeExcludeProps");
 
-export default async (req, res) => {
+const assignmentsHandler = async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
@@ -20,10 +20,13 @@ export default async (req, res) => {
         if (req.query.graded === "true") {
           params.graded = true;
         }
+        if (req.query.reviewStatus) {
+          params.reviewStatus = req.query.reviewStatus;
+        }
 
         let assignments = await db.assignments.findAll({ where: params });
-        assignments = assignments.map((assignment) =>
-          includeExcludeProps(req, assignment)
+        assignments = assignments.map(assignment =>
+          includeExcludeProps(req, assignment),
         );
         responseHandler.response200(res, assignments);
         break;
@@ -31,14 +34,14 @@ export default async (req, res) => {
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(
-            req.body.map((assignment) => db.assignments.create(assignment))
+            req.body.map(assignment => db.assignments.create(assignment)),
           );
         } else {
           await db.assignments.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries."
+          "Successfully created database entries.",
         );
         break;
 
@@ -49,3 +52,5 @@ export default async (req, res) => {
     responseHandler.response400(res, err);
   }
 };
+
+export default assignmentsHandler;
