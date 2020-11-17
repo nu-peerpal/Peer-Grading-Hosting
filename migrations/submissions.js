@@ -21,6 +21,15 @@ const postSubmissions = () => {
       s3Link: "",
       groupId: 2,
     },
+    {
+      id: 3,
+      assignmentId: 1,
+      canvasId: 12,
+      grade: 92,
+      report: {},
+      s3Link: "",
+      groupId: 3,
+    },
   ];
   return axios.post(`${server}/api/submissions?type=multiple`, submissions);
 };

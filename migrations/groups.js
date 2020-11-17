@@ -15,6 +15,12 @@ const postGroups = () => {
       canvasId: 21,
       userIds: [3, 4],
     },
+    {
+      id: 3,
+      assignmentId: 2,
+      canvasId: 22,
+      userIds: [1, 2, 3, 4],
+    },
   ];
   return axios.post(`${server}/api/groups?type=multiple`, groups);
 };

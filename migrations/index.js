@@ -1,3 +1,4 @@
+const db = require("../models");
 const postAnnouncements = require("./announcements.js");
 const postAssignments = require("./assignments.js");
 const postCourses = require("./courses.js");
@@ -10,6 +11,8 @@ const postUsers = require("./users.js");
 (async () => {
   try {
     // Note: to run again, should clear database (or will fail)
+    await db.sequelize.sync({ force: true });
+
     let res;
 
     res = await postCourses();
