@@ -23,7 +23,7 @@ const postSubmissions = () => {
     },
     {
       id: 3,
-      assignmentId: 1,
+      assignmentId: 2,
       canvasId: 12,
       grade: 92,
       report: {},
