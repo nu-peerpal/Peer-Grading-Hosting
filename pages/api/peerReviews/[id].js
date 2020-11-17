@@ -1,13 +1,11 @@
 const db = require("../../../models/index.js");
 const responseHandler = require("../utils/responseHandler");
-const includeExcludeProps = require("../utils/includeExcludeProps");
 
 export default async (req, res) => {
   try {
     let peerMatching = await db.peer_matchings.findByPk(req.query.id);
     switch (req.method) {
       case "GET":
-        peerMatching = includeExcludeProps(req, peerMatching);
         responseHandler.response200(res, peerMatching);
         break;
       case "PATCH":
@@ -17,7 +15,7 @@ export default async (req, res) => {
         await peerMatching.save();
         responseHandler.msgResponse200(
           res,
-          "Successfully updated database entry."
+          "Successfully updated database entry.",
         );
         break;
       default:

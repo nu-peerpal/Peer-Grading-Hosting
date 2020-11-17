@@ -1,7 +1,6 @@
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
-const includeExcludeProps = require("../utils/includeExcludeProps");
 
 const assignmentsHandler = async (req, res) => {
   try {
@@ -25,9 +24,6 @@ const assignmentsHandler = async (req, res) => {
         }
 
         let assignments = await db.assignments.findAll({ where: params });
-        assignments = assignments.map(assignment =>
-          includeExcludeProps(req, assignment),
-        );
         responseHandler.response200(res, assignments);
         break;
 
