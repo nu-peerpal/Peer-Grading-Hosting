@@ -1,7 +1,6 @@
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
-const includeExcludeProps = require("../utils/includeExcludeProps");
 
 export default async (req, res) => {
   try {
@@ -19,23 +18,20 @@ export default async (req, res) => {
         }
 
         let peerMatchings = await db.peer_matchings.findAll({ where: params });
-        peerMatchings = peerMatchings.map((matching) =>
-          includeExcludeProps(req, matching)
-        );
         responseHandler.response200(res, peerMatchings);
         break;
 
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(
-            req.body.map((matching) => db.peer_matchings.create(matching))
+            req.body.map(matching => db.peer_matchings.create(matching)),
           );
         } else {
           await db.peer_matchings.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries."
+          "Successfully created database entries.",
         );
         break;
 

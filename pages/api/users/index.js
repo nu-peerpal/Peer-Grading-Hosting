@@ -1,6 +1,5 @@
 const db = require("../../../models");
 const responseHandler = require("../utils/responseHandler");
-const includeExcludeProps = require("../utils/includeExcludeProps");
 
 export default async (req, res) => {
   try {
@@ -38,19 +37,18 @@ export default async (req, res) => {
             },
           ],
         });
-        users = users.map((user) => includeExcludeProps(req, user));
         responseHandler.response200(res, users);
         break;
 
       case "POST":
         if (req.query.type === "multiple") {
-          await Promise.all(req.body.map((user) => db.users.create(user)));
+          await Promise.all(req.body.map(user => db.users.create(user)));
         } else {
           await db.users.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries."
+          "Successfully created database entries.",
         );
         break;
 

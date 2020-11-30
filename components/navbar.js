@@ -1,7 +1,6 @@
-import React from 'react';
-import Link from 'next/link'
+import React from "react";
+import Link from "next/link";
 import styles from "./styles/navbar.module.css";
-
 
 class NavControl extends React.Component {
   constructor(props) {
@@ -11,7 +10,7 @@ class NavControl extends React.Component {
 
   render() {
     const isStudent = this.props.ISstudent;
-    console.log(isStudent)
+    console.log(isStudent);
     let nav;
 
     if (isStudent) {
@@ -20,11 +19,7 @@ class NavControl extends React.Component {
       nav = <TeacherView />;
     }
 
-    return (
-      <div>
-        {nav}
-      </div>
-    );
+    return <div>{nav}</div>;
   }
 }
 
@@ -34,7 +29,7 @@ function StudentView(props) {
       <Link href={"/"}>
         <a>Dashboard</a>
       </Link>
-      <Link href={"/assignedpr"}>
+      <Link href={"/assignedreviews"}>
         <a>Assigned Peer Reviews</a>
       </Link>
       <Link href={"/grades"}>

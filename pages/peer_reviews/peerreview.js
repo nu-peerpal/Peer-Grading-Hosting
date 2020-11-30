@@ -1,30 +1,39 @@
-import React from "react";
-import Link from 'next/link'
-import styles from "./peerreview.module.css";
-import Container from '../../components/container';
-import Submission from '../../components/submissionview';
-import useSWR from 'swr'
+import React, { useState, useEffect } from "react";
+import Container from "../../components/container";
+import Submission from "../../components/submissionview";
 
-const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
+const getData = async url => {
+  const res = await fetch(url);
+  const resData = await res.json();
+  return resData.data;
+};
 
-function PeerReview() {
-  var submission = []
-  var rubric = []
-  const { data: info } = useSWR('/api/student/peerReviews/detailedView?submissionId=1&rubricId=1', fetcher)
-  // console.log(info)
-  if (info) {
-    submission = info.SubmissionData[0].s3Link
-    rubric = info.RubricData[0].rubric.rubricBody
-    // console.log(rubric, 'tell me')
-  }
+const PeerReview = () => {
+  const [submissionLink, setSubmissionLink] = useState("");
+  const [rubric, setRubric] = useState([]);
+
+  const submissionId = 1;
+  const rubricId = 1;
+
+  useEffect(() => {
+    (async () => {
+      const [submission, rubric] = await Promise.all([
+        getData(`/api/submissions/${submissionId}`),
+        getData(`/api/rubrics/${rubricId}`),
+      ]);
+      setSubmissionLink(submission.s3Link);
+      setRubric(rubric.rubric);
+    })();
+  }, []);
+
   return (
     <div className="Content">
       <Container name="Grade User 1's Submission">
         {/* {console.log(rubric)} */}
-        <Submission sublink={submission} rubric={rubric}/>
+        <Submission sublink={submissionLink} rubric={rubric} />
       </Container>
     </div>
-  )
-}
+  );
+};
 
 export default PeerReview;

@@ -1,6 +1,5 @@
 const db = require("../../models");
 const responseHandler = require("./utils/responseHandler");
-const includeExcludeProps = require("./utils/includeExcludeProps");
 
 //this route will return an array of announcement strings based on courseId
 const announcementsHandler = async (req, res) => {
@@ -13,9 +12,6 @@ const announcementsHandler = async (req, res) => {
         let announcements = await db.announcements.findAll({
           where: { courseId: req.query.courseId },
         });
-        announcements = announcements.map(announcement =>
-          includeExcludeProps(req, announcement),
-        );
         responseHandler.response200(res, announcements);
         break;
 

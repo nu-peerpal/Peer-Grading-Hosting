@@ -1,6 +1,5 @@
 const db = require("../../models/index.js");
 const responseHandler = require("./utils/responseHandler");
-const includeExcludeProps = require("./utils/includeExcludeProps");
 
 export default async (req, res) => {
   try {
@@ -16,25 +15,22 @@ export default async (req, res) => {
         let reviewGradesReports = await db.review_grades_reports.findAll({
           where: params,
         });
-        reviewGradesReports = reviewGradesReports.map((gradeReport) =>
-          includeExcludeProps(req, gradeReport)
-        );
         responseHandler.response200(res, reviewGradesReports);
         break;
 
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(
-            req.body.map((gradeReport) =>
-              db.review_grades_reports.create(gradeReport)
-            )
+            req.body.map(gradeReport =>
+              db.review_grades_reports.create(gradeReport),
+            ),
           );
         } else {
           await db.review_grades_reports.create(req.body);
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries."
+          "Successfully created database entries.",
         );
         break;
 
