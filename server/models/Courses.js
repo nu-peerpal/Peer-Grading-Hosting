@@ -16,7 +16,7 @@ module.exports = (sequelize, Sequelize) => {
   Courses.associate = (db) => {
     Courses.hasMany(db.assignments);
     Courses.hasMany(db.announcements);
-    Courses.hasMany(db.users);
+    Courses.hasMany(db.course_enrollments);
   };
 
   return Courses;

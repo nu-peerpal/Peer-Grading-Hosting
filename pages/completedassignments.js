@@ -1,26 +1,17 @@
-import React from 'react';
-import styles from "./styles/completedassignments.module.css";
-import ListContainer from '../components/listcontainer';
+import React from "react";
+import ListContainer from "../components/listcontainer";
 
-class completedAssignments extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      
-      Completed:[
-        {'name': 'Assignment 1', 'info':"Completed 11/20/20"},
-      ],
-    }
-  }
-  render() {
-    const Completed = this.state.Completed
-    
-    return (
-      <div className="Content">
-        <ListContainer name="Peer Assignments" data={Completed} link="/assignments/fullassignmentview"/>
-      </div>
-    )
-  }
-}
+const CompletedAssignments = props => {
+  const completed = [{ name: "Assignment 1", info: "Completed 11/20/20" }];
+  return (
+    <div className="Content">
+      <ListContainer
+        name="Peer Assignments"
+        data={completed}
+        link="/assignments/fullassignmentview"
+      />
+    </div>
+  );
+};
 
-export default completedAssignments;
+export default CompletedAssignments;

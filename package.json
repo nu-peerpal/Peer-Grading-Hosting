@@ -10,7 +10,6 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development node ./main.js",
-    "dev-local": "NODE_ENV=local node ./main.js",
     "build": "next build",
     "start": "NODE_ENV=production node main.js -p $PORT",
     "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./main.js",
@@ -31,7 +30,7 @@
     "ltijs": "^5.0.3",
     "ltijs-sequelize": "^1.0.6",
     "net": "^1.0.2",
-    "next": "^9.5.1",
+    "next": "^9.5.5",
     "next-connect": "^0.8.1",
     "next-google-fonts": "^1.2.1",
     "next-server": "^9.0.5",
@@ -51,10 +50,27 @@
     "@babel/node": "^7.10.4",
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^26.3.0",
     "cross-env": "^7.0.2",
+    "eslint": "^7.13.0",
+    "eslint-config-babel": "^9.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-testing-library": "^3.10.0",
     "jest": "^26.4.2",
     "nodemon": "^2.0.4",
+    "prettier": "^1.19.1",
     "supertest": "^4.0.2"
   },
   "jest": {
@@ -66,5 +82,20 @@
       "/pages/test.js",
       "/pages/api/__tests__/testclient.js"
     ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "prettier"
+    ],
+    "plugins": [
+      "eslint-plugin-react",
+      "eslint-plugin-prettier"
+    ],
+    "rules": {
+      "react/prefer-stateless-function": 0,
+      "react/jsx-filename-extension": 0,
+      "react/jsx-one-expression-per-line": 0
+    }
   }
 }

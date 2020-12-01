@@ -1,116 +1,113 @@
-import React from "react";
-import Link from "next/link";
-
-import styles from "./styles/dashboard.module.css";
+import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
-import useSWR from "swr";
-import Announcements from "../server/models/Announcements";
-import {
-  peerMatch,
-  ensureSufficientReviews,
-  submissionReports,
-  reviewReports,
-} from "./api/AlgCalls.js";
-import { useStore } from "../components/store";
-import { updateState } from "../components/storeAPI";
 
-// const createUserState = updateState();
-const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
+function Dashboard(props) {
+  const studentUserId = 1;
+  const taUserId = 2;
+  const [announcements, setAnnouncements] = useState([]);
+  const [toDoReviews, setToDoReviews] = useState([]);
+  const [taToDos, setTaToDos] = useState([]);
 
-const PRS = [
-  { name: "Peer Review Assignment 3: Online Learning", info: "Due 1/12" },
-];
-const LIST = [
-  { name: "Grade User 1s Submission", info: "Assignment 2: Bid Analysis" },
-  { name: "Grade User 2s Submission", info: "Assignment 2: Bid Analysis" },
-  { name: "Grade User 3s Submission", info: "Assignment 2: Bid Analysis" },
-  { name: "Peer Matching", info: "Assignment 4" },
-];
-// Algorithm Calls on sample data.  Calls AlgCalls API and prints to console
-
-
-
-function Dashboard(ISstudent) {
-  console.log(ISstudent);
-  if (ISstudent.ISstudent == true) {
-    var announc = [];
-    var todoprs = [];
-    const { data: announcement } = useSWR(
-      "/api/student/announcements/?courseId=1",
-      fetcher
-    );
-    const { data: todo } = useSWR(
-      "/api/student/peerReviews/all?courseId=1&userId=1&current=1",
-      fetcher
-    );
-    if (announcement) {
-      announcement.map((x) =>
-        announc.push({ name: x.announcement, info: "", data: x })
-      );
+  useEffect(() => {
+    if (props.ISstudent) {
+      (async () => {
+        const res = await fetch("/api/announcements?courseId=1");
+        const resData = await res.json();
+        setAnnouncements(
+          resData.data.map(el => ({
+            name: el.announcement,
+            info: "",
+            data: el,
+          })),
+        );
+        console.log(resData.data);
+      })();
     }
-    if (todo) {
-      todo.map((x) =>
-        todoprs.push({
-          name: x.assignment.name,
-          info: x.assignment.peerreviewDueDate,
-          data: x,
-        })
+
+    (async () => {
+      let res, resData;
+      const today = new Date().toISOString().split("T")[0];
+      res = await fetch(
+        `/api/assignments?courseId=1&minReviewDueDate=${today}`,
       );
+<<<<<<< HEAD
     }
     // const {state, dispatch} = useStore();
     // console.log(state);
+=======
+      resData = await res.json();
+      const assignments = resData.data;
+
+      let statusUpdates = [];
+      if (!props.ISstudent) {
+        statusUpdates = assignments.map(assignment => ({
+          name: "Status " + assignment.reviewStatus,
+          info: assignment.name,
+          data: assignment,
+        }));
+      }
+
+      const toDoReviews = [];
+      for (const { id, name, reviewDueDate } of assignments) {
+        res = await fetch(
+          `/api/peerReviews?userId=${
+            props.ISstudent ? studentUserId : taUserId
+          }&assignmentId=${id}`,
+        );
+        resData = await res.json();
+        const peerMatchings = resData.data;
+
+        if (props.ISstudent) {
+          toDoReviews.push({ name, info: reviewDueDate, data: peerMatchings });
+        } else {
+          for (const peerMatching of peerMatchings) {
+            toDoReviews.push({
+              name: "Grade Submission " + peerMatching.submissionId,
+              info: name,
+              data: peerMatching,
+            });
+          }
+        }
+      }
+
+      props.ISstudent
+        ? setToDoReviews(toDoReviews)
+        : setTaToDos([...toDoReviews, ...statusUpdates]);
+    })();
+  }, [props.ISstudent]);
+
+  if (props.ISstudent) {
+>>>>>>> api-testing
     return (
-      <div class='Content'>
+      <div className="Content">
         <ListContainer
-          name='Todos'
-          data={todoprs}
-          student={ISstudent.ISstudent}
-          link='/peer_reviews/peerreview'
+          name="Todos"
+          data={toDoReviews}
+          student={props.ISstudent}
+          link="/peer_reviews/peerreview"
         />
         <ListContainer
-          name='Announcements'
-          data={announc}
-          student={ISstudent.ISstudent}
-          link=''
-        />{" "}
-        {/*link depends on the announcement*/}
+          name="Announcements"
+          data={announcements}
+          student={props.ISstudent}
+          link=""
+        />
       </div>
     );
-  } else if (ISstudent.ISstudent == false) {
-    var ToDos = [];
-    const { data: todos } = useSWR(
-      "/api/ta/to-dos?courseId=1&userId=1",
-      fetcher
-    );
-    if (todos) {
-      todos.Peer_Review_ToDo.map((x) =>
-        ToDos.push({
-          name: "Grade Submission " + x.id,
-          info: x.assignment.name,
-          data: x,
-        })
-      );
-      todos.Status_Updates.map((x) =>
-        ToDos.push({
-          name: "Status " + x.peer_review_statuses[0].status,
-          info: x.name,
-          data: x,
-        })
-      );
-    }
+  } else {
     return (
-      <div class='Content'>
+      <div className="Content">
         <ListContainer
-          name='Todos'
-          data={ToDos}
-          student={ISstudent.ISstudent}
-          link=''
+          name="Todos"
+          data={taToDos}
+          student={props.ISstudent}
+          link=""
         />{" "}
         {/*link depends on the todo*/}
         <ListContainer
-          name='View As Student'
+          name="View As Student"
           data={[{ name: "View As", info: "VIEW" }]}
-          link=''
+          link=""
         />
         {/*link needs to be figured out later, might always be blank*/}
       </div>
