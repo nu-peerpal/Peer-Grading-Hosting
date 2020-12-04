@@ -35,18 +35,18 @@ function formJson(params) {
 //         console.log(error)})
 //     }*/
 
-function peerMatch(graders, peers, submissions, peer_load, grader_load) {
+function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
   var json = formJson([
     ["graders", graders],
     ["peers", peers],
     ["submissions", submissions],
-    ["peer_load", peer_load],
-    ["grader_load", grader_load],
+    ["peer_load", peerLoad],
+    ["grader_load", graderLoad]
   ]);
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/peerMatch",
-      json,
+      json
     )
     .then(
       response => {
@@ -66,7 +66,7 @@ function peerMatch(graders, peers, submissions, peer_load, grader_load) {
       },
       error => {
         console.log(error);
-      },
+      }
     );
 }
 
@@ -74,12 +74,12 @@ function ensureSufficientReviews(graders, reviews, matching) {
   var json = formJson([
     ["graders", graders],
     ["reviews", reviews],
-    ["matching", matching],
+    ["matching", matching]
   ]);
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/ensureSufficientReviews",
-      json,
+      json
     )
     .then(
       response => {
@@ -99,7 +99,7 @@ function ensureSufficientReviews(graders, reviews, matching) {
       },
       error => {
         console.log(error);
-      },
+      }
     );
 }
 
@@ -108,19 +108,19 @@ function submissionReports(
   reviews,
   rubric,
   num_rounds = 20,
-  bonus = 0.0,
+  bonus = 0.0
 ) {
   var json = formJson([
     ["graders", graders],
     ["reviews", reviews],
     ["rubric", rubric],
     ["num_rounds", num_rounds],
-    ["bonus", bonus],
+    ["bonus", bonus]
   ]);
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/submissionReports",
-      json,
+      json
     )
     .then(
       response => {
@@ -134,7 +134,7 @@ function submissionReports(
           //        console.log("response", [response.response.submission_grades, response.response.submission_reports])
           return [
             response.response.submission_grades,
-            response.response.submission_reports,
+            response.response.submission_reports
           ];
         } else {
           console.log("failed alg");
@@ -143,7 +143,7 @@ function submissionReports(
       },
       error => {
         console.log(error);
-      },
+      }
     );
 }
 
@@ -151,11 +151,11 @@ async function reviewReports(graders, reviews, rubric) {
   const json = formJson([
     ["graders", graders],
     ["reviews", reviews],
-    ["rubric", rubric],
+    ["rubric", rubric]
   ]);
   const res = await axios.post(
     "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/reviewReports",
-    json,
+    json
   );
 
   if (res.status !== 200) {
@@ -175,5 +175,5 @@ module.exports = {
   peerMatch,
   ensureSufficientReviews,
   submissionReports,
-  reviewReports,
+  reviewReports
 };
