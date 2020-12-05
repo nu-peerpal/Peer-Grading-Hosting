@@ -13,8 +13,8 @@ import ReviewGradingTable from "./ReviewGradingTable";
 const useStyles = makeStyles({
   tooltip: {
     fontSize: "14px",
-    fontWeight: "normal",
-  },
+    fontWeight: "normal"
+  }
 });
 
 const ReviewDisplayTable = ({
@@ -23,21 +23,21 @@ const ReviewDisplayTable = ({
   peerMatchings,
   values,
   errors,
-  state,
+  state
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
   const classes = useStyles();
 
   const reviewAverages = assignmentRubric.map(({ element }) => {
     const totalPoints = peerMatchings.reduce((acc, { review }) => {
-      const section = review.find((section) => section.element === element);
+      const section = review.find(section => section.element === element);
       return section.points + acc;
     }, 0);
     const average = totalPoints / peerMatchings.length;
     return parseFloat(average.toFixed(1));
   });
 
-  const getReviewTotalPoints = (review) =>
+  const getReviewTotalPoints = review =>
     review.reduce((acc, section) => acc + section.points, 0);
 
   const totalPointsAvg = parseFloat(
@@ -51,18 +51,18 @@ const ReviewDisplayTable = ({
 
   return (
     <>
-      {peerMatchings.map(({ firstName, lastName, review, user_id }) => {
+      {peerMatchings.map(({ firstName, lastName, review, userId }) => {
         const [expandDisabled, setExpandDisabled] = useState(false);
         return (
           <ExpandingTableRow
-            key={user_id}
+            key={userId}
             numCols={review.length + 2}
             details={
               <ReviewGradingTable
                 reviewRubric={reviewRubric}
                 values={values}
                 errors={errors}
-                userId={user_id}
+                userId={userId}
               />
             }
             disabled={expandDisabled}
@@ -74,12 +74,12 @@ const ReviewDisplayTable = ({
             {/* show points per section */}
             {assignmentRubric.map(({ element }) => {
               const section = review.find(
-                (section) => section.element === element
+                section => section.element === element
               );
 
               // will only be different if grade is already upvoted
               const filteredGrades = upvotedGrades[element].filter(
-                (grade) => grade.userId !== user_id
+                grade => grade.userId !== userId
               );
 
               const toggleUpvote = () => {
@@ -89,14 +89,14 @@ const ReviewDisplayTable = ({
                     ...upvotedGrades,
                     [element]: [
                       ...upvotedGrades[element],
-                      { ...section, userId: user_id },
-                    ],
+                      { ...section, userId }
+                    ]
                   });
                 } else {
                   // remove the added grade
                   setUpvotedGrades({
                     ...upvotedGrades,
-                    [element]: filteredGrades,
+                    [element]: filteredGrades
                   });
                 }
               };
@@ -112,15 +112,15 @@ const ReviewDisplayTable = ({
                     <Button style={{ padding: 0 }}>[?]</Button>
                   </Tooltip>
                   <IconButton
-                    size='small'
+                    size="small"
                     onMouseEnter={() => setExpandDisabled(true)}
                     onMouseLeave={() => setExpandDisabled(false)}
                     onClick={toggleUpvote}
                   >
                     {filteredGrades.length !== upvotedGrades[element].length ? (
-                      <ThumbUpIcon fontSize='small' />
+                      <ThumbUpIcon fontSize="small" />
                     ) : (
-                      <ThumbUpOutlinedIcon fontSize='small' />
+                      <ThumbUpOutlinedIcon fontSize="small" />
                     )}
                   </IconButton>
                 </TableCell>
@@ -135,7 +135,7 @@ const ReviewDisplayTable = ({
 
       <TableRow>
         <TableCell style={{ fontWeight: 500 }}>Average</TableCell>
-        {reviewAverages.map((avg) => (
+        {reviewAverages.map(avg => (
           <TableCell style={{ fontWeight: 500 }}>{avg}</TableCell>
         ))}
         <TableCell style={{ fontWeight: 500 }}>{totalPointsAvg}</TableCell>
