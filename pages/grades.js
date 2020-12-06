@@ -59,7 +59,7 @@ function Grades() {
         data: submission,
       }));
 
-      reviewGrades = submissions.map((reviewGrade, i) => ({
+      reviewGrades = reviewGrades.map((reviewGrade, i) => ({
         name: assignments[i].name,
         info: reviewGrade.grade,
         data: reviewGrade,
