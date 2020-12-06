@@ -30,11 +30,6 @@ function Dashboard(props) {
       res = await fetch(
         `/api/assignments?courseId=1&minReviewDueDate=${today}`,
       );
-<<<<<<< HEAD
-    }
-    // const {state, dispatch} = useStore();
-    // console.log(state);
-=======
       resData = await res.json();
       const assignments = resData.data;
 
@@ -77,7 +72,6 @@ function Dashboard(props) {
   }, [props.ISstudent]);
 
   if (props.ISstudent) {
->>>>>>> api-testing
     return (
       <div className="Content">
         <ListContainer
