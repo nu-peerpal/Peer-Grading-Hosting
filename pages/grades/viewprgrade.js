@@ -1,20 +1,28 @@
 import React from "react";
-import Link from 'next/link'
 import "./viewprgrade.module.css";
-import Container from '../../components/container'
+import Container from "../../components/container";
 import useSWR from "swr";
 
-const fetcher = (url) => fetch(url, { method: "GET" }).then((r) => r.json());
+const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 function ViewPRGrade() {
-  const { data: reviewreport } = useSWR('/api/student/graded/peerReviews?assignmentId=1&userId=1', fetcher)
+  const userId = 1;
+  const assignmentId = 1;
+  const { data: res } = useSWR(
+    `/api/reviewGradesReports?assignmentId=${assignmentId}&userId=${userId}`,
+    fetcher,
+  );
+
   return (
     <div class="Content">
-      <Container name="Grade for Peer Review 1">
-        {JSON.stringify(reviewreport)}
+      <Container
+        name={`Assignment ${assignmentId}: Peer Review Grade for User ${userId}`}
+      >
+        <div>User's Peer Review Grade: {res && res.data.grade}</div>
+        <div>User's Peer Review Grade Report: {res && res.data.report}</div>
       </Container>
     </div>
-  )
+  );
 }
 
 export default ViewPRGrade;

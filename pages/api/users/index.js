@@ -1,7 +1,7 @@
 const db = require("../../../models");
 const responseHandler = require("../utils/responseHandler");
 
-export default async (req, res) => {
+const userHandler = async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
@@ -10,7 +10,7 @@ export default async (req, res) => {
         }
 
         const courseEnrollmentParams = {
-          where: { courseId: req.query.courseId },
+          where: { courseId: req.query.courseId }
         };
         if (req.query.enrollment) {
           courseEnrollmentParams.where.enrollment = req.query.enrollment;
@@ -25,17 +25,15 @@ export default async (req, res) => {
           include: [
             {
               model: db.course_enrollments,
-              as: "courseEnrollments",
               attributes: ["courseId", "enrollment"],
-              ...courseEnrollmentParams,
+              ...courseEnrollmentParams
             },
             {
               model: db.group_enrollments,
-              as: "groupEnrollments",
               attributes: ["groupId"],
-              ...groupEnrollmentParams,
-            },
-          ],
+              ...groupEnrollmentParams
+            }
+          ]
         });
         responseHandler.response200(res, users);
         break;
@@ -48,7 +46,7 @@ export default async (req, res) => {
         }
         responseHandler.msgResponse201(
           res,
-          "Successfully created database entries.",
+          "Successfully created database entries."
         );
         break;
 
@@ -59,3 +57,5 @@ export default async (req, res) => {
     responseHandler.response400(res, err);
   }
 };
+
+export default userHandler;
