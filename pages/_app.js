@@ -2,7 +2,6 @@ import './styles.css'
 import React, { useState } from 'react';
 import Header from '../components/header'
 import Navbar from '../components/navbar'
-import WorkingNav from '../components/workingnav'
 import GoogleFonts from "next-google-fonts";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
@@ -42,7 +41,6 @@ export default function MyApp({ Component, pageProps }) {
       <UserView/>
       <Navbar ISstudent={isstudent} />
       <Component ISstudent={isstudent} {...pageProps} />
-      <WorkingNav ISstudent={isstudent} />
     </div>
 
   )

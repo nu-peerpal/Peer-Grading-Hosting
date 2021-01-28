@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./viewassignmentgrade.module.css";
 import Container from "../../components/container";
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());

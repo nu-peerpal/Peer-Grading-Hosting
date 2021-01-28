@@ -1,5 +1,4 @@
 import React from "react";
-import "./viewprgrade.module.css";
 import Container from "../../components/container";
 import useSWR from "swr";
 

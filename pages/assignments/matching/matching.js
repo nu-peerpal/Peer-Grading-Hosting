@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./matching.module.scss";
-import Container from "../../components/container";
-import Tree from "../../components/tree";
+import Container from "../../../components/container";
+import Tree from "../../../components/tree";
 import TextField from "@material-ui/core/TextField";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -9,9 +9,9 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import { Field, Formik, Form } from "formik";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
-import AutoComplete from "../../components/autocomplete";
-import sampleData from "../../sample_data/peerMatching";
-import { peerMatch } from "../api/AlgCalls.js";
+import AutoComplete from "../../../components/autocomplete";
+import sampleData from "../../../sample_data/peerMatching";
+import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
@@ -22,7 +22,6 @@ function Settings({ graders, peers, submissions, setMatchings }) {
       initialValues={{ peerLoad: 2, graderLoad: 3, TA: [] }}
       onSubmit={async (data, { setSubmitting }) => {
         setSubmitting(true);
-        console.log(data);
         const matchings = await peerMatch(
           graders,
           peers,
@@ -30,7 +29,6 @@ function Settings({ graders, peers, submissions, setMatchings }) {
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
-        console.log(matchings);
         setMatchings(matchings);
         setSubmitting(false);
       }}
@@ -44,7 +42,7 @@ function Settings({ graders, peers, submissions, setMatchings }) {
             label="Peer Load"
             required={true}
             as={TextField}
-            className={styles.pms}
+            className={styles.formfield}
           />
           <Field
             name="graderLoad"
@@ -53,11 +51,11 @@ function Settings({ graders, peers, submissions, setMatchings }) {
             label="Grader Load"
             required={true}
             as={TextField}
-            className={styles.pms}
+            className={styles.formfield}
           />
           <Field
             name="TA"
-            className={styles.pms}
+            className={styles.formfield}
             component={AutoComplete}
             required={true}
             label="TA"
@@ -126,13 +124,13 @@ function Matching() {
         </Accordion>
         {matchings.length > 0 && (
           <>
-            <div style={{ display: "flex", padding: "0 20% 40px 20%" }}>
+            <div className={styles.result}>
               <span
-                style={{ flex: 1, textAlign: "right", paddingRight: "20px" }}
+                className={styles.result__header}
               >
                 Submission
               </span>
-              <span style={{ flex: 1, textAlign: "left", paddingLeft: "20px" }}>
+              <span className={styles.result__header}>
                 Matched Peer / Instructor
               </span>
             </div>

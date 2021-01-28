@@ -1,0 +1,12 @@
+/*
+For use:
+In the scss file you want to use it, put "import '../whateverfilepath/global_styles/utilities.scss'
+In the class name you want to add this to, put "@export .whatever-class-name-you-pick-from-here"
+*/
+
+// centers the content in a container, horizontally and vertically
+.flex_center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

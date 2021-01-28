@@ -1,6 +1,5 @@
 import React from "react";
-import "./tamatchinglist.module.scss";
-import Container from "../../components/container";
+import Container from "../../../components/container";
 
 const TAMatchings = () => {
   return (

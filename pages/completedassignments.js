@@ -8,7 +8,7 @@ const CompletedAssignments = () => {
       <ListContainer
         name="Peer Assignments"
         data={completed}
-        link="/assignments/fullassignmentview"
+        link="/assignments/fullassignmentview/fullassignmentview"
       />
     </div>
   );

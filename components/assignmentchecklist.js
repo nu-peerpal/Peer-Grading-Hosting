@@ -26,12 +26,12 @@ function getSteps() {
   return [
     ["Peer Reviews: ", {'status': "Disabled or Enabled"}],    
     ["Due Date: ", {'status': "status"}], 
-    ["Peer Matching: ", { 'link': "/assignments/matching" }], 
+    ["Peer Matching: ", { 'link': "/assignments/matching/matching" }], 
     ["Review Due Date: ", {'status': "status"}], 
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }], 
-    ["TA Grading: ", { 'link': "/assignments/tamatchinglist" }], 
-    ["Review Reports: ", { 'link': "/assignments/reviewreportlist" }], 
-    ["Submission Reports: ", { 'link': "/assignments/submissionreportlist" }], 
+    ["TA Grading: ", { 'link': "/assignments/tamatchinglist/tamatchinglist" }], 
+    ["Review Reports: ", { 'link': "/assignments/reviewreportlist/reviewreportlist" }], 
+    ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }], 
     ["Appeal Period: ", {'status': "Either Not started, Ongoing or Passed"}]
   ];
 }
@@ -65,37 +65,5 @@ function assignmentchecklist() {
     </div>
   );
 }
-
-// class assignmentchecklist extends React.Component {
-// constructor(props) {
-//   super(props);
-//   this.state = {
-//     // :[
-//     //   {'name': '', 'info':""},
-//     //   {'name': '', 'info':""},
-//     // ],
-//   }
-// }
-
-// render() {
-//   //   const = this.state
-//   return (
-//     <div>
-//       <div className={styles.header}>Assignment Checklist</div>
-//       <div>Peer Reviews: </div>{/*Says disabled or enabled*/}
-//       <div>Due Date: </div>{/*Fill in*/}
-//       <div>Peer Matching: <Link href={"/assignments/matching"}>View</Link>
-//       </div>
-//       <div>Review Due Date: </div>{/*Fill in*/}
-//       <div>Additional Matches: <Link href={"/assignments/checkmatching"}>View</Link>
-//       </div>
-//       <div>TA Grading: </div>{/*Will just be a list of submissions that shows if they have been graded or not*/}
-//       <div>Review Reports: <Link href={""}>View</Link></div>
-//       <div>Submission Reports: <Link href={""}>View</Link></div>
-//       <div>Appeal Period: </div>{/*Either Not started, Ongoing or Passed*/}
-//     </div>
-//   )
-// }
-// }
 
 export default assignmentchecklist;
