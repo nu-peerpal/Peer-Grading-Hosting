@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./matching.module.css";
+import styles from "./matching.module.scss";
 import Container from "../../components/container";
 import Tree from "../../components/tree";
 import TextField from "@material-ui/core/TextField";

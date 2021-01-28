@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./fullassignmentview.module.css";
+import styles from "./fullassignmentview.module.scss";
 import Container from "../../components/container";
 import Attributes from "../../components/assignmentattributes";
 import FullDetails from "../../components/fullassignmentdetails";

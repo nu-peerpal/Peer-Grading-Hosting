@@ -1,5 +1,5 @@
 import React from "react";
-import "./reviewreportlist.module.css";
+import "./reviewreportlist.module.scss";
 import Container from "../../components/container";
 
 const ReviewReports = () => {

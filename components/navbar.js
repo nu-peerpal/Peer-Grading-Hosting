@@ -5,12 +5,10 @@ import styles from "./styles/navbar.module.css";
 class NavControl extends React.Component {
   constructor(props) {
     super(props);
-    //this.state = {IsStudent: false};
   }
 
   render() {
     const isStudent = this.props.ISstudent;
-    console.log(isStudent);
     let nav;
 
     if (isStudent) {

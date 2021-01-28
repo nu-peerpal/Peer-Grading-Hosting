@@ -1,5 +1,5 @@
 import React from "react";
-import "./submissionreportlist.module.css";
+import "./submissionreportlist.module.scss";
 import Container from "../../components/container";
 
 const SubmissionReports = () => {
