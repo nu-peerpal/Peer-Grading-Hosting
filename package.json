@@ -9,24 +9,27 @@
     "node": "12.18.3"
   },
   "scripts": {
-    "dev": "NODE_ENV=development node ./main.js",
+    "dev": "set NODE_ENV=development && node ./main.js",
     "build": "next build",
     "start": "NODE_ENV=production node main.js -p $PORT",
     "deploy-production": "NODE_ENV=production next build && NODE_ENV=production node ./main.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles"
   },
   "dependencies": {
+    "@keyv/sqlite": "^2.0.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "formik": "^2.1.5",
     "fs": "0.0.1-security",
     "grommet": "^2.14.0",
     "grommet-icons": "^4.4.0",
     "ims-lti": "^3.0.2",
+    "keyv": "^4.0.3",
     "ltijs": "^5.0.3",
     "ltijs-sequelize": "^1.0.6",
     "net": "^1.0.2",
