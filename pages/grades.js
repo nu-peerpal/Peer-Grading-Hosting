@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styles from "./styles/grades.module.css";
 import ListContainer from "../components/listcontainer";
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());

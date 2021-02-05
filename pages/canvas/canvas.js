@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import styles from "./styles/canvas.module.css";
+import styles from "canvas.module.scss";
+import ListContainer from '../../components/listcontainer';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import useSWR from 'swr';

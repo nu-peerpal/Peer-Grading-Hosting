@@ -2,7 +2,6 @@ import './styles.css'
 import React, { useState } from 'react';
 import Header from '../components/header'
 import Navbar from '../components/navbar'
-import WorkingNav from '../components/workingnav'
 import GoogleFonts from "next-google-fonts";
 import { StoreProvider } from '../components/store';
 
@@ -38,14 +37,11 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <div>
-      <StoreProvider>
-        <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-        <Header />
-        <UserView/>
-        <Navbar ISstudent={isstudent} />
-        <Component ISstudent={isstudent} {...pageProps} />
-        <WorkingNav ISstudent={isstudent} />
-      </StoreProvider>
+      <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+      <Header />
+      <UserView/>
+      <Navbar ISstudent={isstudent} />
+      <Component ISstudent={isstudent} {...pageProps} />
     </div>
 
   )

@@ -29,7 +29,6 @@ const PeerReview = () => {
   return (
     <div className="Content">
       <Container name="Grade User 1's Submission">
-        {/* {console.log(rubric)} */}
         <Submission sublink={submissionLink} rubric={rubric} />
       </Container>
     </div>

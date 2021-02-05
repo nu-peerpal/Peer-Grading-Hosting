@@ -1,0 +1,23 @@
+@import "../../../global_styles/utilities.scss";
+
+.formfield{
+    display: inline-block;
+    margin-right: 20px !important;
+}
+
+.matching {
+    margin: 0 40px 40px !important;
+}
+
+.result{
+    @extend .flex_center;
+    padding: 0 20% 40px 20%;
+
+    &__header{ 
+        @extend .flex_center;
+        text-align: right;
+        padding-right: 20px;
+        width: 200px;
+        
+    }
+}

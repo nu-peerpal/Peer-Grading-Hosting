@@ -1,37 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "./tagrading.module.css";
 import Container from "../../components/container";
 import TAsubmission from "../../components/TAgradingview";
 import useSWR from "swr";
 
 const fetcher = url => fetch(url).then(res => res.json());
-
-/* sample transformed peerMatching:
-{
-  user_id: 1,
-  review: [
-    {
-      points: 9,
-      maxPoints: 10,
-      element: "Answer/Algorithm",
-      comment: "Great algorithm!"
-    },
-    {
-      points: 8,
-      maxPoints: 10,
-      element: "Proof Analysis",
-      comment: "Proof could be better..."
-    }
-  ],
-  lastName: "Ramos",
-  firstName: "Bradley"
-}
-
-sample transformed rubric:
-[
-  { maxPoints: 10, element: "Quantitative" },
-  { maxPoints: 10, element: "Qualitative" }
-] */
 
 const transformRubric = rubric =>
   rubric.map(([maxPoints, element]) => ({ maxPoints, element }));

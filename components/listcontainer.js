@@ -7,18 +7,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
 
-// function GetData(props){
-//   console.log(props.data.name);
-//   for (const row in props.data) {
-//     return(
-//       <TableRow>
-//           <TableCell className="name">{row.name}</TableCell>
-//           <TableCell className="info">{row.info}</TableCell>
-//         </TableRow>
-//     )
-//   }
-// }
-
 
 class ListContainer extends React.Component {
   constructor(props) {
@@ -34,10 +22,6 @@ class ListContainer extends React.Component {
     var assignname = "";
     var student = information.student;
     return (
-      // <TableRow>
-      //   <TableCell className={styles.name}>Name</TableCell>
-      //   <TableCell className={styles.info}>Info</TableCell>
-      // </TableRow>
       information.data.map(x => {
         return (
           <Link href={information.link} className={styles.hov}>
