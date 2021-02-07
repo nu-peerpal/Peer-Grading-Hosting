@@ -4,9 +4,9 @@ import ListContainer from '../../components/listcontainer';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import useSWR from 'swr';
-import { useStore } from "../components/store";
-import Canvas_Data from "../components/Canvas_Data"
-import {handleState} from "../components/storeAPI";
+import { useStore } from "../../components/store";
+// import Canvas_Data from "../components/Canvas_Data"
+import {handleState} from "../../components/storeAPI";
 var bcrypt = require('bcryptjs');
 
 const fetcher = url => fetch(url, { method: 'GET' }).then(r => r.json())
@@ -36,7 +36,7 @@ function Canvas() {
   }
   return (
       <div className="Content">
-        <Canvas_Data></Canvas_Data>
+        {/* <Canvas_Data></Canvas_Data> */}
         <br/>
         <div>
           userId: {userId}
