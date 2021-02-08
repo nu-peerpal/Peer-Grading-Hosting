@@ -5,137 +5,53 @@ const { server } = require("./config/index.js");
 const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
 const token = "Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n"
 
-//gets all courses
-function addCourses(token) {
-  axios.get(canvas + "courses", {
+
+// gets up to 300 users from a course given the courseId
+const getUsers = async (token, courseId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/enrollments?per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).then(response => {
-    const courses = response.data.map(course => {
-      if (!course.end_at) {
-        var active = true
-      } else {
-        const today = new Date()
-        const endDate = new Date(course.end_at)
-        if (today > endDate) {
-          var active = false;
-        } else { 
-          var active = true;
-        }
-      }
-      return {
-        active: active,
-        canvasId: course.id,
-        courseName: course.name
-      }
-    })
-    axios.post(`${server}/api/courses?type=multiple`, courses
-    ).then(response => console.log(response)
-    ).catch(error => console.log(error))
-  }).catch(error => console.log(error))
-}
-
-//gets up to 200 users
-function addUsers(token, courseid) {
-  axios.get(canvas + "courses/" + courseid + "/enrollments?per_page=200", {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  }).then(response => {
-    const users = response.data.map(user => {
-      const name = user.user.short_name.split(' ');
-      if (name.length==1) {
-        name.push("")
-      }
-      return {
-        canvasId: user.user_id,
-        lastName: name[1],
-        firstName: name[0],
-        enrollment: user.type,
-        courseId: user.course_id
-      }
-    })
-    console.log(users)
-    // axios.post(`${server}/api/users?type=multiple`, users
-    //   ).then(response => console.log(response)
-    //   ).catch(error => console.log(error))
-  }).catch(error => console.log(error))
-}
-
-//gets announcements from the last 14 days
-async function addAnnouncements(token, courseid) {
-  console.log(token)
-  const currTable = await axios.get(`${server}/api/announcements?courseId=` + courseid)
-  console.log(currTable.data.data)
-  axios.get(canvas + "announcements?&context_codes[]=course_" + courseid, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-  }).then(response => {
-    const announcements = response.data.map(announcement => {
-      return {
-        announcement: announcement.title,
-        courseId: courseid
-      }
-    })
-    for (i = 0; i < announcements.length; i++) {
-      currTable.data.data.forEach(currannouncement => {
-        if (currannouncement.announcement == announcements[i].announcement) {
-          announcements.splice(i, 1)
-        }
-      })
-    }
-    axios.post(`${server}/api/announcements?type=multiple`, announcements
-      ).then(response => console.log(response)
-      ).catch(error => console.log(error))
-  }).catch(error => console.log(error))
-}
-
-
-function addGroups(token, courseid) {
-  axios.get(canvas + "courses/" + courseid + "/groups", {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  }).then(response => {
-    const groups = response.data.map(group => {
-      return {
-        canvasId: group.id,
-        //assignmentId: 
-        //courseId?
-      }
-    })
-    console.log(groups)
   })
-}
-
-function addGroupEnrollment(token, groupid) {
-  axios.get(canvas + "groups/" + groupid + "/users", {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  const users = response.data.map(user => {
+    const name = user.user.short_name.split(' ');
+    if (name.length==1) {
+      name.push("")
     }
-  }).then(response => {
-    const enrollments = response.data.map(group => {
-      return {
-        groupId: group.id,
-        //assignmentId: 
-        //courseId?
-      }
-    })
-    // axios.post(`${server}/api/group_enrollments?type=multiple`, group_enrollments
-    //   ).then(response => console.log(response)
-    //   ).catch(error => console.log(error))
+    return {
+      canvasId: user.user_id,
+      lastName: name[1],
+      firstName: name[0],
+      enrollment: user.type,
+      courseId: user.course_id
+    }
   })
+  return users
 }
 
-async function getAssignments(token, courseid) {
-  const response = await axios.get(canvas + "courses/" + courseid + "/assignments", {
+//getUsers(token, 1).then(response => console.log(response))
+
+// adds users to the db
+const addUsers = (userData) => {
+  const users = userData.map(user => {
+    return {
+      canvasId: user.canvasId,
+      lastName: user.lastName,
+      firstName: user.firstName
+    }
+  })
+  return axios.post(`${server}/api/users?type=multiple`, users)
+}
+
+
+// gets assignments for a course given a courseid
+const getAssignments = async (token, courseId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments", {
     headers: { 'Authorization': `Bearer ${token}` } 
   })
   const assignments = response.data.map(assignment => {
     return {
-      // courseId: courseid,
+      courseId: courseId,
       assignmentDueDate: assignment.due_at,
       canvasId: assignment.id,
       name: assignment.name,
@@ -143,96 +59,199 @@ async function getAssignments(token, courseid) {
     }
   })
   return assignments
-  // .then(response => {
-  //   const assignments = response.data.map(assignment => {
-  //     return {
-  //       // courseId: courseid,
-  //       assignmentDueDate: assignment.due_at,
-  //       canvasId: assignment.id,
-  //       name: assignment.name,
-  //       // assignmentGroup: assignment.assignment_group_id
-  //     }
-  //   })
-  //   console.log(assignments)
-  // })
 }
 
-getAssignments(token, 17)
+// getAssignments(token, 1).then(response => console.log(response))
 
-function addSubmissions(token, courseid, assignmentid) {
-  axios.get(canvas + "courses/" + courseid + "/assignments/" + assignmentid +"/submissions?&include[]=group&per_page=200", {
+// adds assignments to db
+const addAssignments = (assignments) => {
+  return axios.post(`${server}/api/assignments?type=multiple`, assignments)
+}
+
+
+// gets list of courses associated with a user token
+const getCourses = async (token) => {
+  const response = await axios.get(canvas + "courses", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).then(response => {
-    const submissions = response.data.map(submission => {
-      if (submission.submitted_at != null) {
-        console.log(submission)
-        return {
-          assignmentId: assignmentid,
-          canvasId: submission.id,
-          grade: submission.grade,
-          groupId: submission.group.id
-        }
+  })
+  const courses = response.data.map(course => {
+    if (!course.end_at) {
+      var active = true
+    } else {
+      const today = new Date()
+      const endDate = new Date(course.end_at)
+      if (today > endDate) {
+        var active = false;
+      } else {
+        var active = true;
       }
-    })
-    const filtered = submissions.filter(submission => {
-      return submission != null
-    })
-    console.log(filtered)
-    // axios.post(`${server}/api/submissions?type=multiple`, filtered
-    //   ).then(response => console.log(response)
-    //   ).catch(error => console.log(error))
-  }).catch(error => console.log(error))
+    }
+    return {
+      active: active,
+      canvasId: course.id,
+      courseName: course.name
+    }
+  })
+  return courses
+}
+
+// getCourses(token).then(response => console.log(response))
+
+// add courses to db
+const addCourses = (courses) => {
+  return axios.post(`${server}/api/courses?type=multiple`, courses)
 }
 
 
-// courses/17/assignments?assignment[name]=Test Peer Review&assignment[due_at]=2021-02-01T11:59:00Z&assignment[description]=Peer Review Assignment for Test&assignment[group_category_id]=2&assignment[published]=true
+// adds course enrollments to the db
+const addCourseEnrollments = (userData) => {
+  const enrollments = userData.map(user => {
+    return {
+      enrollment: user.enrollment,
+      userId: user.canvasId,
+      courseId: user.courseId
+    }
+  })
+  return axios.post(`${server}/api/courseEnrollments?type=multiple`, enrollments)
+}
 
-function createReviewAssignment(token, courseid, assignmentid) {
+
+// gets the groups for an assignment given couseId and assignmentId
+const getGroups = async (token, courseId, assignmentId) => {
+  const assignmentResponse = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const groupCategoryId = assignmentResponse.data.group_category_id
+  const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const groups = await Promise.all(categoryResponse.data.map(async (group) => {
+    const groupResponse = await axios.get(canvas + "groups/" + group.id + "/users", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    const userIds = groupResponse.data.map(user => {
+      return user.id
+    })
+    return {
+      assignmentId: assignmentId,
+      canvasId: group.id,
+      userIds: userIds
+    }
+  }))
+  return groups
+}
+
+// getGroups(token, 1, 6)
+
+// adds groups to db
+const addGroups = (groups) => {
+  return axios.post(`${server}/api/groups?type=multiple`, groups)
+}
+
+
+// createReviewAssignment creates the review assignment in Canvas
+// Arguments:
+//  token: Canvas API token
+//  courseId: Canvas ID of original assignment
+//  assignmentName: Name of original assignment
+//  dueDate: Due date for the review assignment in ISO 8601 format, e.g. 2014-10-21T18:48:00Z
+function createReviewAssignment(token, courseId, assignmentId, assignmentName, dueDate) {
   const data = {
     assignment: { 
-      name: "Test Peer Review",
-      due_at: "2021-02-01T11:59:00Z",
-      description: "Peer Review Assignment for Test",
+      name: assignmentName + " Peer Review",
+      due_at: dueDate, //"2021-05-01T11:59:00Z"
+      description: "Peer Review Assignment for " + assignmentName,
       published: true,
       points_possible: 10
     }
   }
-  axios.post(canvas + "courses/" + courseid + "/assignments", data, {
+  axios.post(canvas + "courses/" + courseId + "/assignments", data, {
     headers: {'Authorization': `Bearer ${token}`}
   }).then(response => {
     const assignment = response.data
-    const assignmentinfo = {
-      courseId: courseid,
-      canvasId: assignmentid,
+    const assignmentInfo = {
+      courseId: courseId,
+      canvasId: assignmentId,
       reviewCanvasId: assignment.id,
       reviewDueDate: assignment.due_at,
       reviewStatus: 1
     }
-    console.log(assignmentinfo)
-  }).catch(error => {
-    console.log(error)
+    console.log(assignmentInfo)
   })
 }
 
-//createReviewAssignment(token, 17, 0)
+// function getPeerReviews(token, courseId, assignmentId) {
+//   axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/peer_reviews", {
+//     headers: { 'Authorization': `Bearer ${token}` }
+//   }).then(response => {
+//     console.log(response)
+//   }).catch(error => console.log(error))
+// }
 
-//addSubmissions(token, 1, 6)
+// const addAnnouncements = async (token, courseid) => {
+//   const currTable = await axios.get(`${server}/api/announcements?courseId=` + courseid)
+//   axios.get(canvas + "announcements?&context_codes[]=course_" + courseid, {
+//       headers: {
+//         'Authorization': `Bearer ${token}`
+//       }
+//   }).then(response => {
+//     const announcements = response.data.map(announcement => {
+//       return {
+//         announcement: announcement.title,
+//         courseId: courseid
+//       }
+//     })
+//     for (i = 0; i < announcements.length; i++) {
+//       currTable.data.data.forEach(currannouncement => {
+//         if (currannouncement.announcement == announcements[i].announcement) {
+//           announcements.splice(i, 1)
+//         }
+//       })
+//     }
+//     console.log(announcements)
+//     // axios.post(`${server}/api/announcements?type=multiple`, announcements
+//     //   ).then(response => console.log(response)
+//     //   ).catch(error => console.log(error))
+//   }).catch(error => console.log(error))
+// }
 
-function getPeerReviews(token, courseid, assignmentid) {
-  axios.get(canvas + "courses/" + courseid + "/assignments/" + assignmentid + "/peer_reviews", {
-    headers: { 'Authorization': `Bearer ${token}` }
-  }).then(response => {
-    console.log(response)
-  }).catch(error => console.log(error))
-}
+// function addSubmissions(token, courseId, assignmentId) {
+//   axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?&include[]=group&per_page=200", {
+//     headers: {
+//       'Authorization': `Bearer ${token}`
+//     }
+//   }).then(response => {
+//     const submissions = response.data.map(submission => {
+//       if (submission.submitted_at != null) {
+//         console.log(submission)
+//         return {
+//           assignmentId: assignmentId,
+//           canvasId: submission.id,
+//           grade: submission.grade,
+//           groupId: submission.group.id
+//         }
+//       }
+//     })
+//     const filtered = submissions.filter(submission => {
+//       return submission != null
+//     })
+//     console.log(filtered)
+//     // axios.post(`${server}/api/submissions?type=multiple`, filtered
+//     //   ).then(response => console.log(response)
+//     //   ).catch(error => console.log(error))
+//   }).catch(error => console.log(error))
+// }
 
-//getPeerReviews(token, 1, 2)
-//addAssignments(token, 1)
-
-module.exports = {
-  addAnnouncements,
-  getAssignments,
-  createReviewAssignment
-}
+// module.exports = {
+//   addAnnouncements,
+//   getAssignments,
+//   createReviewAssignment
+// }
