@@ -157,6 +157,37 @@ const addGroups = (groups) => {
 }
 
 
+// Gets submissions info for an assignment given a courseId and assignmentId
+// If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
+// If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
+const getSubmissions = async (token, courseId, assignmentId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?&include[]=group&grouped=1&per_page=300", {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const filteredSubmissions = response.data.filter(submission => {
+    return submission.workflow_state == 'submitted';
+  })
+  const submissions = filteredSubmissions.map(submission => {
+    var submissionBody = submission.body
+    if (submission.submission_type == 'online_upload') {
+      submissionBody = submission.attachments[0].url
+    }
+    return {
+      submissionType: submission.submission_type,
+      submission: submissionBody,
+      assignmentId: assignmentId,
+      canvasId: submission.id,
+      grade: submission.grade,
+      groupId: submission.group.id
+    }
+  })
+  return submissions
+}
+
+// getSubmissions(token, 1, 6).then(response => console.log(response))
+
 // createReviewAssignment creates the review assignment in Canvas
 // Arguments:
 //  token: Canvas API token
@@ -188,6 +219,7 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
   })
 }
 
+
 // function getPeerReviews(token, courseId, assignmentId) {
 //   axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/peer_reviews", {
 //     headers: { 'Authorization': `Bearer ${token}` }
@@ -218,33 +250,6 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
 //     }
 //     console.log(announcements)
 //     // axios.post(`${server}/api/announcements?type=multiple`, announcements
-//     //   ).then(response => console.log(response)
-//     //   ).catch(error => console.log(error))
-//   }).catch(error => console.log(error))
-// }
-
-// function addSubmissions(token, courseId, assignmentId) {
-//   axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?&include[]=group&per_page=200", {
-//     headers: {
-//       'Authorization': `Bearer ${token}`
-//     }
-//   }).then(response => {
-//     const submissions = response.data.map(submission => {
-//       if (submission.submitted_at != null) {
-//         console.log(submission)
-//         return {
-//           assignmentId: assignmentId,
-//           canvasId: submission.id,
-//           grade: submission.grade,
-//           groupId: submission.group.id
-//         }
-//       }
-//     })
-//     const filtered = submissions.filter(submission => {
-//       return submission != null
-//     })
-//     console.log(filtered)
-//     // axios.post(`${server}/api/submissions?type=multiple`, filtered
 //     //   ).then(response => console.log(response)
 //     //   ).catch(error => console.log(error))
 //   }).catch(error => console.log(error))
