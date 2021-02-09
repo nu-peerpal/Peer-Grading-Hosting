@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles/listcontainer.module.css';
+import styles from './styles/listcontainer.module.scss';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';

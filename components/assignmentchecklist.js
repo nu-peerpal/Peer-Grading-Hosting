@@ -1,6 +1,6 @@
 import React from "react";
 import Link from 'next/link'
-import styles from './styles/assignmentchecklist.module.css'
+import styles from './styles/assignmentchecklist.module.scss'
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles/container.module.css";
+import styles from "./styles/container.module.scss";
 import Link from "next/link";
 import Router from "next/router";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
@@ -20,15 +20,6 @@ class Container extends React.Component {
           <KeyboardBackspaceIcon />
         </div>
         {this.props.children}
-        {/* <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>Hey</Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
-
-                <Table.Body>
-                    {this.props.children}
-                </Table.Body> */}
       </div>
     );
   }

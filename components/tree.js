@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Diagram, Stack } from 'grommet';
-import styles from './styles/tree.module.css';
+import styles from './styles/tree.module.scss';
 
 class Tree extends React.Component {
   constructor(props) {
