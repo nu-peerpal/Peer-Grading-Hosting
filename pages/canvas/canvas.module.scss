@@ -1,8 +1,12 @@
-.canvasForm{
-    display: flex;
-    margin-left: 100px;
-    /* justify-content: center; */
+@import '../../global_styles/utilities.scss';
+
+.container {
+    @extend .flex_center;
+    height: 100vh;
+    flex-direction: column;
 }
-.canvasButton {
-    padding: 10px;
+
+.container__button {
+    @extend .flex_center;
+    margin-top: 25px;
 }

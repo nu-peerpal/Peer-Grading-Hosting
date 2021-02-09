@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/tagrading.module.css";
+import styles from "../styles/tagrading.module.scss";
 import { Formik, Form, Field } from "formik";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";

@@ -7,8 +7,8 @@ import { StoreProvider } from '../components/store';
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import Styles from './toggle.module.css'
-
+import Styles from './toggle.module.css';
+import utilities from '../global_styles/utilities.scss';
 
 export default function MyApp({ Component, pageProps }) {
   const [isstudent, setisstudent] = useState(false);
