@@ -70,7 +70,7 @@ const addAssignments = (assignments) => {
 
 
 // gets list of courses associated with a user token
-const getCourses = async (token) => {
+export const getCourses = async (token) => {
   const response = await axios.get(canvas + "courses", {
     headers: {
       'Authorization': `Bearer ${token}`

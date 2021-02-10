@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Router from 'next/router'
 import ListContainer from "../components/listcontainer";
 
 function Dashboard(props) {
@@ -23,6 +24,19 @@ function Dashboard(props) {
         console.log(resData.data);
       })();
     }
+    (async () => {
+      const res = await fetch(`/api/users?courseId=1&enrollment=student`)
+      const resData = await res.json();
+      console.log('TA DATA:',resData.data);
+      if (!resData.data.includes(taUserId)) {
+        console.log('TA not found. Redirecting to setup...')
+        const {pathname} = Router
+        if(pathname == '/' ){
+          Router.push('/canvas/canvas')
+        }
+      }
+    })();
+  
 
     (async () => {
       let res, resData;
