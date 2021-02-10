@@ -188,6 +188,7 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 
 // getSubmissions(token, 1, 6).then(response => console.log(response))
 
+
 // createReviewAssignment creates the review assignment in Canvas
 // Arguments:
 //  token: Canvas API token
