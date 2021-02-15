@@ -68,6 +68,9 @@ function TeacherView(props) {
       <Link href={"/canvas/canvas"}>
         <a>Canvas</a>
       </Link>
+      <Link href={"/canvas/canvasSelect"}>
+        <a>Canvas Select</a>
+      </Link>
     </div>
   );
 }
