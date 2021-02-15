@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Router from 'next/router';
 import { Formik, Field, Form } from 'formik';
 import { getCourses } from '../canvas';
+import styles from './styles/selectAssignmentForm.module.scss';
 
 const SelectAssignmentForm = () => {
     const taUserId = 1;
@@ -17,26 +18,30 @@ const SelectAssignmentForm = () => {
 
     return (
         <Formik
-        initialValues={{
-            assignmentId: '',
-            courseId: '',
-        }}
-        onSubmit={async (values) => {
-            await new Promise((r) => setTimeout(r, 500));
-            alert(JSON.stringify(values, null, 2));
-            Router.push("/assignments/fullassignmentview/fullassignmentview")
-        }}
+            initialValues={{
+                assignmentId: '',
+                courseId: '',
+            }}
+            onSubmit={async (values) => {
+                await new Promise((r) => setTimeout(r, 500));
+                alert(JSON.stringify(values, null, 2));
+                Router.push("/assignments/fullassignmentview/fullassignmentview")
+            }}
         >
-        <Form>
-            <label htmlFor="courseId">Select Course</label>
-            <Field id="courseId" name="courseId" placeholder="Course ID" />
+            <div className={styles.form}>
+                <div className={styles.form__description}>
+                    Select your class and assignment to import data from.
+                </div>
+                <Form>
+                    {/* <label htmlFor="courseId">Select Course</label> */}
+                    <Field className={styles.form__input} id="courseId" name="courseId" placeholder="Course ID" />
 
-            <label htmlFor="assignmentId">Select Assignment</label>
-            <Field id="assignmentId" name="assignmentId" placeholder="Assignment ID" />
+                    {/* <label htmlFor="assignmentId">Select Assignment</label> */}
+                    <Field className={styles.form__input} id="assignmentId" name="assignmentId" placeholder="Assignment ID" />
 
-
-            <button type="submit">Submit</button>
-        </Form>
+                    <button className={styles.form__button} type="submit">Submit</button>
+                </Form>
+            </div>
         </Formik>
     );
 };

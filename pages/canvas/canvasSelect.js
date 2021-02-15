@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
-import styles from "./canvas.module.scss";
 import SelectAssignmentForm from '../../components/selectAssignmentForm';
 
 function CanvasSelect() {
