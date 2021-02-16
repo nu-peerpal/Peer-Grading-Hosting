@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles/tagrading.module.css";
+import styles from "./styles/tagrading.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
