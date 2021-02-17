@@ -12,6 +12,7 @@ const db = require("./models");
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
+const cors = require('cors');
 
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
@@ -31,6 +32,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
+    server.use(cors());
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {

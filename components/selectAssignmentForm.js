@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
 import { Formik, Field, Form } from 'formik';
-import { getAssignments } from '../canvas';
+import { token, getAssignments } from '../canvasCalls';
 import styles from './styles/selectAssignmentForm.module.scss';
 
 const SelectAssignmentForm = () => {
@@ -17,8 +17,8 @@ const SelectAssignmentForm = () => {
     };
     // useEffect(() => {
     //     (async () => {
-    //       console.log('Fetching courses...')
-    //       const res = await getCourses();
+    //       console.log('Fetching Assignments...')
+    //       const res = await getAssignments(token, 1);
     //       const result = await res.json()
     //       console.log(result);
     //     })();
@@ -41,10 +41,7 @@ const SelectAssignmentForm = () => {
                     Select your class and assignment to import data from.
                 </div>
                 <Form>
-                    {/* <label htmlFor="courseId">Select Course</label> */}
                     <Field className={styles.form__input} id="courseId" name="courseId" placeholder="Course ID" />
-
-                    {/* <label htmlFor="assignmentId">Select Assignment</label> */}
                     <Field className={styles.form__input} id="assignmentId" name="assignmentId" placeholder="Assignment ID" />
 
                     <button className={styles.form__button} type="submit">Submit</button>
