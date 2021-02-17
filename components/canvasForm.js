@@ -31,7 +31,7 @@ const CanvasForm = () => {
         //     const result = await res.json()
         //     console.log(result);
         // })();
-        Router.push('/assignments/fullassignmentview/fullassignmentview')
+        Router.push('/canvas/canvasSelect')
         },
     });
   return (

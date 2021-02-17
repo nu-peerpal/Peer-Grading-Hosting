@@ -70,7 +70,7 @@ const addAssignments = (assignments) => {
 
 
 // gets list of courses associated with a user token
-export const getCourses = async (token) => {
+const getCourses = async (token) => {
   const response = await axios.get(canvas + "courses", {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -250,8 +250,9 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
 //   }).catch(error => console.log(error))
 // }
 
-// module.exports = {
-//   addAnnouncements,
-//   getAssignments,
-//   createReviewAssignment
-// }
+module.exports = {
+  addAnnouncements,
+  getAssignments,
+  createReviewAssignment,
+  getCourses
+}
