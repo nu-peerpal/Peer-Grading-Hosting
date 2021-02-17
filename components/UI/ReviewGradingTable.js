@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/tagrading.module.css";
+import styles from "../styles/tagrading.module.scss";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";

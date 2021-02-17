@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
 import { Formik, Field, Form } from 'formik';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { getAssignments } from '../../canvasCalls';
+import { getAssignments } from '../canvas';
+import styles from './styles/selectAssignmentForm.module.scss';
 
 const SelectAssignmentForm = () => {
     const taUserId = 1;
@@ -27,51 +26,30 @@ const SelectAssignmentForm = () => {
 
     return (
         <Formik
-        initialValues={{
-            assignmentId: '',
-            courseId: '',
-        }}
-        onSubmit={async (values) => {
-            await new Promise((r) => setTimeout(r, 500));
-            alert(JSON.stringify(values, null, 2));
-            Router.push("/assignments/fullassignmentview/fullassignmentview")
-        }}
+            initialValues={{
+                assignmentId: '',
+                courseId: '',
+            }}
+            onSubmit={async (values) => {
+                await new Promise((r) => setTimeout(r, 500));
+                alert(JSON.stringify(values, null, 2));
+                Router.push("/assignments/fullassignmentview/fullassignmentview")
+            }}
         >
-        <Form>
-            <label htmlFor="courseId">Select Course</label>
-            <Select
-                labelId="demo-simple-select-filled-label"
-                id="courseId"
-                value={courseId}
-                onChange={handleCourseChange}
-                >
-                <MenuItem value="">
-                    <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
+            <div className={styles.form}>
+                <div className={styles.form__description}>
+                    Select your class and assignment to import data from.
+                </div>
+                <Form>
+                    {/* <label htmlFor="courseId">Select Course</label> */}
+                    <Field className={styles.form__input} id="courseId" name="courseId" placeholder="Course ID" />
 
-            <label htmlFor="assignmentId">Select Assignment</label>
-            <Select
-                labelId="demo-simple-select-filled-label"
-                id="assignmentId"
-                value={assignmentId}
-                onChange={handleAssignmentChange}
-                >
-                <MenuItem value="">
-                    <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
+                    {/* <label htmlFor="assignmentId">Select Assignment</label> */}
+                    <Field className={styles.form__input} id="assignmentId" name="assignmentId" placeholder="Assignment ID" />
 
-
-
-            <button type="submit">Submit</button>
-        </Form>
+                    <button className={styles.form__button} type="submit">Submit</button>
+                </Form>
+            </div>
         </Formik>
     );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styles from "./canvas.module.scss";
 import CanvasForm from './../../components/canvasForm';
 
 function Canvas() {
