@@ -156,6 +156,28 @@ const addGroups = (groups) => {
   return axios.post(`${server}/api/groups?type=multiple`, groups)
 }
 
+// gets rubrics from a course given a courseId
+const getRubrics = async (token, courseId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/rubrics", {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const rubrics = response.data.map(rubricObj => {
+    const rubric = rubricObj.data.map(rubricData => {
+      return [rubricData.points, rubricData.description]
+    })
+    return rubric
+  })
+  return rubrics
+}
+
+// getRubrics(token, 1).then(response => console.log(response))
+
+// adds rubrics to db
+const addRubrics = (rubrics) => {
+  return axios.post(`${server}/api/rubrics?type=multiple`, rubrics);
+}
 
 // Gets submissions info for an assignment given a courseId and assignmentId
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
@@ -187,6 +209,7 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 }
 
 // getSubmissions(token, 1, 6).then(response => console.log(response))
+
 
 
 // createReviewAssignment creates the review assignment in Canvas
