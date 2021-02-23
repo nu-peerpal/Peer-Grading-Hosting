@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   return [
+    ["Initialize: ", { 'link': '/assignments/initialchecklist/initialchecklist' }],
     ["Peer Reviews: ", { 'switch': 'enabled or disabled' }],
     ["Due Date: ", { 'date': "status" }],
     ["Peer Matching: ", { 'link': "/assignments/matching/matching" }],

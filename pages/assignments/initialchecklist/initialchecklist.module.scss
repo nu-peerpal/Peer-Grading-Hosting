@@ -1,0 +1,33 @@
+@import '../../../global_styles/colors.scss';
+
+.column{
+    width: 30%;
+    border: 2px solid lightgray;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+
+    &Container{
+        width: 100%;
+        display: flex;
+        justify-content:space-around;
+    }
+
+    &__header{
+        height: 20px;
+        background-color: $primary_color;
+        color: white;
+        padding: 5px 10px;
+        margin-bottom: 15px;
+    }
+
+    &__content{
+        padding: 0 15px;
+    }
+}
+
+.dropdown{
+    width: 200px !important;
+    display: inline-block;
+
+
+}
