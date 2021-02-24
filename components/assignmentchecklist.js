@@ -7,6 +7,8 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,14 +31,15 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   return [
+    ["Assignment Due Date: ", { 'date': "status" }],
     ["Peer Reviews: ", { 'switch': 'enabled or disabled' }],
-    ["Due Date: ", { 'date': "status" }],
+    ["Rubric: ", { 'rubric': "status" }],
     ["Peer Matching: ", { 'link': "/assignments/matching/matching" }],
     ["Review Due Date: ", { 'date': "status" }],
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }],
     ["TA Grading: ", { 'link': "/assignments/tamatchinglist/tamatchinglist" }],
-    ["Review Reports: ", { 'link': "/assignments/reviewreportlist/reviewreportlist" }],
-    ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
+    ["Review and Submission Reports: ", { 'link': "/assignments/reportlist/reportlist" }],
+    // ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
     ["Appeal Period: ", { 'status': "Either Not started, Ongoing or Passed" }]
   ];
 }
@@ -46,6 +49,7 @@ function assignmentchecklist() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(2);
   const [peerReviews, setPeerReviews] = React.useState(true); // true if peer reviews are enabled
+  const [rubric, setRubric] = React.useState('');
   const steps = getSteps();
 
   return (
@@ -61,6 +65,25 @@ function assignmentchecklist() {
                 <StepLabel>
                   {label[0]}
                   <Switch color="primary" checked={peerReviews ? true : false} onChange={()=>setPeerReviews(!peerReviews)}/>
+                </StepLabel>
+              </Step>)
+          }
+          // only for selecting rubrics
+          if (label[1].rubric) {
+            return (
+              <Step key={label[0]}>
+                <StepLabel>
+                <div style={{marginRight: '10px'}}>{label[0]}
+                  <Select
+                    id="simple-select"
+                    value={rubric}
+                    onChange={setRubric}
+                  >
+                    <MenuItem value={10}>(Default)</MenuItem>
+                    <MenuItem value={20}>Custom 1</MenuItem>
+                    <MenuItem value={30}>Custom 2</MenuItem>
+                  </Select>
+                  </div>
                 </StepLabel>
               </Step>)
           }
@@ -81,6 +104,7 @@ function assignmentchecklist() {
                       InputLabelProps={{
                         shrink: true,
                       }}
+                      disabled={peerReviews ? false : true}
                     />
                   </form>
                   </div>

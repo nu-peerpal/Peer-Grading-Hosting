@@ -21,7 +21,7 @@ function Canvas() {
         });
       const result = await res.json()
       console.log(result);
-      // result.user => 'Ada Lovelace'
+      // result.user => 'brad ramos'
     })();
   }, [taUserId]); //only run if user Id is changed?
   return (
