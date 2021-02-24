@@ -31,9 +31,8 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   return [
-    ["Assignment Due Date: ", { 'date': "status" }],
+    ["Initialize: ", { 'link': '/assignments/initialchecklist/initialchecklist' }],
     ["Peer Reviews: ", { 'switch': 'enabled or disabled' }],
-    ["Rubric: ", { 'rubric': "status" }],
     ["Peer Matching: ", { 'link': "/assignments/matching/matching" }],
     ["Review Due Date: ", { 'date': "status" }],
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }],
@@ -65,25 +64,6 @@ function assignmentchecklist() {
                 <StepLabel>
                   {label[0]}
                   <Switch color="primary" checked={peerReviews ? true : false} onChange={()=>setPeerReviews(!peerReviews)}/>
-                </StepLabel>
-              </Step>)
-          }
-          // only for selecting rubrics
-          if (label[1].rubric) {
-            return (
-              <Step key={label[0]}>
-                <StepLabel>
-                <div style={{marginRight: '10px'}}>{label[0]}
-                  <Select
-                    id="simple-select"
-                    value={rubric}
-                    onChange={setRubric}
-                  >
-                    <MenuItem value={10}>(Default)</MenuItem>
-                    <MenuItem value={20}>Custom 1</MenuItem>
-                    <MenuItem value={30}>Custom 2</MenuItem>
-                  </Select>
-                  </div>
                 </StepLabel>
               </Step>)
           }
