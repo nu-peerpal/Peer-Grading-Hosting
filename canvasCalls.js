@@ -309,5 +309,6 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
 module.exports = {
   getAssignments,
   createReviewAssignment,
-  getRubrics
+  getRubrics,
+  token
 }
