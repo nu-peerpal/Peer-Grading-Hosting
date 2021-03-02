@@ -279,8 +279,6 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
 //   }).catch(error => console.log(error))
 // }
 
-// module.exports = {
-//   addAnnouncements,
-//   getAssignments,
-//   createReviewAssignment
-// }
+module.exports = {
+  getUsers
+}
