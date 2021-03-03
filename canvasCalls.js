@@ -63,11 +63,6 @@ const getAssignments = async (token, courseId) => {
 
 // getAssignments(token, 1).then(response => console.log(response))
 
-// adds assignments to db
-const addAssignments = (assignments) => {
-  return axios.post(`${server}/api/assignments?type=multiple`, assignments)
-}
-
 
 // gets list of courses associated with a user token
 const getCourses = async (token) => {
@@ -156,26 +151,27 @@ const addGroups = (groups) => {
   return axios.post(`${server}/api/groups?type=multiple`, groups)
 }
 
-// gets rubrics from a course given a courseId
-const getRubrics = async (token, courseId) => {
+
+// gets rubrics from a course given a courseId in raw format - used as input to create review assignment
+const getRawRubrics = async (token, courseId) => {
   const response = await axios.get(canvas + "courses/" + courseId + "/rubrics", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   })
-  const rubrics = response.data.map(rubricObj => {
+  return response.data
+}
+
+// getRawRubrics(token, 1).then(response => console.log(response))
+
+// adds rubrics to db
+const addRubrics = (rawRubrics) => {
+  const rubrics = rawRubrics.data.map(rubricObj => {
     const rubric = rubricObj.data.map(rubricData => {
-      return [rubricData.points, rubricData.description]
+      return [rubricData.points, rubricData.description, rubricData.long_description]
     })
     return rubric
   })
-  return rubrics
-}
-
-// getRubrics(token, 1).then(response => console.log(response))
-
-// adds rubrics to db
-const addRubrics = (rubrics) => {
   return axios.post(`${server}/api/rubrics?type=multiple`, rubrics);
 }
 
@@ -216,32 +212,66 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 // Arguments:
 //  token: Canvas API token
 //  courseId: Canvas ID of original assignment
+//  assignmentId: Canvas ID of original assignment
 //  assignmentName: Name of original assignment
-//  dueDate: Due date for the review assignment in ISO 8601 format, e.g. 2014-10-21T18:48:00Z
-function createReviewAssignment(token, courseId, assignmentId, assignmentName, dueDate) {
+//  assignmentDueDate: Due date of original assignmnet
+//  dueDate: Due date for the new review assignment in ISO 8601 format, e.g. 2014-10-21T18:48:00Z
+//  rubric: Rubric for the peer review
+// 
+// Additional notes:
+//  - appealsDueDate not included because I have no idea what it is
+//  - rubricId and reviewRubricId not included, because we currently have no use for them
+
+
+async function postReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, dueDate, rubric) {
   const data = {
     assignment: { 
       name: assignmentName + " Peer Review",
       due_at: dueDate, //"2021-05-01T11:59:00Z"
       description: "Peer Review Assignment for " + assignmentName,
       published: true,
-      points_possible: 10
+      points: rubric.points_possible
     }
   }
-  axios.post(canvas + "courses/" + courseId + "/assignments", data, {
+  const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
     headers: {'Authorization': `Bearer ${token}`}
-  }).then(response => {
-    const assignment = response.data
-    const assignmentInfo = {
-      courseId: courseId,
-      canvasId: assignmentId,
-      reviewCanvasId: assignment.id,
-      reviewDueDate: assignment.due_at,
-      reviewStatus: 1
-    }
-    console.log(assignmentInfo)
   })
+  const newAssignment = response.data
+  const rubricData = {
+    rubric_association: {
+      rubric_id: rubric.id,
+      association_id: newAssignment.id,
+      association_type: "Assignment",
+      purpose: "grading"
+    }
+  }
+  axios.post(canvas + "courses/" + courseId + "/rubric_associations", rubricData, {
+    headers: {'Authorization': `Bearer ${token}`}
+  })
+  const assignment = {
+    assignmentDueDate: assignmentDueDate,
+    reviewDueDate: newAssignment.due_at,
+    reviewStatus: 0,
+    canvasId: assignmentId,
+    reviewCanvasId: newAssignment.id,
+    graded: false,
+    name: assignmentName,
+    courseId: courseId,
+  }
+  return assignment
 }
+
+// getRawRubrics(token, 1).then(response => {
+//   postReviewAssignment(token, 1, 7, "Peer Reviews Testing", null, "2021-08-25T05:59:59Z", response[0]).then(response => {
+//     console.log(response)
+//   })
+// })
+
+// adds assignment to the db
+function addReviewAssignment(token, assignment) {
+  return axios.post(`${server}/api/assignments`, assignments)
+}
+
 
 
 // function getPeerReviews(token, courseId, assignmentId) {
@@ -308,7 +338,7 @@ function createReviewAssignment(token, courseId, assignmentId, assignmentName, d
 
 module.exports = {
   getAssignments,
-  createReviewAssignment,
-  getRubrics,
+  postReviewAssignment,
+  getRawRubrics,
   token
 }
