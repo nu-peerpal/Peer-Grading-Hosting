@@ -7,6 +7,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
 
+function Info(props) {
+  const dueDate = props.dueDate;
+  const info = props.info;
+  if (dueDate) {
+    let newDate = new Date(dueDate);
+    let dateText = "Due " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
+    return <TableCell className={styles.info}>{dateText}</TableCell>
+  }
+  else {
+    return <TableCell className={styles.info}>{info}</TableCell>;
+  }
+}
 
 class ListContainer extends React.Component {
   constructor(props) {
@@ -21,19 +33,23 @@ class ListContainer extends React.Component {
     var list = "";
     var assignname = "";
     var student = information.student;
-    return (
-      information.data.map(x => {
-        return (
-          <Link href={information.link} className={styles.hov}>
-          <TableRow className={styles.row}>
-            <TableCell className={styles.name}>{x.name}</TableCell>
-            <TableCell className={styles.info}>{x.info}</TableCell>
-          </TableRow>
-          </Link>
+    if (information.data) {
+      return (
+        information.data.map(x => {
+          return (
+            <Link href={{pathname: information.link, query: { name: x.name }}} className={styles.hov}>
+              <TableRow className={styles.row}>
+                <TableCell className={styles.name}>{x.name}</TableCell>
+                <Info dueDate={x.assignmentDueDate} info={x.info}/>
+              </TableRow>
+            </Link>
+          )
+        }
         )
-      }
       )
-    )
+    } else {
+      return null;
+    }
   }
 
   render() {

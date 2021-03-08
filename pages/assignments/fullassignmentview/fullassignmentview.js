@@ -12,12 +12,13 @@ import useSWR from "swr";
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-const FullAssignment = () => {
+const FullAssignment = (props) => {
   // For future reference:
   // const data = [
   //   {'name': '', 'info':""},
   //   {'name': '', 'info':""},
   // ];
+  // console.log('assignment id:', props.id)
 
   return (
     <div className="Content">
