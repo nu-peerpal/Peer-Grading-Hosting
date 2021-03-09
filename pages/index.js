@@ -36,6 +36,7 @@ function Dashboard(props) {
     }  
     canvasCalls.getAssignments(canvasCalls.token, 1).then(response => {
       setCanvasAssignments(response);
+      console.log(response);
     });
     // else { // look for existing users
     //   (async () => {

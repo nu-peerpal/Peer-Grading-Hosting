@@ -9,10 +9,13 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import useSWR from "swr";
+import { useRouter } from 'next/router'
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 const FullAssignment = (props) => {
+  const router = useRouter()
+  // console.log(router.query); //to access assignment data info
   // For future reference:
   // const data = [
   //   {'name': '', 'info':""},
@@ -22,10 +25,10 @@ const FullAssignment = (props) => {
 
   return (
     <div className="Content">
-      <Container name="Assignment Details">
+      <Container name={"Assignment Details: " + router.query.name}>
         <div className={styles.view}>
           <div className={styles.att}>
-            <Attributes />
+            <Attributes assignmentName={router.query.name} assignmentId={router.query.id}/>
           </div>
           {/* <div className={styles.inf}> */}
           <Accordion className={styles.inf}>
@@ -36,7 +39,7 @@ const FullAssignment = (props) => {
           </Accordion>
           {/* </div> */}
           <div className={styles.check}>
-            <Checklist />
+            <Checklist assignmentName={router.query.name} assignmentId={router.query.id} />
           </div>
         </div>
       </Container>

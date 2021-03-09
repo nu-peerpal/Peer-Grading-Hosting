@@ -53,7 +53,7 @@ function incActiveStep(activeStep){
     return activeStep + 1
   }
 }
-function assignmentchecklist() {
+function assignmentchecklist(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(1);
   const [peerReviews, setPeerReviews] = React.useState(true); // true if peer reviews are enabled
@@ -61,6 +61,8 @@ function assignmentchecklist() {
   const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
   const steps = getSteps();
+  let assignmentId = props.assignmentId;
+  let assignmentName = props.assignmentName;
 
   return (
     <div className={classes.root}>
