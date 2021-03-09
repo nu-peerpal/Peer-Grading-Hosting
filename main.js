@@ -60,13 +60,13 @@ app
           console.log(provider);
           //copying all the useful data from the provider to what will be stored for the user
           userData.user_id = provider.body.custom_canvas_user_id;
-          userData.context_id = provider.custom_canvas_course_id;
+          userData.context_id = provider.body.custom_canvas_course_id;
           userData.instructor = provider.instructor;
           userData.ta = provider.ta;
           userData.student = provider.student;
           userData.admin = provider.admin;
           userData.assignment = provider.body.ext_lti_assignment_id;
-
+          console.log('user data', userData);
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);

@@ -29,6 +29,25 @@ function Settings({ graders, peers, submissions, setMatchings }) {
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
+        let submissionBuckets = {};
+        let userBuckets = {};
+        let grader, sub;
+        for (let i in matchings) {
+          [grader, sub] = matchings[i];
+          if (submissionBuckets[sub]) {
+            submissionBuckets[sub].push(grader);
+          } else {
+            submissionBuckets[sub] = [grader];
+          }
+          if (userBuckets[grader]) {
+            userBuckets[grader].push(sub);
+          } else {
+            userBuckets[grader] = [sub];
+          }
+        }
+
+        console.log('Sub buckets: ',submissionBuckets);
+        console.log('User buckets: ',userBuckets);
         setMatchings(matchings);
         setSubmitting(false);
       }}
@@ -53,6 +72,7 @@ function Settings({ graders, peers, submissions, setMatchings }) {
             as={TextField}
             className={styles.formfield}
           />
+          TAs: {/* why isn't the label working here ??  */}
           <Field
             name="TA"
             className={styles.formfield}
