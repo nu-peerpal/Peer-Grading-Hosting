@@ -32,6 +32,7 @@
     "grommet": "^2.14.0",
     "grommet-icons": "^4.4.0",
     "ims-lti": "^3.0.2",
+    "js-cookie": "^2.2.1",
     "keyv": "^4.0.3",
     "ltijs": "^5.0.3",
     "ltijs-sequelize": "^1.0.6",

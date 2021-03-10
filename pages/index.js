@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Router from 'next/router'
 import ListContainer from "../components/listcontainer";
+import Cookies from 'js-cookie';
 const canvasCalls = require("../canvasCalls");
 
 function ToDoList(props) {
@@ -24,6 +24,8 @@ function ToDoList(props) {
 function Dashboard(props) {
   const studentUserId = 1;
   const taUserId = 2;
+  const userData = JSON.parse(Cookies.get('userData'));
+  console.log('user data: ', userData);
   const [assignments, setAssignments] = useState('');
   const [canvasAssignments, setCanvasAssignments] = useState();
   const [announcements, setAnnouncements] = useState([]);
@@ -36,7 +38,6 @@ function Dashboard(props) {
     }  
     canvasCalls.getAssignments(canvasCalls.token, 1).then(response => {
       setCanvasAssignments(response);
-      console.log(response);
     });
     // else { // look for existing users
     //   (async () => {

@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
 const cors = require('cors');
 
+
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
 const consumer_secret = "this_is_a_bad_secret123"
@@ -46,7 +47,7 @@ app
       if (req.cookies && req.cookies.authToken){
         var nonce = req.cookies.authToken;
         userData = await keyv.get(nonce);
-        console.log(userData)
+        // console.log(userData)
         if (userData){
           req.userData = userData;
           return handle(req, res);
@@ -66,10 +67,10 @@ app
           userData.student = provider.student;
           userData.admin = provider.admin;
           userData.assignment = provider.body.ext_lti_assignment_id;
-          console.log('user data', userData);
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
+          res.cookie('userData', JSON.stringify(userData));
           keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
           req.userData = userData;
         }
