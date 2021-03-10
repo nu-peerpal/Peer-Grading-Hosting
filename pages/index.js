@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
+import { useUserData } from "../components/storeAPI";
 const canvasCalls = require("../canvasCalls");
 
 function ToDoList(props) {
@@ -24,13 +25,18 @@ function ToDoList(props) {
 function Dashboard(props) {
   const studentUserId = 1;
   const taUserId = 2;
-  const userData = JSON.parse(Cookies.get('userData'));
-  console.log('user data: ', userData);
   const [assignments, setAssignments] = useState('');
   const [canvasAssignments, setCanvasAssignments] = useState();
   const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
+  const { createUser, userId, courseId } = useUserData();
+  if (Cookies.get('userData')) {
+    const userData = JSON.parse(Cookies.get('userData'));
+    console.log('user data: ', userData);
+    // createUser(userData);
+    console.log('userId: ', userId, 'courseId: ', courseId);
+  }
 
   useEffect(() => {
     if (props.ISstudent) {

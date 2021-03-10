@@ -7,6 +7,7 @@ import GoogleFonts from "next-google-fonts";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Styles from './toggle.module.css'
+import { StoreProvider } from "../components/store";
 
 
 export default function MyApp({ Component, pageProps }) {
@@ -36,11 +37,13 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <div>
-      <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-      <Header />
-      <UserView/>
-      <Navbar ISstudent={isstudent} />
-      <Component ISstudent={isstudent} {...pageProps} />
+      <StoreProvider>
+        <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+        <Header />
+        <UserView/>
+        <Navbar ISstudent={isstudent} />
+        <Component ISstudent={isstudent} {...pageProps} />
+      </StoreProvider>
     </div>
 
   )
