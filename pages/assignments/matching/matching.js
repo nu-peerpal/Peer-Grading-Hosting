@@ -17,6 +17,8 @@ import useSWR from "swr";
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }) {
+  const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
+
   return (
     <Formik
       initialValues={{ peerLoad: 2, graderLoad: 3, TA: [] }}
@@ -46,13 +48,24 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
           }
         }
 
-        console.log('Sub buckets: ',submissionBuckets);
-        console.log('User buckets: ',userBuckets);
-       
+        console.log('Sub buckets: ', submissionBuckets);
+        console.log('User buckets: ', userBuckets);
+
+        // create the grid that will show the matchings
         var mg = []
-        for (var obj in submissionBuckets){
-          mg.push(<MatchingCell key={obj} submission={obj} peers={submissionBuckets[obj]}/>)
+
+        // if they want to see submissions first
+        if (subFirstView) {
+          for (var obj in submissionBuckets) {
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+          }
         }
+        else{
+          for (var obj in userBuckets) {
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={obj} submissions={userBuckets[obj]} />)
+          }
+        }
+
         setMatchingGrid(mg);
 
         setMatchings(matchings);
@@ -93,6 +106,9 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
             Compute Matchings
           </Button>
           <Button>Clear</Button>
+          <Button onClick={() => setSubFirstView(!subFirstView)}>
+          Toggle View
+        </Button>
         </Form>
       )}
     </Formik>
@@ -101,26 +117,45 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
 
 // display submission and peers reviewing iit
 function MatchingCell(props) {
-  console.log(props.peers[0])
+
   // nicely format the list of peers reviewing the submissions
   var formattedPeers = "";
-  for (var i=0; i<props.peers.length; i++){
-    formattedPeers+=(props.peers[i]);
-    formattedPeers+=(", ")
+  if (props.peers){
+    for (var i = 0; i < props.peers.length; i++) {
+      formattedPeers += (props.peers[i]);
+      formattedPeers += (", ")
+    }
   }
-  formattedPeers
-  return (
-    <div className={styles.matchingCell}>
-      <div>
-        <p className={styles.matchingCell__title}>Submission #:</p>
-        <p className={styles.matchingCell__value}>{props.submission}</p>
+
+   if (!props.reviewer){
+    return (
+      <div className={styles.matchingCell}>
+        <div>
+          <p className={styles.matchingCell__title}>Submission #:</p>
+          <p className={styles.matchingCell__value}>{props.submission}</p>
+        </div>
+        <div>
+          <p className={styles.matchingCell__title}>Reviewers:</p>
+          <p className={styles.matchingCell__value}>{formattedPeers.slice(0, -2)}</p>
+        </div>
       </div>
-      <div>
-        <p className={styles.matchingCell__title}>Reviewers:</p>
-        <p className={styles.matchingCell__value}>{formattedPeers.slice(0,-2)}</p>
+    );
+  }
+  else{
+    return (
+      <div className={styles.matchingCell}>
+        <div>
+          <p className={styles.matchingCell__title}>Reviewer #:</p>
+          <p className={styles.matchingCell__value}>{props.reviewer}</p>
+        </div>
+        <div>
+          <p className={styles.matchingCell__title}>Submissions:</p>
+          <p className={styles.matchingCell__value}>{props.submissions}</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
 }
 
 function Matching() {
@@ -191,9 +226,9 @@ function Matching() {
             </div> */}
           </>
         )}
-        <div className={styles.matchingGrid}>
-        {matchingGrid}
 
+        <div className={styles.matchingGrid}>
+          {matchingGrid}
         </div>
         {/* {subMatchings.map(obj=>
         <MatchingCell key={obj} submission={obj} peers={subMatchings[obj]}/>
