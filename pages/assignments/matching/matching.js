@@ -16,7 +16,7 @@ import useSWR from "swr";
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ graders, peers, submissions, setMatchings }) {
+function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }) {
   return (
     <Formik
       initialValues={{ peerLoad: 2, graderLoad: 3, TA: [] }}
@@ -48,7 +48,15 @@ function Settings({ graders, peers, submissions, setMatchings }) {
 
         console.log('Sub buckets: ',submissionBuckets);
         console.log('User buckets: ',userBuckets);
+       
+        var mg = []
+        for (var obj in submissionBuckets){
+          mg.push(<MatchingCell key={obj} submission={obj} peers={submissionBuckets[obj]}/>)
+        }
+        setMatchingGrid(mg);
+
         setMatchings(matchings);
+        setSubMatchings(submissionBuckets);
         setSubmitting(false);
       }}
     >
@@ -91,8 +99,34 @@ function Settings({ graders, peers, submissions, setMatchings }) {
   );
 }
 
+// display submission and peers reviewing iit
+function MatchingCell(props) {
+  console.log(props.peers[0])
+  // nicely format the list of peers reviewing the submissions
+  var formattedPeers = "";
+  for (var i=0; i<props.peers.length; i++){
+    formattedPeers+=(props.peers[i]);
+    formattedPeers+=(", ")
+  }
+  formattedPeers
+  return (
+    <div className={styles.matchingCell}>
+      <div>
+        <p className={styles.matchingCell__title}>Submission #:</p>
+        <p className={styles.matchingCell__value}>{props.submission}</p>
+      </div>
+      <div>
+        <p className={styles.matchingCell__title}>Reviewers:</p>
+        <p className={styles.matchingCell__value}>{formattedPeers.slice(0,-2)}</p>
+      </div>
+    </div>
+  );
+}
+
 function Matching() {
   const [matchings, setMatchings] = useState([]);
+  const [matchingGrid, setMatchingGrid] = useState([]);
+
 
   // NOTE: The following code should be removed upon usage of real data.
   const { graders, peers, submissions } = sampleData;
@@ -139,12 +173,13 @@ function Matching() {
               peers={peers}
               submissions={submissions}
               setMatchings={setMatchings}
+              setMatchingGrid={setMatchingGrid}
             />
           </AccordionDetails>
         </Accordion>
         {matchings.length > 0 && (
           <>
-            <div className={styles.result}>
+            {/* <div className={styles.result}>
               <span
                 className={styles.result__header}
               >
@@ -153,10 +188,17 @@ function Matching() {
               <span className={styles.result__header}>
                 Matched Peer / Instructor
               </span>
-            </div>
+            </div> */}
           </>
         )}
-        <Tree id="tree" response={matchings} />
+        <div className={styles.matchingGrid}>
+        {matchingGrid}
+
+        </div>
+        {/* {subMatchings.map(obj=>
+        <MatchingCell key={obj} submission={obj} peers={subMatchings[obj]}/>
+          )} */}
+        {/* <Tree id="tree" response={matchings} /> */}
       </Container>
     </div>
   );

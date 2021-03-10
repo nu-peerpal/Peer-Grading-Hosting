@@ -1,4 +1,6 @@
 @import "../../../global_styles/utilities.scss";
+@import "../../../global_styles/colors.scss";
+
 
 .formfield{
     display: inline-block;
@@ -20,4 +22,36 @@
         width: 200px;
         
     }
+}
+
+.matching{
+    &Cell{
+        @extend .flex_center;
+        text-align: center;
+
+        flex-direction: column;
+        height: 150px;
+        width: 150px;
+        background-color: $primary_color;
+        margin: 5px;
+
+        &__title{
+            font-size: 11px;;
+            margin: 0 !important;
+            margin-top: 5px !important;
+        }
+
+        &__value{
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 !important;
+        }
+    }
+
+    &Grid{
+        
+        display: flex;
+        flex-wrap: wrap;
+    }
+
 }
