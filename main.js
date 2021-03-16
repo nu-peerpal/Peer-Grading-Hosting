@@ -66,7 +66,7 @@ app
           userData.ta = provider.ta;
           userData.student = provider.student;
           userData.admin = provider.admin;
-          userData.assignment = provider.body.ext_lti_assignment_id;
+          userData.assignment = provider.body.custom_canvas_assignment_id;
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);

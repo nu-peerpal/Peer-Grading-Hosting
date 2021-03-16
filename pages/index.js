@@ -31,18 +31,18 @@ function Dashboard(props) {
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
   const { createUser, userId, courseId } = useUserData();
-  if (Cookies.get('userData')) {
-    const userData = JSON.parse(Cookies.get('userData'));
-    console.log('user data: ', userData);
-    // createUser(userData);
-    console.log('userId: ', userId, 'courseId: ', courseId);
-  }
 
   useEffect(() => {
+    if (Cookies.get('userData')) {
+      const userData = JSON.parse(Cookies.get('userData'));
+      // console.log('user data: ', userData);
+      createUser(userData);
+      console.log('userId: ', userId, 'courseId: ', courseId);
+    }
     if (props.ISstudent) {
       console.log('this is a student')
     }  
-    canvasCalls.getAssignments(canvasCalls.token, 1).then(response => {
+    canvasCalls.getAssignments(canvasCalls.token, courseId).then(response => {
       setCanvasAssignments(response);
     });
     // else { // look for existing users

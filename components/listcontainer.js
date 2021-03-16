@@ -37,7 +37,7 @@ class ListContainer extends React.Component {
       return (
         information.data.map(x => {
           return (
-            <Link href={{pathname: information.link, query: { name: x.name, id: x.canvasId}}} className={styles.hov}>
+            <Link key={JSON.stringify(x)} href={{pathname: information.link, query: { name: x.name, id: x.canvasId}}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name}</TableCell>
                 <Info dueDate={x.assignmentDueDate} info={x.info}/>
