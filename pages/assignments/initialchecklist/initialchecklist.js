@@ -8,6 +8,7 @@ import sampleData from "../../../sample_data/peerMatching";
 import AutoComplete from "../../../components/autocomplete";
 import TextField from '@material-ui/core/TextField';
 const canvasCalls = require("../../../canvasCalls");
+import { useUserData } from "../../../components/storeAPI";
 
 
 const InitialChecklist = () => {
@@ -17,12 +18,13 @@ const InitialChecklist = () => {
   const [rawRubrics, setRawRubrics] = React.useState([]); // raw canvas rubrics for input to createPeerReview
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
   const [rubric, setRubric] = React.useState(''); // selecting rubric for PR assignment
-
-  const courseId = 1
-  const assignmentId = 7
-  const assignmentName = "Peer Reviews Testing"
+  const { userId, courseId, assignment } = useUserData(); // get current user data
+  // const courseId = 1 // hardcoded
+  // const assignmentId = 7
+  const assignmentName = "Peer Reviews Static"
 
   useEffect(() => {
+    console.log('userid',userId,'coursid',courseId,'aid',assignment);
     canvasCalls.getRawRubrics(canvasCalls.token, courseId).then(response => {
       const rubricNames = response.map(rubricObj => {
         return rubricObj.title

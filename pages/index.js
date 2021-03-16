@@ -30,14 +30,14 @@ function Dashboard(props) {
   const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
-  const { createUser, userId, courseId } = useUserData();
+  const { createUser, userId, courseId, assignment } = useUserData();
 
   useEffect(() => {
     if (Cookies.get('userData')) {
       const userData = JSON.parse(Cookies.get('userData'));
       // console.log('user data: ', userData);
       createUser(userData);
-      console.log('userId: ', userId, 'courseId: ', courseId);
+      console.log('userId: ', userId, 'courseId: ', courseId, 'assignment: ',assignment);
     }
     if (props.ISstudent) {
       console.log('this is a student')

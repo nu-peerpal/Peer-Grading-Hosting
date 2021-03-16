@@ -19,13 +19,17 @@ const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
 
+// useEffect ()
+
+// get all submissions
+
   return (
     <Formik
       initialValues={{ peerLoad: 2, graderLoad: 3, TA: [] }}
       onSubmit={async (data, { setSubmitting }) => {
         setSubmitting(true);
         const matchings = await peerMatch(
-          graders,
+          graders, // groups
           peers,
           submissions,
           Number(data.peerLoad),
@@ -33,6 +37,9 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
         );
         let submissionBuckets = {};
         let userBuckets = {};
+        // convert groups to individuals
+        // convert individual IDs to names
+
         let grader, sub;
         for (let i in matchings) {
           [grader, sub] = matchings[i];
@@ -115,7 +122,7 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
   );
 }
 
-// display submission and peers reviewing iit
+// display submission and peers reviewing it
 function MatchingCell(props) {
 
   // nicely format the list of peers reviewing the submissions

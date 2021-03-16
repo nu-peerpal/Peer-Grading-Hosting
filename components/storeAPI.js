@@ -10,7 +10,7 @@ export const useUserData = () => {
     ta: state.ta,
     student: state.student,
     admin: state.admin,
-    assignmentId: state.assignment,
+    assignment: state.assignment,
     createUser: (user) => dispatch({type: "createUser",
       user_id: user.user_id,
       context_id: user.context_id,
