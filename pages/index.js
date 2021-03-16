@@ -35,9 +35,9 @@ function Dashboard(props) {
   useEffect(() => {
     if (Cookies.get('userData')) {
       const userData = JSON.parse(Cookies.get('userData'));
-      // console.log('user data: ', userData);
+      console.log('user data: ', userData);
       createUser(userData);
-      console.log('userId: ', userId, 'courseId: ', courseId, 'assignment: ',assignment);
+      // console.log('userId: ', userId, 'courseId: ', courseId, 'assignment: ',assignment);
     }
     if (props.ISstudent) {
       console.log('this is a student')

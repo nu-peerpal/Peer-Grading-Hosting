@@ -9,22 +9,25 @@ import AutoComplete from "../../../components/autocomplete";
 import TextField from '@material-ui/core/TextField';
 const canvasCalls = require("../../../canvasCalls");
 import { useUserData } from "../../../components/storeAPI";
+import { useRouter } from 'next/router'
 
 
 const InitialChecklist = () => {
+  const router = useRouter()
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
   const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
   const [rawRubrics, setRawRubrics] = React.useState([]); // raw canvas rubrics for input to createPeerReview
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
   const [rubric, setRubric] = React.useState(''); // selecting rubric for PR assignment
-  const { userId, courseId, assignment } = useUserData(); // get current user data
+  const { userId, courseId, assignment } = useUserData(); // data from LTI
+  const { assignmentId, assignmentName } = router.query; // currently selected assignment from dashboard
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
-  const assignmentName = "Peer Reviews Static"
+  // const assignmentName = "Peer Reviews Static"
 
   useEffect(() => {
-    console.log('userid',userId,'coursid',courseId,'aid',assignment);
+    console.log('userid',userId,', coursid',courseId,', launch aid',assignment,', selectAid',assignmentId,', selectAName',assignmentName);
     canvasCalls.getRawRubrics(canvasCalls.token, courseId).then(response => {
       const rubricNames = response.map(rubricObj => {
         return rubricObj.title
