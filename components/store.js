@@ -8,7 +8,7 @@ const initialState = {
     ta: '',
     student: '',
     admin: '',
-    assignment: ''};
+    assignment: '26'};
 
 const reducer = (state, action) => {
   switch(action.type) {
