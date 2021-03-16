@@ -223,7 +223,7 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 //  - rubricId and reviewRubricId not included, because we currently have no use for them
 
 
-async function postReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, dueDate, rubric) {
+async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, dueDate, rubric) {
   const data = {
     assignment: { 
       name: assignmentName + " Peer Review",
@@ -262,7 +262,7 @@ async function postReviewAssignment(token, courseId, assignmentId, assignmentNam
 }
 
 // getRawRubrics(token, 1).then(response => {
-//   postReviewAssignment(token, 1, 7, "Peer Reviews Testing", null, "2021-08-25T05:59:59Z", response[0]).then(response => {
+//   createReviewAssignment(token, 1, 7, "Peer Reviews Testing", null, "2021-08-25T05:59:59Z", response[0]).then(response => {
 //     console.log(response)
 //   })
 // })
@@ -338,7 +338,8 @@ function addReviewAssignment(token, assignment) {
 
 module.exports = {
   getAssignments,
-  postReviewAssignment,
+  createReviewAssignment,
+  addReviewAssignment,
   getRawRubrics,
   token
 }
