@@ -13,7 +13,7 @@ const InProgress = props => {
       <ListContainer
         name="Peer Assignments"
         data={progress}
-        link={"/assignments/fullassignmentview"}
+        link={"/assignments/fullassignmentview/fullassignmentview"}
       />
     </div>
   );

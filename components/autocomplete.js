@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles/autocomplete.module.css";
+import styles from "./styles/autocomplete.module.scss";
 import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -28,7 +28,6 @@ const AutoComplete = ({ textFieldProps, ...props }) => {
           <Checkbox
             icon={icon}
             checkedIcon={checkedIcon}
-            // style={{ marginRight: 8 }}
             checked={selected}
           />
           {option}

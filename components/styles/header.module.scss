@@ -1,0 +1,22 @@
+@import "../../global_styles/colors.scss";
+
+.header{
+    position: absolute;
+    height: 65px;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background: $primary_color;
+    display: flex;
+    align-items: center;
+
+    &__name{
+        position: absolute;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 30px;
+        line-height: 35px;
+        margin-left: 10px;
+        color: white;    
+    }
+}

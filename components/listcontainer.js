@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles/listcontainer.module.css';
+import styles from './styles/listcontainer.module.scss';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,18 +7,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
 
-// function GetData(props){
-//   console.log(props.data.name);
-//   for (const row in props.data) {
-//     return(
-//       <TableRow>
-//           <TableCell className="name">{row.name}</TableCell>
-//           <TableCell className="info">{row.info}</TableCell>
-//         </TableRow>
-//     )
-//   }
-// }
-
+function Info(props) {
+  const dueDate = props.dueDate;
+  const info = props.info;
+  if (dueDate) {
+    let newDate = new Date(dueDate);
+    let dateText = "Due " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
+    return <TableCell className={styles.info}>{dateText}</TableCell>
+  }
+  else {
+    return <TableCell className={styles.info}>{info}</TableCell>;
+  }
+}
 
 class ListContainer extends React.Component {
   constructor(props) {
@@ -33,23 +33,23 @@ class ListContainer extends React.Component {
     var list = "";
     var assignname = "";
     var student = information.student;
-    return (
-      // <TableRow>
-      //   <TableCell className={styles.name}>Name</TableCell>
-      //   <TableCell className={styles.info}>Info</TableCell>
-      // </TableRow>
-      information.data.map(x => {
-        return (
-          <Link href={information.link} className={styles.hov}>
-          <TableRow className={styles.row}>
-            <TableCell className={styles.name}>{x.name}</TableCell>
-            <TableCell className={styles.info}>{x.info}</TableCell>
-          </TableRow>
-          </Link>
+    if (information.data) {
+      return (
+        information.data.map(x => {
+          return (
+            <Link key={JSON.stringify(x)} href={{pathname: information.link, query: { name: x.name, id: x.canvasId}}} className={styles.hov}>
+              <TableRow className={styles.row}>
+                <TableCell className={styles.name}>{x.name}</TableCell>
+                <Info dueDate={x.assignmentDueDate} info={x.info}/>
+              </TableRow>
+            </Link>
+          )
+        }
         )
-      }
       )
-    )
+    } else {
+      return null;
+    }
   }
 
   render() {

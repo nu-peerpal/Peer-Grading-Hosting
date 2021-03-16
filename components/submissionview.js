@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles/submissionview.module.css";
+import styles from "./styles/submissionview.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -34,7 +34,9 @@ class Submission extends React.Component {
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             User 1's Submission
           </AccordionSummary>
-          <AccordionDetails>{this.props.sublink}</AccordionDetails>
+          <AccordionDetails>
+            <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe>
+          </AccordionDetails>
         </Accordion>
         <br />
         {Grading(gradingrubric)}
@@ -414,15 +416,28 @@ function Grading(rubric) {
               <TableHead>
                 <TableRow>
                   <TableCell>Criteria</TableCell>
-                  <TableCell align='center'>Grade</TableCell>
                   <TableCell align='center'>Comments</TableCell>
+                  <TableCell align='center'>Grade</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rubric.map((row, index) => (
                   <TableRow key={row[1]}>
                     <TableCell>{row[1]}</TableCell>
-                    <TableCell style={{ width: 80 }} align='center'>
+                    <TableCell align='center' style={{ width: 600 }}>
+                      <Field
+                        name={"Comments[" + index + "]"}
+                        type='input'
+                        rowsMin={4}
+                        value={values.Comments[index]}
+                        id='outlined-basic'
+                        variant='outlined'
+                        required={true}
+                        as={TextareaAutosize}
+                        class={styles.pms}
+                      />
+                    </TableCell>
+                    <TableCell style={{ width: 100 }} align='center'>
                       <Field
                         name={"Grades[" + index + "]"}
                         type='number'
@@ -437,19 +452,6 @@ function Grading(rubric) {
                         class={styles.pms}
                       />
                       <br></br>/{row[0]}
-                    </TableCell>
-                    <TableCell align='center' style={{ width: 600 }}>
-                      <Field
-                        name={"Comments[" + index + "]"}
-                        type='input'
-                        rowsMin={4}
-                        value={values.Comments[index]}
-                        id='outlined-basic'
-                        variant='outlined'
-                        required={true}
-                        as={TextareaAutosize}
-                        class={styles.pms}
-                      />
                     </TableCell>
                   </TableRow>
                 ))}

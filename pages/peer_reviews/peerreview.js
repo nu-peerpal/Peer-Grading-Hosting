@@ -14,6 +14,15 @@ const PeerReview = () => {
 
   const submissionId = 1;
   const rubricId = 1;
+  const rubricOne = {
+    id: 1,
+    rubric: [
+      [10, "Answer / Algorithm"],
+      [10, "Proof Analysis"],
+      [10, "Clarity"],
+    ],
+  };
+  const pdfUrl = "https://peer-grading-submissions.s3.us-east-2.amazonaws.com/becker-trellis-jcgs.pdf";
 
   useEffect(() => {
     (async () => {
@@ -21,15 +30,16 @@ const PeerReview = () => {
         getData(`/api/submissions/${submissionId}`),
         getData(`/api/rubrics/${rubricId}`),
       ]);
-      setSubmissionLink(submission.s3Link);
-      setRubric(rubric.rubric);
+      console.log("RUBRIC:",rubricOne);
+      // setSubmissionLink(submission.s3Link);
+      setRubric(rubricOne.rubric);
+      setSubmissionLink(pdfUrl);
     })();
   }, []);
 
   return (
     <div className="Content">
       <Container name="Grade User 1's Submission">
-        {/* {console.log(rubric)} */}
         <Submission sublink={submissionLink} rubric={rubric} />
       </Container>
     </div>

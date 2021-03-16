@@ -12,6 +12,8 @@ const db = require("./models");
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
+const cors = require('cors');
+
 
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
@@ -31,6 +33,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
+    server.use(cors());
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
@@ -44,7 +47,7 @@ app
       if (req.cookies && req.cookies.authToken){
         var nonce = req.cookies.authToken;
         userData = await keyv.get(nonce);
-        console.log(userData)
+        // console.log(userData)
         if (userData){
           req.userData = userData;
           return handle(req, res);
@@ -55,19 +58,19 @@ app
       var provider = new lti.Provider(consumer_key, consumer_secret)
       provider.valid_request(req, (err, is_valid) => {
         if (is_valid) {
-          
+          console.log(provider);
           //copying all the useful data from the provider to what will be stored for the user
-          userData.user_id = provider.body.user_id;
-          userData.context_id = provider.context_id;
+          userData.user_id = provider.body.custom_canvas_user_id;
+          userData.context_id = provider.body.custom_canvas_course_id;
           userData.instructor = provider.instructor;
           userData.ta = provider.ta;
           userData.student = provider.student;
           userData.admin = provider.admin;
-          userData.assignment = provider.body.ext_lti_assignment_id;
-
+          userData.assignment = provider.body.custom_canvas_assignment_id;
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
+          res.cookie('userData', JSON.stringify(userData));
           keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
           req.userData = userData;
         }
@@ -99,64 +102,6 @@ app
       if (err) throw err;
       console.log(`> App running on ${port}`);
     });
-
-
-    // // LTI JS
-    // //postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres
-
-    // // Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
-    // const lti_db = new Database("postgres", "pga", "Jas0n5468", {
-    //   host: "peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com",
-    //   dialect: "postgres",
-    //   logging: console.log,
-    // });
-
-    // // Setup provider
-    // lti.setup(
-    //   "LTIKEY", // Key used to sign cookies and tokens
-    //   {
-    //     plugin: lti_db, // Passing db object to plugin field
-    //   },
-    //   {
-    //     // Options
-    //     appRoute: "/",
-    //     loginRoute: "/login", // Optionally, specify some of the reserved routes
-    //     cookies: {
-    //       secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
-    //       sameSite: "", // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
-    //     },
-    //     devMode: false, // Set DevMode to true if the testing platform is in a different domain and https is not being used
-    //   }
-    // );
-
-    // // Set lti launch callback
-    // lti.onConnect((token, req, res) => {
-    //   console.log(token);
-    //   return res.send("It's alive!");
-    // });
-
-    // const setup = async () => {
-    //   // Deploy server and open connection to the database
-    //   await lti.deploy({ port: 3000 }); // Specifying port. Defaults to 3000
-
-    //   // Register platform
-    //   await lti.registerPlatform({
-    //     url: "https://lti-ri.imsglobal.org/platforms/1181",
-    //     name: "PGA-Test",
-    //     clientId: "12345",
-    //     authenticationEndpoint:
-    //       "https://lti-ri.imsglobal.org/platforms/1181/authorizations/new",
-    //     accesstokenEndpoint:
-    //       "https://lti-ri.imsglobal.org/platforms/1181/access_tokens",
-    //     authConfig: {
-    //       method: "JWK_SET",
-    //       key:
-    //         "https://lti-ri.imsglobal.org/platforms/1181/platform_keys/1177.json",
-    //     },
-    //   });
-    // };
-
-    // setup();
 
   })
   .catch((ex) => {
