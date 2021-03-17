@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 const canvasCalls = require("../../../canvasCalls");
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
+import { PanoramaFishEye } from "@material-ui/icons";
 
 
 const InitialChecklist = () => {
@@ -17,24 +18,27 @@ const InitialChecklist = () => {
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
   const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
-  const [rawRubrics, setRawRubrics] = React.useState([]); // raw canvas rubrics for input to createPeerReview
+  const [prGroup, setPrGroup] = React.useState(0); // list of group names and ids
+  const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
-  const [rubric, setRubric] = React.useState(''); // selecting rubric for PR assignment
-  const { userId, courseId, assignment } = useUserData(); // data from LTI
+  const [rubricId, setRubricId] = React.useState(0); // selecting rubric ID for PR assignment
+  // const { userId, courseId, assignment } = useUserData(); // data from LTI
   const { assignmentId, assignmentName } = router.query; // currently selected assignment from dashboard
+  const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
 
+  const courseId = 1;
+
   useEffect(() => {
-    console.log('userid',userId,', coursid',courseId,', launch aid',assignment,', selectAid',assignmentId,', selectAName',assignmentName);
+    // console.log('userid',userId,', coursid',courseId,', launch aid',assignment,', selectAid',assignmentId,', selectAName',assignmentName);
     canvasCalls.getRawRubrics(canvasCalls.token, courseId).then(response => {
-      const rubricNames = response.map(rubricObj => {
-        return rubricObj.title
-      })
-      setRawRubrics(response)
-      setRubricOptions(rubricNames)
+      setRubricOptions(response)
     })
+    canvasCalls.getAssignmentGroups(canvasCalls.token, courseId).then(response => {
+      setPrGroupOptions(response);
+    });
 
     setDueDate(null)
     setPrDueDate("2021-08-25T05:59:59Z")
@@ -48,14 +52,24 @@ const InitialChecklist = () => {
         <div className={styles.columnContainer}>
           <div className={styles.column}>
             <div className={styles.column__header}>
-              Enable Peer Reviews
+              Assignment Name and Group
             </div>
             <div className={styles.column__content}>
-              Peer Reviews are currently {prEnabled ? "enabled" : "disabled"}.
-                <Button color={prEnabled ? "default" : "primary"} variant="contained" onClick={() => { setPrEnabled(!prEnabled) }}>
-                {prEnabled ? "Disable" : "Enable"} Peer Reviews
-                </Button>
-
+              Name of the peer review assignment:
+              <form>
+                <input type="text" value={prName} onChange={(e) => setPrName(e.target.value)} />
+              </form>
+            </div>
+            <br/>
+            <div className={styles.column__content}>
+              Select peer review assignment group:
+              <form>
+                <select value={prGroup} onChange={e => setPrGroup(e.target.value)} >
+                  {prGroupOptions.map(prGroup => {
+                    return <option key={prGroup.id} value={prGroup.id}>{prGroup.name}</option>;
+                  })}
+                </select>
+              </form>
             </div>
           </div>
 
@@ -100,38 +114,13 @@ const InitialChecklist = () => {
             </div>
             <div className={styles.column__content}>
               Select a rubric for the peer review assignment.
-              <Formik
-                initialValues={{ rubric: [] }}
-                onSubmit={(data, { setSubmitting }) => {
-                  setSubmitting(true)
-                  var i;
-                  for (i=0; i < rubricOptions.length; i++) {
-                    if (rawRubrics[i].title === data.TA[0]) {
-                      setRubric(rawRubrics[i]);
-                      break;
-                    };
-                  };
-                  // console.log(rubric)
-                  setSubmitting(false)
-                }
-              }
-              >
-                {({ values, isSubmitting }) => (
-                  <Form>
-                    <Field as="select"
-                      name="rubric"
-                      component={AutoComplete}
-                      label="rubric"
-                      options={rubricOptions}
-                      className={styles.dropdown}
-                    />
-                    <Button disabled={isSubmitting} type="submit" >
-                      Submit
-                    </Button>
-                  </Form>
-                )}
-              </Formik>
-
+              <form>
+                <select value={rubricId} onChange={e => setRubricId(e.target.value)} >
+                  {rubricOptions.map(rubricObj => {
+                    return <option key={rubricObj.id} value={rubricObj.id}>{rubricObj.title}</option>;
+                  })}
+                </select>
+              </form>
             </div>
           </div>
         </div>
@@ -139,7 +128,15 @@ const InitialChecklist = () => {
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
         <Button onClick={() => {
-          canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentId, assignmentName, dueDate, prDueDate, rubric).then(assignment => {
+          var rubric = null;
+          var i;
+          for (i = 0; i < rubricOptions.length; i++) {
+            if (rubricOptions[i].id == rubricId) {
+              rubric = rubricOptions[i];
+              break;
+            }
+          }
+          canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentId, assignmentName, dueDate, prName, prDueDate, prGroup, rubric).then(assignment => {
             console.log(assignment)
             // canvasCalls.addReviewAssignment(canvasCalls.token, assignment)
           })
