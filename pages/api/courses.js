@@ -4,6 +4,15 @@ const responseHandler = require("./utils/responseHandler");
 export default async (req, res) => {
   try {
     switch (req.method) {
+      case "GET":
+        if (!req.query.canvasId) {
+          throw new Error("Query parameter canvasId required");
+        }
+        let courses = await db.courses.findAll({
+          where: { canvasId: req.query.canvasId },
+        });
+        responseHandler.response200(res, courses);
+        break;
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(

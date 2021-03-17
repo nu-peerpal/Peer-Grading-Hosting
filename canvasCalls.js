@@ -341,5 +341,6 @@ module.exports = {
   createReviewAssignment,
   addReviewAssignment,
   getRawRubrics,
+  addCourses,
   token
 }
