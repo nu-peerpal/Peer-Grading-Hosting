@@ -178,6 +178,7 @@ const ReviewReports = () => {
                             <div className={styles.scoreContainer}>
                               {submission[1].scores.map(score =>
                                 <div className={styles.score}>
+                                  <p className={styles.score__rubric_field}>{revData.rubric[submission[1].scores.indexOf(score)][1]}</p>
                                   <p className={styles.score__value}>{score[0]}</p>
                                   <p className={styles.score__title}>{score[1]}</p>
                                 </div>

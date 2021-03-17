@@ -16,6 +16,7 @@
     @extend .flex_center;
     flex-direction: column;
     border: 1px solid lightgray;
+    background-color: #ededed;
     width: 100px;
     padding: 15px 0;
     margin: 15px;
@@ -28,13 +29,21 @@
     &__value{
         color: $primary_color;
         font-weight: bold;
-        font-size: 30px;
+        font-size: 32px;
         margin: 0 !important;
     }
 
     &__title{
         font-weight: bold;
         margin: 0 !important;
+        color: $primary_color;
+    }
+
+    &__rubric_field{
+        font-weight: bold;
+        text-align: center;
+        font-size: 12px;
+        margin: 0 0 10px 0!important;
     }
 
 }
