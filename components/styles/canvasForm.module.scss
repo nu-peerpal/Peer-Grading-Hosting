@@ -1,0 +1,21 @@
+@import '../../global_styles/utilities.scss';
+@import '../../global_styles/atoms.scss';
+
+.form{
+    @extend .flex_center;
+    flex-direction: column;
+    height: 50vh;
+
+    &__button{
+        @extend .button;
+    }
+
+    &__input{
+        @extend .input;
+        margin-right: 10px;
+    }
+
+    &__description{
+        margin-bottom: 15px;
+    }
+}

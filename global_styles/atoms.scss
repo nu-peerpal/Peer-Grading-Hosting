@@ -1,0 +1,22 @@
+/*
+For use:
+In the scss file you want to use it, put "import '../whateverfilepath/global_styles/atoms.scss'
+In the class name you want to add this to, put "@extend .whatever-class-name-you-pick-from-here"
+*/
+
+@import './colors.scss';
+
+.button {
+    height: 35px;
+    width: 100px;
+    background-color: $primary_color;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.input {
+    height: 25px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+}

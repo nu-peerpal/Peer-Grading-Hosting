@@ -12,6 +12,7 @@ const db = require("./models");
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
+const cors = require('cors');
 
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
@@ -31,6 +32,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
+    server.use(cors());
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
@@ -55,16 +57,16 @@ app
       var provider = new lti.Provider(consumer_key, consumer_secret)
       provider.valid_request(req, (err, is_valid) => {
         if (is_valid) {
-          
+          console.log(provider);
           //copying all the useful data from the provider to what will be stored for the user
-          userData.user_id = provider.body.user_id;
-          userData.context_id = provider.context_id;
+          userData.user_id = provider.body.custom_canvas_user_id;
+          userData.context_id = provider.body.custom_canvas_course_id;
           userData.instructor = provider.instructor;
           userData.ta = provider.ta;
           userData.student = provider.student;
           userData.admin = provider.admin;
           userData.assignment = provider.body.ext_lti_assignment_id;
-
+          console.log('user data', userData);
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
