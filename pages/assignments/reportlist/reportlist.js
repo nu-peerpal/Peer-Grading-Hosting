@@ -44,7 +44,7 @@ var subData = {
 
 var revData = {
   reviews: [
-    [11, 114, { 'scores': [[0.9, 'good'], [0.8, 'decent']], 'comments': 'Nice Work' }],
+    [11, 114, { 'scores': [[0.9, 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.'], [0.8, 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.']], 'comments': 'Nice Work' }],
     [11, 120, { 'scores': [[0.6, 'okay'], [0.4, 'bad']], 'comments': 'Try harder' }],
     [12, 114, { 'scores': [[0.9, 'good'], [0.8, 'decent']], 'comments': 'Nice Work' }],
     [12, 118, { 'scores': [[0.6, 'okay'], [0.4, 'bad']], 'comments': 'Try harder' }],
@@ -193,19 +193,6 @@ const ReviewReports = () => {
                       )
                     }
                     </div>
-                    {/* <p className={styles.details__title}>Scores</p>
-                    <div className={styles.scoreContainer}>
-                      {review[2].scores.map(score =>
-                        <div className={styles.score}>
-                          <p className={styles.score__value}>{score[0]}</p>
-                          <p className={styles.score__title}>{score[1]}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <p className={styles.details__title}>Comments</p>
-                      {review[2].comments}
-                    </div> */}
                   </div>
 
                 </Typography>
