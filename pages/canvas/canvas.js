@@ -29,7 +29,9 @@ function Canvas() {
         <CanvasForm></CanvasForm>
 
       </div>
-  )
-}
+    )
+  }
+
+
 
 export default Canvas;

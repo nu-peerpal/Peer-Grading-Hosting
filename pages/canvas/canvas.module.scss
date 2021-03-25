@@ -1,0 +1,12 @@
+@import '../../global_styles/utilities.scss';
+
+.container {
+    @extend .flex_center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.container__button {
+    @extend .flex_center;
+    margin-top: 25px;
+}

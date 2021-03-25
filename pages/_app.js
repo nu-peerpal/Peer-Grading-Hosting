@@ -9,6 +9,7 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Styles from './toggle.module.css'
 import { StoreProvider } from "../components/store";
 
+import utilities from '../global_styles/utilities.scss';
 
 export default function MyApp({ Component, pageProps }) {
   const [isstudent, setisstudent] = useState(false);
