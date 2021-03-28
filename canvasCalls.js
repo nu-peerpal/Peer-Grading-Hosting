@@ -186,7 +186,7 @@ const getRawRubrics = async (token, courseId) => {
 
 // adds rubrics to db
 const addRubrics = (rawRubrics) => {
-  const rubrics = rawRubrics.data.map(rubricObj => {
+  const rubrics = rawRubrics.map(rubricObj => {
     const rubric = rubricObj.data.map(rubricData => {
       return [rubricData.points, rubricData.description, rubricData.long_description]
     })
@@ -370,6 +370,7 @@ module.exports = {
   createReviewAssignment,
   addReviewAssignment,
   getRawRubrics,
+  addRubrics,
   addCourses,
   token
 }

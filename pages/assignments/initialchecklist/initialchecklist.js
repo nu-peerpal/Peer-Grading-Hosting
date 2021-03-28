@@ -22,19 +22,19 @@ const InitialChecklist = () => {
   const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
   const [rubricId, setRubricId] = React.useState(0); // selecting rubric ID for PR assignment
-  // const { userId, courseId, assignment } = useUserData(); // data from LTI
+  const { userId, courseId, assignment } = useUserData(); // data from LTI launch
   const { assignmentId, assignmentName } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
 
-  const courseId = 1;
-
   useEffect(() => {
     // console.log('userid',userId,', coursid',courseId,', launch aid',assignment,', selectAid',assignmentId,', selectAName',assignmentName);
     canvasCalls.getRawRubrics(canvasCalls.token, courseId).then(response => {
-      setRubricOptions(response)
+      console.log('rubrics: ',response);
+      canvasCalls.addRubrics(response).then(res => console.log(res));
+      setRubricOptions(response);
     })
     canvasCalls.getAssignmentGroups(canvasCalls.token, courseId).then(response => {
       setPrGroupOptions(response);
