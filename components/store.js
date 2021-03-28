@@ -6,7 +6,7 @@ const initialState = {
     context_id: '1',
     context_name: '',
     roles: [],
-    assignment: '26',
+    assignment: '1', // Course Evaluation Essay
     key: 'Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n'};
 
 const reducer = (state, action) => {

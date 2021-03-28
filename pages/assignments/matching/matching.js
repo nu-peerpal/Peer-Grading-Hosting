@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./matching.module.scss";
 import Container from "../../../components/container";
 import Tree from "../../../components/tree";
@@ -10,22 +10,66 @@ import { Field, Formik, Form } from "formik";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
 import AutoComplete from "../../../components/autocomplete";
+import UploadSubmissions from "../../../components/uploadSubmissions";
 import sampleData from "../../../sample_data/peerMatching";
 import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
+import { useUserData } from "../../../components/storeAPI";
+const canvasCalls = require("../../../canvasCalls");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }) {
+function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGrid }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
+  const [matchedUsers, setMatchedUsers] = useState();
+  const [matchedSubs, setMatchedSubs] = useState();
+  const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
+  
+  let users;
+  let graders = []
+  let peers = []
+  let submissions = [];
+  useEffect(() => {
+    console.log('made it to useEffect 2!');
+    // Not supporting groups. If so, add this to call promises: ,canvasCalls.getGroups(canvasCalls.token, courseId, assignment)
+    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment)]).then((canvasData) => {
+      console.log(canvasData);
+      users = canvasData[0];
+      let submissionData = canvasData[1];
+      // separate users, compile data for alg call
+      let graderData = users.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
+      graders = []; 
+      for (let grader in graderData) {
+        graders.push(graderData[grader]["canvasId"]);
+      }
+      let peerData = users.filter(user => user.enrollment == "StudentEnrollment");
+      peers = [];
+      for (let peer in peerData) {
+        peers.push(peerData[peer]["canvasId"]);
+      }
+      submissions = [];
+      for (let sub in submissionData) {
+        submissions.push([submissionData[sub]["submitterId"],submissionData[sub]["canvasId"]]);
+      }
+      console.log('alg data: ',graders,peers,submissions)
+      // Uncomment to support groups
+      // let groupData = canvasData[2];
+      // let group_assignments;
+      // let groups = [];
+      // for (let group in groupData) { // in case you want to send groups to peerMatch
+      //   group_assignments[group][groupData[group]["canvasId"]] = groupData[group][userIds];
+      //   groups.push(groupData[group]["canvasId"]);
+      // }
 
-// useEffect ()
+    });
+  },[]);
 
 // get all submissions
 
   return (
+    <div>
     <Formik
-      initialValues={{ peerLoad: 2, graderLoad: 3, TA: [] }}
+      initialValues={{ peerLoad: 3, graderLoad: 10, TA: [] }}
       onSubmit={async (data, { setSubmitting }) => {
         setSubmitting(true);
         const matchings = await peerMatch(
@@ -35,25 +79,44 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
+        let matched_users = {};
         let submissionBuckets = {};
         let userBuckets = {};
-        // convert groups to individuals
-        // convert individual IDs to names
-
-        let grader, sub;
+        let grader, sub, user;
         for (let i in matchings) {
           [grader, sub] = matchings[i];
-          if (submissionBuckets[sub]) {
-            submissionBuckets[sub].push(grader);
-          } else {
-            submissionBuckets[sub] = [grader];
+          for (let j in users) {
+            user = users[j];
+            if (grader == user["canvasId"]) {
+              console.log('found a match!')
+              matched_users[grader] = {
+                name: user["firstName"] + " " + user["lastName"],
+                enrollment: user["enrollment"],
+                submissions: []
+              }
+              console.log(matched_users);
+            }
           }
-          if (userBuckets[grader]) {
-            userBuckets[grader].push(sub);
+          // console.log('matched_users: ', matched_users)
+          // console.log('gradermatch: ', grader, matched_users[grader]["submissions"]);
+          console.log('grader: ',grader);
+          if (matched_users[grader]["submissions"]) {
+            matched_users[grader]["submissions"].push(sub);
           } else {
-            userBuckets[grader] = [sub];
+            matched_users[grader]["submissions"] = [sub];
+          }
+
+          if (submissionBuckets[sub]) {
+            submissionBuckets[sub].push(matched_users[grader]);
+          } else {
+            submissionBuckets[sub] = [matched_users[grader]];
           }
         }
+        setMatchedUsers(matched_users);
+        setMatchedSubs(submissionBuckets);
+        console.log(matchedUsers,matchedSubs);
+        // convert groups to individuals
+        // convert individual IDs to names
 
         console.log('Sub buckets: ', submissionBuckets);
         console.log('User buckets: ', userBuckets);
@@ -119,6 +182,7 @@ function Settings({ graders, peers, submissions, setMatchings, setMatchingGrid }
         </Form>
       )}
     </Formik>
+    </div>
   );
 }
 
@@ -168,10 +232,14 @@ function MatchingCell(props) {
 function Matching() {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
+  const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
 
 
-  // NOTE: The following code should be removed upon usage of real data.
-  const { graders, peers, submissions } = sampleData;
+  // NOTE: The following code is completely fake sample data. 
+  // const { graders, peers, submissions } = sampleData;
+  // NOTE: The following code is fetched directly from cavas.
+  
+  
 
   /* NOTE: The following code should be used instead when real data populated in database.
   const courseId = 1;
@@ -211,36 +279,18 @@ function Matching() {
           </AccordionSummary>
           <AccordionDetails>
             <Settings
-              graders={graders}
-              peers={peers}
-              submissions={submissions}
+              // graders={graders}
+              // peers={peers}
+              // submissions={submissions}
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
             />
           </AccordionDetails>
         </Accordion>
-        {matchings.length > 0 && (
-          <>
-            {/* <div className={styles.result}>
-              <span
-                className={styles.result__header}
-              >
-                Submission
-              </span>
-              <span className={styles.result__header}>
-                Matched Peer / Instructor
-              </span>
-            </div> */}
-          </>
-        )}
 
         <div className={styles.matchingGrid}>
           {matchingGrid}
         </div>
-        {/* {subMatchings.map(obj=>
-        <MatchingCell key={obj} submission={obj} peers={subMatchings[obj]}/>
-          )} */}
-        {/* <Tree id="tree" response={matchings} /> */}
       </Container>
     </div>
   );
