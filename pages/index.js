@@ -2,25 +2,10 @@ import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
+const axios = require("axios");
 const canvasCalls = require("../canvasCalls");
-
-function ToDoList(props) {
-  if (props.data) {
-    return <ListContainer
-      name="Todos"
-      data={props.data}
-      student={props.ISstudent}
-      link={props.link}
-    />
-  } else { // No items in to do list. 
-  return <ListContainer
-    name="Todos"
-    data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
-    info= "Get Started"
-    link= "/canvas/canvas"
-  />
-  }
-}
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr('fake_secret');
 
 function Dashboard(props) {
   const studentUserId = 1;
@@ -30,7 +15,8 @@ function Dashboard(props) {
   const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
-  const { createUser, userId, courseId, assignment } = useUserData();
+  const { createUser, setKey, userId, courseId, courseName, assignment, roles, key } = useUserData();
+  let todos = true;
 
   useEffect(() => {
     if (Cookies.get('userData')) {
@@ -39,6 +25,18 @@ function Dashboard(props) {
       createUser(userData);
       // console.log('userId: ', userId, 'courseId: ', courseId, 'assignment: ',assignment);
     }
+    // axios.get(`/api/courses?canvasId=${courseId}`).then(res => {
+    //   if (res) {
+    //     let resKey = res.data.data[0].canvasKey;
+    //     (async () => {
+    //       let dekey = await cryptr.decrypt(resKey);
+    //       setKey(dekey);
+    //     })();
+    //   } else {
+        
+    //   }
+    // });
+
     if (props.ISstudent) {
       console.log('this is a student')
     }  
@@ -59,7 +57,6 @@ function Dashboard(props) {
     //     }
     //   })();
     // }
-  
     (async () => {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
@@ -101,15 +98,6 @@ function Dashboard(props) {
         }
       }
 
-      // if (toDoReviews.length==0) {
-      //   console.log('made it')
-      //   toDoReviews.push({
-      //     name: "Enable your first class for Peer Reviews!",
-      //     info: "Get Started",
-      //     link: "/canvas/canvas"
-      //   });
-      // }
-
       props.ISstudent
         ? setToDoReviews(toDoReviews)
         : setTaToDos([...toDoReviews, ...statusUpdates]);
@@ -136,7 +124,7 @@ function Dashboard(props) {
   } else { // TA or Instructor View
     return (
       <div className="Content">
-        <ToDoList />
+        <ToDoList data={taToDos}/>
         
         <ListContainer
           name="View As Student"
@@ -144,13 +132,43 @@ function Dashboard(props) {
           link=""
         />
         {/*link needs to be figured out later, might always be blank*/}
-        <ListContainer
+        <CanvasAssignments assignments={canvasAssignments} />
+        {/* <ListContainer
           name="Canvas Assignments"
           data={canvasAssignments}
           link="/assignments/fullassignmentview/fullassignmentview"
-        />
+        /> */}
       </div>
     );
+  }
+}
+
+function ToDoList(props) {
+  if (props.data[0]) {
+    return <ListContainer
+      name="Todos"
+      data={props.data}
+      student={props.ISstudent}
+      link={props.link}
+    />
+  } else { // No items in to do list. 
+  return <ListContainer
+    name="Todos"
+    data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
+    info= "Get Started"
+    link= "/canvas/canvas"
+  />
+  }
+}
+function CanvasAssignments(props) {
+  if (props.assignments) {
+    return <ListContainer
+      name="Canvas Assignments"
+      data={props.assignments}
+      link="/assignments/fullassignmentview/fullassignmentview"
+    />
+  } else { // No assignments loaded 
+  return null;
   }
 }
 

@@ -120,6 +120,7 @@ const getGroups = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
+  // console.log(assignmentResponse)
   const groupCategoryId = assignmentResponse.data.group_category_id
   const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
     headers: {
@@ -150,6 +151,25 @@ const getGroups = async (token, courseId, assignmentId) => {
 const addGroups = (groups) => {
   return axios.post(`${server}/api/groups?type=multiple`, groups)
 }
+
+
+// gets rubrics from a course given a courseId in raw format - used as input to create review assignment
+const getAssignmentGroups = async (token, courseId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignment_groups", {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const groups = response.data.map(groupObj => {
+    return {
+      id: groupObj.id,
+      name: groupObj.name
+    }
+  })
+  return groups
+}
+
+// getAssignmentGroups(token, 1).then(response => console.log(response))
 
 
 // gets rubrics from a course given a courseId in raw format - used as input to create review assignment
@@ -185,12 +205,15 @@ const getSubmissions = async (token, courseId, assignmentId) => {
     }
   })
   const filteredSubmissions = response.data.filter(submission => {
+    // console.log('submission: ', submission);
     return submission.workflow_state == 'submitted';
   })
   const submissions = filteredSubmissions.map(submission => {
     var submissionBody = submission.body
+    // console.log(submission);
     if (submission.submission_type == 'online_upload') {
       submissionBody = submission.attachments[0].url
+      // submissionBody = submission.preview_url; // possibly a way to get the document itself from this link
     }
     return {
       submissionType: submission.submission_type,
@@ -198,7 +221,8 @@ const getSubmissions = async (token, courseId, assignmentId) => {
       assignmentId: assignmentId,
       canvasId: submission.id,
       grade: submission.grade,
-      groupId: submission.group.id
+      groupId: submission.group.id,
+      submitterId: submission.user_id,
     }
   })
   return submissions
@@ -223,13 +247,14 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 //  - rubricId and reviewRubricId not included, because we currently have no use for them
 
 
-async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, dueDate, rubric) {
+async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, prName, prDueDate, prGroup, rubric) {
   const data = {
     assignment: { 
-      name: assignmentName + " Peer Review",
-      due_at: dueDate, //"2021-05-01T11:59:00Z"
+      name: prName,
+      due_at: prDueDate, //"2021-05-01T11:59:00Z"
       description: "Peer Review Assignment for " + assignmentName,
       published: true,
+      assignment_group_id: prGroup,
       points: rubric.points_possible
     }
   }
@@ -338,8 +363,13 @@ function addReviewAssignment(token, assignment) {
 
 module.exports = {
   getAssignments,
+  getAssignmentGroups,
+  getSubmissions,
+  getUsers,
+  getGroups,
   createReviewAssignment,
   addReviewAssignment,
   getRawRubrics,
+  addCourses,
   token
 }

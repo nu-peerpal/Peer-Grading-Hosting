@@ -5,12 +5,15 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
-        if (!req.query.canvasId) {
-          throw new Error("Query parameter canvasId required");
+        if (!req.query.courseId) {
+          throw new Error("Query parameter courseId required");
         }
-        let courses = await db.courses.findAll({
-          where: { canvasId: req.query.canvasId },
-        });
+        if (!req.query.assignmentId) {
+            throw new Error("Query parameter assignmentId required");
+        }
+        // let courses = await db.courses.findAll({
+        //   where: { canvasId: req.query.canvasId },
+        // });
         responseHandler.response200(res, courses);
         break;
       case "POST":

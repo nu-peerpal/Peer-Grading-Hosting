@@ -21,7 +21,7 @@ function ViewAssignmentGrade() {
 
   // Needs work: minor improvements to V0
   return (
-    <div class="Content">
+    <div className="Content">
       <Container name={`Grade for Assignment ${assignmentId}`}>
         <div>Assignment: {assignment.name}</div>
         <br />

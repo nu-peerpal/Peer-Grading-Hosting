@@ -62,6 +62,7 @@ app
           //copying all the useful data from the provider to what will be stored for the user
           userData.user_id = provider.body.custom_canvas_user_id;
           userData.context_id = provider.body.custom_canvas_course_id;
+          userData.context_name = provider.body.custom_canvas_assignment_title;
           userData.instructor = provider.instructor;
           userData.ta = provider.ta;
           userData.student = provider.student;
