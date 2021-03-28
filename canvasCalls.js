@@ -199,7 +199,7 @@ const addRubrics = (rawRubrics) => {
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
 // If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
 const getSubmissions = async (token, courseId, assignmentId) => {
-  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?&include[]=group&grouped=1&per_page=300", {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&grouped=1&per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -230,6 +230,23 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 
 // getSubmissions(token, 1, 6).then(response => console.log(response))
 
+
+// posts a grade to a submission, given courseId, assignmentId, userId, grades array
+const postGrades = (token, courseId, assignmentId, grades) => {
+  const grade_data = {}
+  var i = 0
+  for (i = 0; i < grades.length; i++) {
+    grade_data[grades[i][0]] = { posted_grade: grades[i][1] }
+  }
+  const data = {
+    grade_data: grade_data
+  }
+  axios.post(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/submissions/update_grades", data, {
+    headers: {'Authorization': `Bearer ${token}`}
+  })
+}
+
+// postGrades(token, 1, 6, [[28, 8.5], [16, 9.5]])
 
 
 // createReviewAssignment creates the review assignment in Canvas
@@ -294,7 +311,7 @@ async function createReviewAssignment(token, courseId, assignmentId, assignmentN
 
 // adds assignment to the db
 function addReviewAssignment(token, assignment) {
-  return axios.post(`${server}/api/assignments`, assignments)
+  return axios.post(`${server}/api/assignments`, assignment)
 }
 
 
