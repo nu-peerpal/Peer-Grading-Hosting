@@ -6,6 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
+import MenuItem from '@material-ui/core/MenuItem'
 import { Field, Formik, Form } from "formik";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
@@ -21,37 +22,43 @@ const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGrid }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
+  const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
   const [matchedSubs, setMatchedSubs] = useState();
+  const [users, setUsers] = useState();
+  const [graders, setGraders] = useState([]);
+  const [peers, setPeers] = useState([]);
+  const [submissions,setSubmissions] = useState([]);
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
-  
-  let users;
-  let graders = []
-  let peers = []
-  let submissions = [];
+
   useEffect(() => {
-    console.log('made it to useEffect 2!');
+    // console.log('made it to useEffect 2!');
     // Not supporting groups. If so, add this to call promises: ,canvasCalls.getGroups(canvasCalls.token, courseId, assignment)
     Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment)]).then((canvasData) => {
-      console.log(canvasData);
-      users = canvasData[0];
+      console.log('submissions: ', canvasData[1])
+      let tempUsers = canvasData[0];
       let submissionData = canvasData[1];
       // separate users, compile data for alg call
-      let graderData = users.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
-      graders = []; 
+      let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
+      let tempGraders = []; 
       for (let grader in graderData) {
-        graders.push(graderData[grader]["canvasId"]);
+        tempGraders.push(graderData[grader]["canvasId"]);
       }
-      let peerData = users.filter(user => user.enrollment == "StudentEnrollment");
-      peers = [];
+      let peerData = tempUsers.filter(user => user.enrollment == "StudentEnrollment");
+      let tempPeers = [];
       for (let peer in peerData) {
-        peers.push(peerData[peer]["canvasId"]);
+        tempPeers.push(peerData[peer]["canvasId"]);
       }
-      submissions = [];
+      let tempSubmissions = [];
       for (let sub in submissionData) {
-        submissions.push([submissionData[sub]["submitterId"],submissionData[sub]["canvasId"]]);
+        tempSubmissions.push([submissionData[sub]["submitterId"],submissionData[sub]["canvasId"]]);
       }
-      console.log('alg data: ',graders,peers,submissions)
+      console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
+      setTas([tempGraders]);
+      setUsers(tempUsers);
+      setGraders(tempGraders.sort(function(a, b){return a-b}));
+      setPeers(tempPeers.sort(function(a, b){return a-b}));
+      setSubmissions(tempSubmissions);
       // Uncomment to support groups
       // let groupData = canvasData[2];
       // let group_assignments;
@@ -60,87 +67,106 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
       //   group_assignments[group][groupData[group]["canvasId"]] = groupData[group][userIds];
       //   groups.push(groupData[group]["canvasId"]);
       // }
-
+      
     });
   },[]);
 
-// get all submissions
+    useEffect(() => {
+      console.log('View toggled!');
+      if (matchedUsers && matchedSubs) {
+        // create the grid that will show the matchings
+        var mg = []
+        // if they want to see submissions first
+        if (subFirstView) {
+          for (var obj in matchedSubs) {
+            console.log(matchedSubs);
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} />)
+          }
+        }
+        else{
+          // console.log(matchedSubs);
+          for (var obj in matchedUsers) {
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={JSON.stringify(matchedUsers[obj]["name"])} submissions={JSON.stringify(matchedUsers[obj]["submissions"])} />)
+          }
+        }
+
+        setMatchingGrid(mg);
+      }
+    },[subFirstView])
+
+  // run algo, produce matchings
+  async function createMatchings(data, setSubmitting) {
+    setSubmitting(true);
+    console.log('form data:',graders,peers,submissions);
+    const matchings = await peerMatch(
+      graders, // groups
+      peers,
+      submissions,
+      Number(data.peerLoad),
+      Number(data.graderLoad)
+    );
+    let matched_users = {};
+    let submissionBuckets = {};
+    let userBuckets = {};
+    let grader, sub, user;
+    for (let i in matchings) {
+      // console.log('matching: ',matchings[i]);
+      [grader, sub] = matchings[i];
+      for (let j in users) {
+        user = users[j];
+        if (grader == user["canvasId"]) {
+          matched_users[grader] = {
+            name: user["firstName"] + " " + user["lastName"],
+            enrollment: user["enrollment"],
+            submissions: []
+          }
+        }
+      }
+      // console.log('matched_users: ', matched_users)
+      // console.log('gradermatch: ', grader, matched_users[grader]["submissions"]);
+      // console.log('grader: ',grader);
+      // console.log('matched users: ',matched_users);
+      if (matched_users[grader]["submissions"]) {
+        matched_users[grader]["submissions"].push(sub);
+      } else {
+        matched_users[grader]["submissions"] = [sub];
+      }
+
+      if (submissionBuckets[sub]) {
+        submissionBuckets[sub].push(matched_users[grader]);
+      } else {
+        submissionBuckets[sub] = [matched_users[grader]];
+      }
+    }
+    setMatchedUsers(matched_users);
+    setMatchedSubs(submissionBuckets);
+
+    // create the grid that will show the matchings
+    var mg = []
+
+    // if they want to see submissions first
+    if (subFirstView) {
+      console.log(submissionBuckets);
+      for (var obj in submissionBuckets) {
+        mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+      }
+    }
+    else{
+      for (var obj in matched_users) {
+        mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} />)
+      }
+    }
+
+    setMatchingGrid(mg);
+    setSubmitting(false);
+  }
 
   return (
     <div>
     <Formik
       initialValues={{ peerLoad: 3, graderLoad: 10, TA: [] }}
       onSubmit={async (data, { setSubmitting }) => {
-        setSubmitting(true);
-        const matchings = await peerMatch(
-          graders, // groups
-          peers,
-          submissions,
-          Number(data.peerLoad),
-          Number(data.graderLoad)
-        );
-        let matched_users = {};
-        let submissionBuckets = {};
-        let userBuckets = {};
-        let grader, sub, user;
-        for (let i in matchings) {
-          [grader, sub] = matchings[i];
-          for (let j in users) {
-            user = users[j];
-            if (grader == user["canvasId"]) {
-              console.log('found a match!')
-              matched_users[grader] = {
-                name: user["firstName"] + " " + user["lastName"],
-                enrollment: user["enrollment"],
-                submissions: []
-              }
-              console.log(matched_users);
-            }
-          }
-          // console.log('matched_users: ', matched_users)
-          // console.log('gradermatch: ', grader, matched_users[grader]["submissions"]);
-          console.log('grader: ',grader);
-          if (matched_users[grader]["submissions"]) {
-            matched_users[grader]["submissions"].push(sub);
-          } else {
-            matched_users[grader]["submissions"] = [sub];
-          }
-
-          if (submissionBuckets[sub]) {
-            submissionBuckets[sub].push(matched_users[grader]);
-          } else {
-            submissionBuckets[sub] = [matched_users[grader]];
-          }
-        }
-        setMatchedUsers(matched_users);
-        setMatchedSubs(submissionBuckets);
-        console.log(matchedUsers,matchedSubs);
-        // convert groups to individuals
-        // convert individual IDs to names
-
-        console.log('Sub buckets: ', submissionBuckets);
-        console.log('User buckets: ', userBuckets);
-
-        // create the grid that will show the matchings
-        var mg = []
-
-        // if they want to see submissions first
-        if (subFirstView) {
-          for (var obj in submissionBuckets) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
-          }
-        }
-        else{
-          for (var obj in userBuckets) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={obj} submissions={userBuckets[obj]} />)
-          }
-        }
-
-        setMatchingGrid(mg);
-
-        setMatchings(matchings);
-        setSubMatchings(submissionBuckets);
-        setSubmitting(false);
+        createMatchings(data, setSubmitting);
       }}
     >
       {({ values, isSubmitting }) => (
@@ -164,14 +190,18 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
             className={styles.formfield}
           />
           TAs: {/* why isn't the label working here ??  */}
-          <Field
+          {tas.map(taList => 
+            <Field
+            key={taList}
             name="TA"
             className={styles.formfield}
             component={AutoComplete}
             required={true}
             label="TA"
-            options={graders}
-          />
+            options={taList}
+            />
+          )
+          }
           <Button disabled={isSubmitting} type="submit">
             Compute Matchings
           </Button>
@@ -193,7 +223,7 @@ function MatchingCell(props) {
   var formattedPeers = "";
   if (props.peers){
     for (var i = 0; i < props.peers.length; i++) {
-      formattedPeers += (props.peers[i]);
+      formattedPeers += (JSON.stringify(props.peers[i]["name"]));
       formattedPeers += (", ")
     }
   }

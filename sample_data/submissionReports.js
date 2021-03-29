@@ -29,6 +29,6 @@ const subData = {
       [1, 111, { 'scores': [[0.9, 'good'], [0.8, 'decent']], 'comments': 'Nice Work' }],
       [2, 116, { 'scores': [[0.6, 'okay'], [0.4, 'bad']], 'comments': 'Try harder' }],
       [3, 113, { 'scores': [[0.9, 'good'], [0.8, 'decent']], 'comments': 'Nice Work' }]],
-    rubric: [[50, 'Content'], [50, 'Writing Quality']]
+    rubric: [[10, 'Content'], [10, 'Writing Quality']]
   }
 export default subData;

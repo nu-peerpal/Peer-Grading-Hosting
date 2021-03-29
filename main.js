@@ -12,7 +12,6 @@ const db = require("./models");
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
-const cors = require('cors');
 
 
 const jsonParser = bodyParser.json();
@@ -33,13 +32,12 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
-    server.use(cors());
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
       await db.connect();
     })();
-
+    
     server.post("*", async function(req, res, next) {
 
       //If the user is authenticated, immediately handle the request
@@ -49,7 +47,8 @@ app
         userData = await keyv.get(nonce);
         // console.log(userData)
         if (userData){
-          req.userData = userData;
+          // req.userData = userData;
+          console.log("AUTHENTICATED.")
           return handle(req, res);
         }
       } 
