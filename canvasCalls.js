@@ -190,8 +190,10 @@ const addRubrics = (rawRubrics) => {
     const rubric = rubricObj.data.map(rubricData => {
       return [rubricData.points, rubricData.description, rubricData.long_description]
     })
-    return rubric
+    // console.log({rubric: rubric});
+    return {rubric: rubric}
   })
+  // [{rubric: {rubricjson}}, {rubric 2: }]
   return axios.post(`${server}/api/rubrics?type=multiple`, rubrics);
 }
 
@@ -265,6 +267,7 @@ const postGrades = (token, courseId, assignmentId, grades) => {
 
 
 async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, prName, prDueDate, prGroup, rubric) {
+  console.log('pr due date: ',prDueDate)
   const data = {
     assignment: { 
       name: prName,
