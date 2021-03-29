@@ -15,13 +15,6 @@ const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 const FullAssignment = (props) => {
   const router = useRouter()
-  // console.log(router.query); //to access assignment data info
-  // For future reference:
-  // const data = [
-  //   {'name': '', 'info':""},
-  //   {'name': '', 'info':""},
-  // ];
-  // console.log('assignment id:', props.id)
 
   return (
     <div className="Content">

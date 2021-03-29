@@ -201,18 +201,16 @@ const addRubrics = (rawRubrics) => {
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
 // If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
 const getSubmissions = async (token, courseId, assignmentId) => {
-  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&grouped=1&per_page=300", {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   })
   const filteredSubmissions = response.data.filter(submission => {
-    // console.log('submission: ', submission);
     return submission.workflow_state == 'submitted';
   })
   const submissions = filteredSubmissions.map(submission => {
     var submissionBody = submission.body
-    // console.log(submission);
     if (submission.submission_type == 'online_upload') {
       submissionBody = submission.attachments[0].url
       // submissionBody = submission.preview_url; // possibly a way to get the document itself from this link
