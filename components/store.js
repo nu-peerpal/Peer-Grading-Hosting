@@ -7,7 +7,7 @@ const initialState = {
     context_name: '',
     roles: [],
     assignment: '1', // Course Evaluation Essay
-    key: 'Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n'};
+};
 
 const reducer = (state, action) => {
   switch(action.type) {
@@ -23,17 +23,7 @@ const reducer = (state, action) => {
         context_name: action.context_name,
         roles: state.roles,
         assignment: action.assignment,
-        key: state.key,
       }
-      case "setKey":
-        return {
-          user_id: state.user_id,
-          context_id: state.context_id,
-          context_name: state.context_name,
-          roles: state.roles,
-          assignment: state.assignment,
-          key: action.key
-        }
       case "reset":
         return {
           user_id: '',
@@ -41,7 +31,6 @@ const reducer = (state, action) => {
           context_name: '',
           roles: [],
           assignment: '',
-          key: '',
         }
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
