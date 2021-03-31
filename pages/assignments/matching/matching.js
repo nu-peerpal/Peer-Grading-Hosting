@@ -10,7 +10,7 @@ import { Field, Formik, Form } from "formik";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
 import AutoComplete from "../../../components/autocomplete";
-import UploadSubmissions from "../../../components/uploadSubmissions";
+import UploadSubmissions from "../../../components/uploadSubmissions/uploadSubmissions";
 import sampleData from "../../../sample_data/peerMatching";
 import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
@@ -19,7 +19,7 @@ const canvasCalls = require("../../../canvasCalls");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGrid }) {
+function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchings, setMatchingGrid }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
@@ -32,10 +32,10 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
 
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
-    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment)/*,canvasCalls.getGroups(canvasCalls.token, courseId, assignment)*/]).then((canvasData) => {
+    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment),canvasCalls.getGroups(canvasCalls.token, courseId, assignment)]).then((canvasData) => {
       let tempUsers = canvasData[0];
       let submissionData = canvasData[1];
-      // console.log('ungrouped subs: ',submissionData)
+      setSubmissionData(submissionData);
       // let groupData = canvasData[2];
       // separate users, compile data for alg call
       let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
@@ -113,7 +113,7 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
       algGraders.push(selectedGraders[i]["id"])
     }
     algGraders = algGraders.sort(function(a, b){return a-b});
-    
+    // console.log("graders:",algGraders);
     // let graderList = data.TA;
     // console.log(graderList);
     const matchings = await peerMatch(
@@ -275,15 +275,9 @@ function MatchingCell(props) {
 function Matching() {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
+  const [submissionData, setSubmissionData] = useState();
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
-
-
-  // NOTE: The following code is completely fake sample data. 
-  // const { graders, peers, submissions } = sampleData;
-  // NOTE: The following code is fetched directly from cavas.
   
-  
-
   /* NOTE: The following code should be used instead when real data populated in database.
   const courseId = 1;
   const assignmentId = 1;
@@ -324,13 +318,13 @@ function Matching() {
             <Settings
               // graders={graders}
               // peers={peers}
-              // submissions={submissions}
+              setSubmissionData={setSubmissionData}
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
             />
           </AccordionDetails>
         </Accordion>
-
+        {/* <UploadSubmissions submissions={submissionData} /> */}
         <div className={styles.matchingGrid}>
           {matchingGrid}
         </div>

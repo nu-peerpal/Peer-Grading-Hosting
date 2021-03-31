@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
+import ViewAsStudent from "../components/viewAsStudent";
 const axios = require("axios");
 const canvasCalls = require("../canvasCalls");
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr('fake_secret');
 
 function Dashboard(props) {
   const studentUserId = 1;
@@ -21,21 +20,9 @@ function Dashboard(props) {
   useEffect(() => {
     if (Cookies.get('userData')) {
       const userData = JSON.parse(Cookies.get('userData'));
-      console.log('user data: ', userData);
+      // console.log('user data: ', userData);
       createUser(userData);
-      // console.log('userId: ', userId, 'courseId: ', courseId, 'assignment: ',assignment);
     }
-    // axios.get(`/api/courses?canvasId=${courseId}`).then(res => {
-    //   if (res) {
-    //     let resKey = res.data.data[0].canvasKey;
-    //     (async () => {
-    //       let dekey = await cryptr.decrypt(resKey);
-    //       setKey(dekey);
-    //     })();
-    //   } else {
-        
-    //   }
-    // });
 
     if (props.ISstudent) {
       console.log('this is a student')
@@ -43,20 +30,6 @@ function Dashboard(props) {
     canvasCalls.getAssignments(canvasCalls.token, courseId).then(response => {
       setCanvasAssignments(response);
     });
-    // else { // look for existing users
-    //   (async () => {
-    //     const res = await fetch(`/api/users?courseId=1&enrollment=student`)
-    //     const resData = await res.json();
-    //     console.log('TA DATA:',resData.data);
-    //     if (!resData.data.includes(taUserId)) {
-    //       console.log('TA not found. Redirecting to setup...')
-    //       const {pathname} = Router
-    //       if(pathname == '/' ){
-    //         Router.push('/canvas/canvas')
-    //       }
-    //     }
-    //   })();
-    // }
     (async () => {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
@@ -126,11 +99,13 @@ function Dashboard(props) {
       <div className="Content">
         <ToDoList data={taToDos}/>
         
-        <ListContainer
+        {/* <ListContainer
           name="View As Student"
           data={[{ name: "View As", info: "VIEW" }]}
           link=""
-        />
+        /> */}
+        <ViewAsStudent />
+
         {/*link needs to be figured out later, might always be blank*/}
         <CanvasAssignments assignments={canvasAssignments} />
         {/* <ListContainer

@@ -51,6 +51,7 @@
     "react-markdown": "^5.0.3",
     "react-pdf": "^5.2.0",
     "remark-gfm": "^1.0.0",
+    "request": "^2.88.2",
     "sass": "^1.32.6",
     "sass-loader": "^11.0.0",
     "sequelize": "^6.3.4",
