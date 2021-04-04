@@ -9,7 +9,7 @@ export const useUserData = () => {
     courseName: state.context_name,
     roles: state.roles,
     assignment: state.assignment,
-    key: state.key,
+    savedStudentId: state.saved_user_id,
     createUser: (user) => dispatch({type: "createUser",
       user_id: user.user_id,
       context_id: user.context_id,
@@ -19,7 +19,8 @@ export const useUserData = () => {
       student: user.student,
       admin: user.admin,
       assignment: user.assignment}),
-    setKey: (key) => dispatch({type: "setKey", key}),
+    actAsStudent: (userId) => dispatch({type: "actAsStudent", user_id: userId }),
+    revertFromStudent: () => dispatch({type: "revertFromStudent"}),
     reset: () => dispatch({type: "reset"})
   }
 }

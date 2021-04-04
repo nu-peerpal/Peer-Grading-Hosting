@@ -6,8 +6,9 @@ const initialState = {
     context_id: '1',
     context_name: '',
     roles: [],
-    assignment: '1', // Course Evaluation Essay
-    key: 'Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n'};
+    assignment: '41', // Course Evaluation Essay
+    saved_user_id: ''
+};
 
 const reducer = (state, action) => {
   switch(action.type) {
@@ -23,16 +24,29 @@ const reducer = (state, action) => {
         context_name: action.context_name,
         roles: state.roles,
         assignment: action.assignment,
-        key: state.key,
+        saved_user_id: '',
       }
-      case "setKey":
+      case "actAsStudent":
+        state.roles.push('student');
+        let save_user = state.user_id
         return {
-          user_id: state.user_id,
+          user_id: action.user_id,
           context_id: state.context_id,
           context_name: state.context_name,
           roles: state.roles,
           assignment: state.assignment,
-          key: action.key
+          saved_user_id: save_user
+        }
+      case "revertFromStudent":
+        let updated_roles = state.roles.filter(role => role != 'student');
+        let saved_user = state.saved_user_id
+        return {
+          user_id: saved_user,
+          context_id: state.context_id,
+          context_name: state.context_name,
+          roles: updated_roles,
+          assignment: state.assignment,
+          saved_user_id: ''
         }
       case "reset":
         return {
@@ -41,7 +55,7 @@ const reducer = (state, action) => {
           context_name: '',
           roles: [],
           assignment: '',
-          key: '',
+          saved_user_id: ''
         }
     default:
       throw new Error(`Unhandled action type: ${action.type}`);

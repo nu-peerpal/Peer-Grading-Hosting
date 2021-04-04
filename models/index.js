@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const tls = require('tls');
 
 let dbUri, options;
 
@@ -6,9 +7,10 @@ if (process.env.NODE_ENV === "test") {
   dbUri = `sqlite:///${process.cwd()}/pages/api/__tests__/test.db`;
   options = {};
 } else {
-  dbUri =
+    dbUri =
     "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres";
   options = {
+    ssl: 'Amazon RDS',
     pool: {
       max: 5,
       min: 0,
@@ -16,8 +18,17 @@ if (process.env.NODE_ENV === "test") {
     },
   };
 }
-
 const sequelize = new Sequelize(dbUri, options); // Example for postgres
+  // const sequelize = new Sequelize("postgres", "pga", "Jas0n5468", {
+  //   host: 'peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com',
+  //   port: 5432,
+  //   logging: console.log,
+  //   maxConcurrentQueries: 100,
+  //   dialect: 'postgres',
+  //   ssl: true,
+  //   pool: { maxConnections: 5, maxIdleTime: 30},
+  //   language: 'en'
+  // });
 const db = {};
 
 //require all tables for database

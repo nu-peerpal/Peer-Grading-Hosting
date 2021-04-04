@@ -120,7 +120,7 @@ const getGroups = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
-  // console.log(assignmentResponse)
+  console.log(assignmentResponse)
   const groupCategoryId = assignmentResponse.data.group_category_id
   const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
     headers: {
@@ -207,12 +207,10 @@ const getSubmissions = async (token, courseId, assignmentId) => {
     }
   })
   const filteredSubmissions = response.data.filter(submission => {
-    // console.log('submission: ', submission);
     return submission.workflow_state == 'submitted';
   })
   const submissions = filteredSubmissions.map(submission => {
     var submissionBody = submission.body
-    // console.log(submission);
     if (submission.submission_type == 'online_upload') {
       submissionBody = submission.attachments[0].url
       // submissionBody = submission.preview_url; // possibly a way to get the document itself from this link
