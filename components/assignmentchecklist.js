@@ -60,9 +60,9 @@ function assignmentchecklist(props) {
   const [rubric, setRubric] = React.useState(''); // state for the rubric
   const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
-  const steps = getSteps();
-  let assignmentId = props.assignmentId;
+  let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
+  const steps = getSteps();
 
   return (
     <div className={classes.root}>
@@ -104,7 +104,10 @@ function assignmentchecklist(props) {
             return (
               <Step key={label[0]}>
                 <StepLabel>{label[0]}
-                  <Link href={label[1].link}>Edit</Link>
+                <Link href={{ pathname: label[1].link, query: { assignmentId: assignmentId, assignmentName: assignmentName } }}>
+                  Edit
+                </Link>
+                  {/* <Link href={label[1].link} assignmentId={assignmentId} assignmentName={assignmentName}>Edit</Link> */}
                 </StepLabel>
               </Step>)
           }

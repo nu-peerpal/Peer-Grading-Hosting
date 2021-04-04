@@ -12,7 +12,7 @@ const db = require("./models");
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const lti = require("ims-lti");
-const cors = require('cors');
+
 
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
@@ -32,13 +32,12 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
-    server.use(cors());
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
       await db.connect();
     })();
-
+    
     server.post("*", async function(req, res, next) {
 
       //If the user is authenticated, immediately handle the request
@@ -46,9 +45,10 @@ app
       if (req.cookies && req.cookies.authToken){
         var nonce = req.cookies.authToken;
         userData = await keyv.get(nonce);
-        console.log(userData)
+        // console.log(userData)
         if (userData){
-          req.userData = userData;
+          // req.userData = userData;
+          console.log("AUTHENTICATED.")
           return handle(req, res);
         }
       } 
@@ -61,15 +61,16 @@ app
           //copying all the useful data from the provider to what will be stored for the user
           userData.user_id = provider.body.custom_canvas_user_id;
           userData.context_id = provider.body.custom_canvas_course_id;
+          userData.context_name = provider.body.custom_canvas_assignment_title;
           userData.instructor = provider.instructor;
           userData.ta = provider.ta;
           userData.student = provider.student;
           userData.admin = provider.admin;
-          userData.assignment = provider.body.ext_lti_assignment_id;
-          console.log('user data', userData);
+          userData.assignment = provider.body.custom_canvas_assignment_id;
           //The nonce is used as the auth token to identify the user to their data
           var nonce = Object.keys(provider.nonceStore.used)[0];
           res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
+          res.cookie('userData', JSON.stringify(userData));
           keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
           req.userData = userData;
         }

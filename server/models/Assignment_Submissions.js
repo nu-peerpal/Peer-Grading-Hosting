@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
     s3Link: {
       type: Sequelize.STRING,
     },
+    submissionType: {
+      type: Sequelize.STRING,
+    },
   });
 
   Assignment_Submissions.associate = (db) => {

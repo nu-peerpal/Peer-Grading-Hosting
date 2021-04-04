@@ -13,7 +13,7 @@ function ViewPRGrade() {
   );
 
   return (
-    <div class="Content">
+    <div className="Content">
       <Container
         name={`Assignment ${assignmentId}: Peer Review Grade for User ${userId}`}
       >

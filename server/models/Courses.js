@@ -11,6 +11,9 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    canvasKey: {
+      type: Sequelize.STRING,
+    },
   });
 
   Courses.associate = (db) => {

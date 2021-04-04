@@ -120,6 +120,7 @@ const getGroups = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
+  // console.log(assignmentResponse)
   const groupCategoryId = assignmentResponse.data.group_category_id
   const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
     headers: {
@@ -153,6 +154,25 @@ const addGroups = (groups) => {
 
 
 // gets rubrics from a course given a courseId in raw format - used as input to create review assignment
+const getAssignmentGroups = async (token, courseId) => {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignment_groups", {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  const groups = response.data.map(groupObj => {
+    return {
+      id: groupObj.id,
+      name: groupObj.name
+    }
+  })
+  return groups
+}
+
+// getAssignmentGroups(token, 1).then(response => console.log(response))
+
+
+// gets rubrics from a course given a courseId in raw format - used as input to create review assignment
 const getRawRubrics = async (token, courseId) => {
   const response = await axios.get(canvas + "courses/" + courseId + "/rubrics", {
     headers: {
@@ -166,12 +186,14 @@ const getRawRubrics = async (token, courseId) => {
 
 // adds rubrics to db
 const addRubrics = (rawRubrics) => {
-  const rubrics = rawRubrics.data.map(rubricObj => {
+  const rubrics = rawRubrics.map(rubricObj => {
     const rubric = rubricObj.data.map(rubricData => {
       return [rubricData.points, rubricData.description, rubricData.long_description]
     })
-    return rubric
+    // console.log({rubric: rubric});
+    return {rubric: rubric}
   })
+  // [{rubric: {rubricjson}}, {rubric 2: }]
   return axios.post(`${server}/api/rubrics?type=multiple`, rubrics);
 }
 
@@ -179,18 +201,21 @@ const addRubrics = (rawRubrics) => {
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
 // If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
 const getSubmissions = async (token, courseId, assignmentId) => {
-  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?&include[]=group&grouped=1&per_page=300", {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&grouped=1&per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   })
   const filteredSubmissions = response.data.filter(submission => {
+    // console.log('submission: ', submission);
     return submission.workflow_state == 'submitted';
   })
   const submissions = filteredSubmissions.map(submission => {
     var submissionBody = submission.body
+    // console.log(submission);
     if (submission.submission_type == 'online_upload') {
       submissionBody = submission.attachments[0].url
+      // submissionBody = submission.preview_url; // possibly a way to get the document itself from this link
     }
     return {
       submissionType: submission.submission_type,
@@ -198,7 +223,8 @@ const getSubmissions = async (token, courseId, assignmentId) => {
       assignmentId: assignmentId,
       canvasId: submission.id,
       grade: submission.grade,
-      groupId: submission.group.id
+      groupId: submission.group.id,
+      submitterId: submission.user_id,
     }
   })
   return submissions
@@ -206,6 +232,23 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 
 // getSubmissions(token, 1, 6).then(response => console.log(response))
 
+
+// posts a grade to a submission, given courseId, assignmentId, userId, grades array
+const postGrades = (token, courseId, assignmentId, grades) => {
+  const grade_data = {}
+  var i = 0
+  for (i = 0; i < grades.length; i++) {
+    grade_data[grades[i][0]] = { posted_grade: grades[i][1] }
+  }
+  const data = {
+    grade_data: grade_data
+  }
+  axios.post(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/submissions/update_grades", data, {
+    headers: {'Authorization': `Bearer ${token}`}
+  })
+}
+
+// postGrades(token, 1, 6, [[28, 8.5], [16, 9.5]])
 
 
 // createReviewAssignment creates the review assignment in Canvas
@@ -223,13 +266,15 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 //  - rubricId and reviewRubricId not included, because we currently have no use for them
 
 
-async function postReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, dueDate, rubric) {
+async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, prName, prDueDate, prGroup, rubric) {
+  console.log('pr due date: ',prDueDate)
   const data = {
     assignment: { 
-      name: assignmentName + " Peer Review",
-      due_at: dueDate, //"2021-05-01T11:59:00Z"
+      name: prName,
+      due_at: prDueDate, //"2021-05-01T11:59:00Z"
       description: "Peer Review Assignment for " + assignmentName,
       published: true,
+      assignment_group_id: prGroup,
       points: rubric.points_possible
     }
   }
@@ -262,14 +307,14 @@ async function postReviewAssignment(token, courseId, assignmentId, assignmentNam
 }
 
 // getRawRubrics(token, 1).then(response => {
-//   postReviewAssignment(token, 1, 7, "Peer Reviews Testing", null, "2021-08-25T05:59:59Z", response[0]).then(response => {
+//   createReviewAssignment(token, 1, 7, "Peer Reviews Testing", null, "2021-08-25T05:59:59Z", response[0]).then(response => {
 //     console.log(response)
 //   })
 // })
 
 // adds assignment to the db
 function addReviewAssignment(token, assignment) {
-  return axios.post(`${server}/api/assignments`, assignments)
+  return axios.post(`${server}/api/assignments`, assignment)
 }
 
 
@@ -338,7 +383,14 @@ function addReviewAssignment(token, assignment) {
 
 module.exports = {
   getAssignments,
-  postReviewAssignment,
+  getAssignmentGroups,
+  getSubmissions,
+  getUsers,
+  getGroups,
+  createReviewAssignment,
+  addReviewAssignment,
   getRawRubrics,
+  addRubrics,
+  addCourses,
   token
 }
