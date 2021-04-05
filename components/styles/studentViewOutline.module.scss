@@ -4,7 +4,7 @@
     height: 98%;
     width: 99.5%;
     position: absolute;
-    border: 5px solid red;
+    border: 5px solid $outline_color;
     top: 0;
     left: 0;
     right: 0;
@@ -20,14 +20,14 @@
     }
 
     &__tag{
-        background-color: red;
+        background-color: $outline_color;
         padding: 5px;
         padding-bottom: 50px;
         color: white;
     }
 
     &__revertButton{
-        background-color: red;
+        background-color: $outline_color;
         position: absolute;
         right: 50px;
         bottom: 20px;

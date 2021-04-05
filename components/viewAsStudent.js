@@ -18,17 +18,14 @@ function ViewAsStudent() {
     const [currentUserId, setCurrentUserId] = useState('');
     const { userId, courseId, courseName, assignment, actAsStudent, revertFromStudent, savedStudentId } = useUserData();
 
+    // ! change this to actual data formatted this way / as a map (see below)
     let mockData = [
         {name: 'Bradley Ramos', id: '7'},
         {name: 'Chelly Compendio', id: '8'},
         {name: 'Jonathan Liu', id: '9'}
     ]
 
-    let mockDataMap = new Map();
-    for (var student of mockData){
-        mockDataMap.set(student.id, student.name)
-    }
-
+    // change function for the dropdown
     const handleChange = (event) => {
         setCurrentUserId(event.target.value);
       };
@@ -70,11 +67,8 @@ function ViewAsStudent() {
                     </TableRow>
                 </Link>
 
+                <StudentViewOutline/>
 
-                <StudentViewOutline name={mockDataMap.get(currentUserId)}/>
-                {/* <div className={userId==10 ? compStyles.outline : compStyles.outline_invisible}>
-                <div className={compStyles.outline__tag}>Viewing as Student {userId}</div>
-            </div> */}
             </TableBody>
         </Table>
     )

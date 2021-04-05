@@ -8,7 +8,6 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Styles from './toggle.module.css'
 import { StoreProvider } from "../components/store";
-// import { useUserData } from "../components/storeAPI";
 
 import utilities from '../global_styles/utilities.scss';
 

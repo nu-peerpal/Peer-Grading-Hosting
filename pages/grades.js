@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
+import StudentViewOutline from '../components/studentViewOutline';
+
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
@@ -81,6 +83,7 @@ function Grades() {
         data={submissionGrades}
         link="/grades/viewassignmentgrade"
       />
+      <StudentViewOutline />
     </div>
   );
 }

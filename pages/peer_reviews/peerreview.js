@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import Submission from "../../components/submissionview";
+import StudentViewOutline from '../../components/studentViewOutline';
 
 const getData = async url => {
   const res = await fetch(url);
@@ -42,6 +43,7 @@ const PeerReview = () => {
       <Container name="Grade User 1's Submission">
         <Submission sublink={submissionLink} rubric={rubric} />
       </Container>
+      <StudentViewOutline />
     </div>
   );
 };
