@@ -8,12 +8,11 @@ import Link from 'next/link'
 import styles from './styles/listcontainer.module.scss';
 import Button from "@material-ui/core/Button";
 import { useUserData } from "./storeAPI";
-import compStyles from "./styles/viewAsStudent.module.scss";
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import StudentViewOutline from './studentViewOutline';
 
 function ViewAsStudent() {
     const [currentUserId, setCurrentUserId] = useState('');
@@ -29,7 +28,6 @@ function ViewAsStudent() {
     for (var student of mockData){
         mockDataMap.set(student.id, student.name)
     }
-    console.log(mockDataMap)
 
     const handleChange = (event) => {
         setCurrentUserId(event.target.value);
@@ -72,12 +70,8 @@ function ViewAsStudent() {
                     </TableRow>
                 </Link>
 
-                <div className={savedStudentId ? compStyles.outline : compStyles.outline_invisible}>
-                    <div className={compStyles.outline__tag}>Viewing as {mockDataMap.get(currentUserId)}</div>
-                </div>
-                <div className={savedStudentId ? compStyles.outline__revertButton : compStyles.outline__revertButton_invisible}>
-                    <Button onClick={() => revertFromStudent()}>Revert to TA</Button>
-                </div>
+
+                <StudentViewOutline name={mockDataMap.get(currentUserId)}/>
                 {/* <div className={userId==10 ? compStyles.outline : compStyles.outline_invisible}>
                 <div className={compStyles.outline__tag}>Viewing as Student {userId}</div>
             </div> */}
