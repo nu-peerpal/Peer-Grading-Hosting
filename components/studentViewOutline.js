@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from "@material-ui/core/Button";
 import { useUserData } from "./storeAPI";
 import styles from "./styles/studentViewOutline.module.scss";
+import Link from "next/link";
 
 
 function StudentViewOutline() {
@@ -26,7 +27,9 @@ function StudentViewOutline() {
                 <div className={styles.outline__tag}>Viewing as {mockDataMap.get(userId)}</div>
             </div>
             <div className={savedStudentId ? styles.outline__revertButton : styles.outline__revertButton_invisible}>
+            <Link href={"/"}>
                 <Button onClick={() => revertFromStudent()}>Revert to TA</Button>
+            </Link>
             </div>
         </div>
     )

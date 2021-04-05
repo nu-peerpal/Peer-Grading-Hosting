@@ -20,15 +20,15 @@ function ViewAsStudent() {
 
     // ! change this to actual data formatted this way / as a map (see below)
     let mockData = [
-        {name: 'Bradley Ramos', id: '7'},
-        {name: 'Chelly Compendio', id: '8'},
-        {name: 'Jonathan Liu', id: '9'}
+        { name: 'Bradley Ramos', id: '7' },
+        { name: 'Chelly Compendio', id: '8' },
+        { name: 'Jonathan Liu', id: '9' }
     ]
 
     // change function for the dropdown
     const handleChange = (event) => {
         setCurrentUserId(event.target.value);
-      };
+    };
     useEffect(() => {
         console.log('user id changed! now:', userId);
         console.log('saved id: ', savedStudentId);
@@ -46,28 +46,30 @@ function ViewAsStudent() {
             <TableBody>
                 <Link href={{ pathname: '/', query: { name: 'name', id: 'userId' } }} className={styles.hov}>
                     <TableRow className={styles.row}>
-                        <TableCell className={styles.name}>View as Student
-                        <FormControl variant="outlined" >
-                            <InputLabel >Student</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-outlined-label"
-                                id="demo-simple-select-outlined"
-                                style={{width: '150px'}}
-                                value={currentUserId}
-                                onChange={handleChange}
-                                label="UserID"
-                            >
-                                {mockData.map(student=>
-                                    <MenuItem value={student.id}>{student.name}</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl></TableCell>
+                        <TableCell className={styles.name} style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                View as Student
+                            <FormControl variant="outlined" style={{marginLeft: '15px'}}>
+                                    <InputLabel >Student</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-outlined-label"
+                                        id="demo-simple-select-outlined"
+                                        style={{ width: '200px'}}
+                                        value={currentUserId}
+                                        onChange={handleChange}
+                                        label="UserID"
+                                    >
+                                        {mockData.map(student =>
+                                            <MenuItem value={student.id}>{student.name}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                        </TableCell>
 
-                        <TableCell className={styles.info}><Button onClick={() => actAsStudent(currentUserId)}>View</Button></TableCell>
+                        <TableCell className={styles.info}><Button onClick={currentUserId != '' ? () => actAsStudent(currentUserId) : null}>View</Button></TableCell>
                     </TableRow>
                 </Link>
 
-                <StudentViewOutline/>
+                <StudentViewOutline />
 
             </TableBody>
         </Table>
