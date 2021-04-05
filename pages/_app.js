@@ -8,11 +8,13 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Styles from './toggle.module.css'
 import { StoreProvider } from "../components/store";
+// import { useUserData } from "../components/storeAPI";
 
 import utilities from '../global_styles/utilities.scss';
 
 export default function MyApp({ Component, pageProps }) {
   const [isstudent, setisstudent] = useState(false);
+  // const { userId, savedStudentId } = useUserData();
 
   const handleUser = (event, view) => {
     if (view === 'prof/ta') {
@@ -40,10 +42,12 @@ export default function MyApp({ Component, pageProps }) {
     <div>
       <StoreProvider>
         <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+        {/* <div style={userId == 10 ? {border:"5px solid red", width: "100%", height: "95vh"} : null}> */}
         <Header />
         <UserView/>
         <Navbar ISstudent={isstudent} />
         <Component ISstudent={isstudent} {...pageProps} />
+        {/* </div> */}
       </StoreProvider>
     </div>
 
