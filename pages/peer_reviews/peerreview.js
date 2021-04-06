@@ -9,7 +9,7 @@ const getData = async url => {
   return resData.data;
 };
 
-const PeerReview = () => {
+const PeerReview = (props) => {
   const [submissionLink, setSubmissionLink] = useState("");
   const [rubric, setRubric] = useState([]);
 
@@ -43,7 +43,7 @@ const PeerReview = () => {
       <Container name="Grade User 1's Submission">
         <Submission sublink={submissionLink} rubric={rubric} />
       </Container>
-      <StudentViewOutline />
+      <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };

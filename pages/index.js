@@ -3,6 +3,7 @@ import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
+import StudentViewOutline from '../components/studentViewOutline';
 const axios = require("axios");
 const canvasCalls = require("../canvasCalls");
 
@@ -14,16 +15,18 @@ function Dashboard(props) {
   const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
-  const { createUser, setKey, userId, courseId, courseName, assignment, roles, key } = useUserData();
-  let todos = true;
+  const { createUser, setKey, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
 
   useEffect(() => {
-    if (Cookies.get('userData')) {
+    if (Cookies.get('userData') && !savedStudentId) {
+      console.log('updating user data');
       const userData = JSON.parse(Cookies.get('userData'));
       // console.log('user data: ', userData);
       createUser(userData);
     }
+  }, []);
 
+  useEffect(() => {
     if (props.ISstudent) {
       console.log('this is a student')
     }  
@@ -92,6 +95,7 @@ function Dashboard(props) {
           student={props.ISstudent}
           link=""
         />
+        <StudentViewOutline SetIsStudent={props.SetIsStudent} />
       </div>
     );
   } else { // TA or Instructor View
@@ -104,7 +108,7 @@ function Dashboard(props) {
           data={[{ name: "View As", info: "VIEW" }]}
           link=""
         /> */}
-        <ViewAsStudent />
+        <ViewAsStudent SetIsStudent={props.SetIsStudent} />
 
         {/*link needs to be figured out later, might always be blank*/}
         <CanvasAssignments assignments={canvasAssignments} />
@@ -113,6 +117,7 @@ function Dashboard(props) {
           data={canvasAssignments}
           link="/assignments/fullassignmentview/fullassignmentview"
         /> */}
+        <StudentViewOutline SetIsStudent={props.SetIsStudent} />
       </div>
     );
   }

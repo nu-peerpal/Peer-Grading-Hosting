@@ -29,8 +29,8 @@ class Submission extends React.Component {
     this.props.rubric.map((x) => gradingrubric.push(x));
     // console.log('what do i look like', gradingrubric)
     return (
-      <div class={styles.sub}>
-        <Accordion class={styles.acc}>
+      <div className={styles.sub}>
+        <Accordion className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             User 1's Submission
           </AccordionSummary>
@@ -434,7 +434,7 @@ function Grading(rubric) {
                         variant='outlined'
                         required={true}
                         as={TextareaAutosize}
-                        class={styles.pms}
+                        className={styles.pms}
                       />
                     </TableCell>
                     <TableCell style={{ width: 100 }} align='center'>
@@ -449,7 +449,7 @@ function Grading(rubric) {
                         variant='outlined'
                         required={true}
                         as={TextField}
-                        class={styles.pms}
+                        className={styles.pms}
                       />
                       <br></br>/{row[0]}
                     </TableCell>
@@ -475,12 +475,12 @@ function Grading(rubric) {
               </TableBody>
               <TableFooter>
                 <TableRow>
-                  <TableCell class={styles.save} style={{ color: "black" }}>
+                  <TableCell className={styles.save} style={{ color: "black" }}>
                     Total Score: {getTotalScore(values.Grades)} / {maxScore}
                   </TableCell>
                   <TableCell>
                     <Button
-                      class={styles.save}
+                      className={styles.save}
                       disabled={isSubmitting}
                       type='submit'
                     >
@@ -489,7 +489,7 @@ function Grading(rubric) {
                   </TableCell>
                   <TableCell
                     id='submitted'
-                    class={styles.save}
+                    className={styles.save}
                     style={{ color: "black", display: "none" }}
                   >
                     Submitted

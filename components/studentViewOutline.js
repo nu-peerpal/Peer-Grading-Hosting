@@ -3,32 +3,43 @@ import Button from "@material-ui/core/Button";
 import { useUserData } from "./storeAPI";
 import styles from "./styles/studentViewOutline.module.scss";
 import Link from "next/link";
+const canvasCalls = require("../canvasCalls");
 
 
-function StudentViewOutline() {
-    const { userId, revertFromStudent, savedStudentId } = useUserData();
+function StudentViewOutline(props) {
+    const { userId, courseId, revertFromStudent, savedStudentId } = useUserData();
+    const [ canvasUsers, setCanvasUsers ] = useState(new Map());
+    // console.log('studentview props',props);
 
-    // ! change this to actual data formatted this way / as a map (see below)
-    let mockData = [
-        {name: 'Bradley Ramos', id: '7'},
-        {name: 'Chelly Compendio', id: '8'},
-        {name: 'Jonathan Liu', id: '9'}
-    ]
-
-    // change mock data (array of objects) to a Map object
-    let mockDataMap = new Map();
-    for (var student of mockData){
-        mockDataMap.set(student.id, student.name)
-    }
+    useEffect(() => {
+        canvasCalls.getUsers(canvasCalls.token, courseId).then(users => {
+            let peers = users.filter(user => user.enrollment == "StudentEnrollment");
+            let customUsers = [];
+            peers.forEach(obj => {
+                customUsers.push({
+                    name: obj["firstName"] + " " + obj["lastName"],
+                    id: obj["canvasId"]
+                });
+            });
+            // change data (array of objects) to a Map object
+            let dataMap = new Map();
+            for (var student of customUsers){
+                dataMap.set(student.id, student.name)
+            }
+            setCanvasUsers(dataMap);
+        });
+    }, [])
 
     return (
         <div>
             <div className={savedStudentId ? styles.outline : styles.outline_invisible}>
-                <div className={styles.outline__tag}>Viewing as {mockDataMap.get(userId)}</div>
+                <div className={styles.outline__tag}>Viewing as {canvasUsers.get(userId)}</div>
             </div>
             <div className={savedStudentId ? styles.outline__revertButton : styles.outline__revertButton_invisible}>
             <Link href={"/"}>
-                <Button onClick={() => revertFromStudent()}>Revert to TA</Button>
+                <Button onClick={() => {
+                    revertFromStudent()
+                    props.SetIsStudent(false);}}>Revert to TA</Button>
             </Link>
             </div>
         </div>

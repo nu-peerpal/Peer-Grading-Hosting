@@ -1,5 +1,5 @@
 import './styles.css'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/header'
 import Navbar from '../components/navbar'
 import GoogleFonts from "next-google-fonts";
@@ -8,14 +8,25 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Styles from './toggle.module.css'
 import { StoreProvider } from "../components/store";
+import Cookies from 'js-cookie';
 
 import utilities from '../global_styles/utilities.scss';
 
 export default function MyApp({ Component, pageProps }) {
   const [isstudent, setisstudent] = useState(false);
-  // const { userId, savedStudentId } = useUserData();
+  useEffect(() => {
+    if (Cookies.get('userData')) {
+      const userData = JSON.parse(Cookies.get('userData'));
+      // console.log('appjs user data: ', userData);
+      if (userData.student) {
+        setisstudent(true);
+      }
+    }
+  }, [])
 
+  // console.log(pageProps);
   const handleUser = (event, view) => {
+    
     if (view === 'prof/ta') {
       setisstudent(false)
     }
@@ -26,6 +37,7 @@ export default function MyApp({ Component, pageProps }) {
 
   function UserView(){
     return(
+      <StoreProvider>
       <ToggleButtonGroup exclusive onChange={handleUser} aria-label="State" className={Styles.tog}>
         <ToggleButton value="student" aria-label="student">
           Student
@@ -34,6 +46,7 @@ export default function MyApp({ Component, pageProps }) {
           Prof/TA
         </ToggleButton>
       </ToggleButtonGroup>
+      </StoreProvider>
     )
   }
 
@@ -45,7 +58,7 @@ export default function MyApp({ Component, pageProps }) {
         <Header />
         <UserView/>
         <Navbar ISstudent={isstudent} />
-        <Component ISstudent={isstudent} {...pageProps} />
+        <Component ISstudent={isstudent} SetIsStudent={setisstudent} {...pageProps} />
         {/* </div> */}
       </StoreProvider>
     </div>

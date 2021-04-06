@@ -15,8 +15,8 @@ const uploadSubmissions = ({ submissions }) => {
     console.log('uploadS3 subs', submissions)
     var myConfig = new AWS.Config({
         credentials: {
-            accessKeyId: "AKIASL7DNOD2T3WW6L7W",
-            secretAccessKey: "mVa7IMdVHIuWKVXXUHDoE+zTUiaR7jPO2pLH06RJ"
+            accessKeyId: "",
+            secretAccessKey: ""
         }, region: 'us-east-2'
       });
       const s3 = new AWS.S3()
