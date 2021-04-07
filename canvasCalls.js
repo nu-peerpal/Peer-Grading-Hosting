@@ -2,8 +2,25 @@ const { CollectionsOutlined } = require("@material-ui/icons");
 const axios = require("axios")
 const { server } = require("./config/index.js");
 
+
 const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
+// const canvas = "http://canvas.northwestern.edu/api/v1/"
 const token = "Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n"
+// const token = "1876~4VYDnpYCFa2wZVVYEpBOsDHmL9mlfJSRW1d7vLgzQ0wRUHRgwYVjNLR9DfdVfRv6"
+
+
+// const temp = {
+//   matchingType: "initial",
+//   review: null,
+//   reviewReview: null,
+//   assignmentId: 1,
+//   submissionId: 1,
+//   userId: 2
+// }
+// console.log("POST peer matchings")
+// axios.post(`${server}/api/peerReviews`, temp)
+// .then(res => console.log("res", res))
+// .catch(err => console.log(err));
 
 
 // gets up to 300 users from a course given the courseId
@@ -29,7 +46,8 @@ const getUsers = async (token, courseId) => {
   return users
 }
 
-//getUsers(token, 1).then(response => console.log(response))
+// getUsers(token, 1).then(response => console.log(response))
+// getUsers(token, 137500).then(response => console.log(response))
 
 // adds users to the db
 const addUsers = (userData) => {
@@ -43,12 +61,18 @@ const addUsers = (userData) => {
   return axios.post(`${server}/api/users?type=multiple`, users)
 }
 
+// getUsers(token, 1).then(response => {
+//   console.log(response)
+//   addUsers(response)
+// })
+
 
 // gets assignments for a course given a courseid
 const getAssignments = async (token, courseId) => {
   const response = await axios.get(canvas + "courses/" + courseId + "/assignments", {
     headers: { 'Authorization': `Bearer ${token}` } 
   })
+  console.log(response.data)
   const assignments = response.data.map(assignment => {
     return {
       courseId: courseId,
@@ -62,11 +86,12 @@ const getAssignments = async (token, courseId) => {
 }
 
 // getAssignments(token, 1).then(response => console.log(response))
+// getAssignments(token, 137500).then(response => console.log(response))
 
 
 // gets list of courses associated with a user token
 const getCourses = async (token) => {
-  const response = await axios.get(canvas + "courses", {
+  const response = await axios.get(canvas + "courses?per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -92,12 +117,14 @@ const getCourses = async (token) => {
   return courses
 }
 
-// getCourses(token).then(response => console.log(response))
+// getCourses(token).then(response => console.log(response)).catch(err => console.log(err.response.data))
 
 // add courses to db
 const addCourses = (courses) => {
-  return axios.post(`${server}/api/courses?type=multiple`, courses)
+  // return axios.post(`${server}/api/courses?type=multiple`, courses)
+  return axios.post(`${server}/api/courses`, courses)
 }
+
 
 
 // adds course enrollments to the db
@@ -120,7 +147,6 @@ const getGroups = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
-  // console.log(assignmentResponse)
   const groupCategoryId = assignmentResponse.data.group_category_id
   const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
     headers: {
@@ -146,6 +172,13 @@ const getGroups = async (token, courseId, assignmentId) => {
 }
 
 // getGroups(token, 1, 6)
+// getGroups(token, 137500, 887068).then(res => console.log(res))
+
+axios.get(canvas + "groups/", {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+}).then(res => console.log(res))
 
 // adds groups to db
 const addGroups = (groups) => {
@@ -206,6 +239,7 @@ const getSubmissions = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
+  console.log(response.data)
   const filteredSubmissions = response.data.filter(submission => {
     return submission.workflow_state == 'submitted';
   })
@@ -229,6 +263,8 @@ const getSubmissions = async (token, courseId, assignmentId) => {
 }
 
 // getSubmissions(token, 1, 6).then(response => console.log(response))
+// getSubmissions(token, 137500, 887067).then(response => console.log(response))
+// getSubmissions(token, 137500, 887068).then(response => console.log(response))
 
 
 // posts a grade to a submission, given courseId, assignmentId, userId, grades array

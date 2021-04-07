@@ -16,10 +16,12 @@ import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
 import { useUserData } from "../../../components/storeAPI";
 const canvasCalls = require("../../../canvasCalls");
+const axios = require("axios");
+const { server } = require("../../../config/index.js");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGrid }) {
+function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGrid, setMatchedUsersOuter }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
@@ -33,6 +35,7 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
     Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment)/*,canvasCalls.getGroups(canvasCalls.token, courseId, assignment)*/]).then((canvasData) => {
+      console.log(canvasData)
       let tempUsers = canvasData[0];
       let submissionData = canvasData[1];
       // console.log('ungrouped subs: ',submissionData)
@@ -116,6 +119,8 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
     
     // let graderList = data.TA;
     // console.log(graderList);
+
+    console.log("peermatch data: ", algGraders, peers, submissions, Number(data.peerLoad), Number(data.graderLoad))
     const matchings = await peerMatch(
       algGraders, // groups
       peers,
@@ -123,6 +128,7 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
       Number(data.peerLoad),
       Number(data.graderLoad)
     );
+    console.log(matchings)
     let matched_users = {};
     let submissionBuckets = {};
     let grader, sub, user;
@@ -152,6 +158,7 @@ function Settings({ /*graders, peers, submissions,*/ setMatchings, setMatchingGr
       }
     }
     setMatchedUsers(matched_users);
+    setMatchings(matchings);
     setMatchedSubs(submissionBuckets);
 
     // create the grid that will show the matchings
@@ -275,6 +282,7 @@ function MatchingCell(props) {
 function Matching() {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
+  // const [matchedUsers, setMatchedUsers] = useState([]);
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
 
 
@@ -313,6 +321,23 @@ function Matching() {
     ]);
   } */
 
+  function handleSubmit() {
+    const peerMatchings = matchings.map(matching => {
+      return {
+        matchingType: "initial",
+        review: null,
+        reviewReview: null,
+        assignmentId: assignment,
+        submissionId: matching[1],
+        userId: matching[0]
+      }
+    })
+    console.log("POST peer matchings")
+    axios.post(`${server}/api/peerReviews?type=multiple`, peerMatchings)
+    .then(res => console.log("res", res))
+    .catch(err => console.log(err));
+  }
+
   return (
     <div className="Content">
       <Container name="Peer Matching">
@@ -335,6 +360,11 @@ function Matching() {
           {matchingGrid}
         </div>
       </Container>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+        <Button onClick={handleSubmit}>
+          Confirm Matchings
+        </Button>
+      </div>
     </div>
   );
 }

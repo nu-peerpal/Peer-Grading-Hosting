@@ -12,6 +12,7 @@ import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
 import { PanoramaFishEye } from "@material-ui/icons";
 const axios = require("axios");
+const { server } = require("../config/index.js");
 
 
 const InitialChecklist = () => {
@@ -153,8 +154,8 @@ const InitialChecklist = () => {
           canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentId, assignmentName, dueDate, prName, prDueDate, prGroup, rubric).then(assignment => {
             // uploadRubrics(rubricOptions);
             console.log(assignment)
-            // axios.post(`/api/assignments`, assignment).then(res => console.log(res));
-            // canvasCalls.addReviewAssignment(canvasCalls.token, assignment)
+            axios.post(`${server}/api/assignments`, assignment).then(res => console.log(res));
+            canvasCalls.addReviewAssignment(canvasCalls.token, assignment)
           })
         }}>
           Create Peer Review Assignment
