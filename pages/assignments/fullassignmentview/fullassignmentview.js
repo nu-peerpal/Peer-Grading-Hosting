@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styles from "./fullassignmentview.module.scss";
 import Container from "../../../components/container";
 import Attributes from "../../../components/assignmentattributes";
@@ -9,11 +9,14 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import useSWR from "swr";
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
+import { useUserData } from "../../../components/storeAPI";
+const axios = require("axios");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
 const FullAssignment = (props) => {
+  const { userId, courseId, courseName, assignment } = useUserData();
   const router = useRouter()
 
   return (

@@ -42,16 +42,14 @@ const InitialChecklist = () => {
   }
 
   useEffect(() => {
-    canvasCalls.getRawRubrics(canvasCalls.token, courseId).then(response => {
-      console.log('rubrics: ',response);
-      setRubricOptions(response);
-    })
-    canvasCalls.getAssignmentGroups(canvasCalls.token, courseId).then(response => {
-      setPrGroupOptions(response);
+    axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
+      console.log('rubrics: ', response.data.data)
+      setRubricOptions(response.data.data);
     });
-
+    axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
+      setPrGroupOptions(response.data.data);
+    });
     setDueDate(null)
-    setPrDueDate("2021-08-25T05:59:59Z")
     
   }, []); 
 
@@ -94,8 +92,8 @@ const InitialChecklist = () => {
                 <TextField
                   id="datetime-local"
                   type="datetime-local"
-                  defaultValue={"2021-05-24T11:59:00Z"}
-                  onChange={e => setDueDate(e.target.value+":00Z")}
+                  defaultValue={"2021-05-24T11:59:59Z"}
+                  onChange={e => setDueDate(e.target.value+":59Z")}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -107,8 +105,8 @@ const InitialChecklist = () => {
                 <TextField
                   id="datetime-local"
                   type="datetime-local"
-                  defaultValue={"2021-05-24T11:59:00Z"}
-                  onChange={e => setPrDueDate(e.target.value+":00Z")}
+                  defaultValue={"2021-05-24T11:59:50Z"}
+                  onChange={e => setPrDueDate(e.target.value+":59Z")}
                   InputLabelProps={{
                     shrink: true,
                   }}

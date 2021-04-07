@@ -5,7 +5,6 @@ import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
 import StudentViewOutline from '../components/studentViewOutline';
 const axios = require("axios");
-const canvasCalls = require("../canvasCalls");
 
 function Dashboard(props) {
   const studentUserId = 1;
@@ -15,7 +14,7 @@ function Dashboard(props) {
   const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
-  const { createUser, setKey, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
+  const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
 
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) {
@@ -29,10 +28,11 @@ function Dashboard(props) {
   useEffect(() => {
     if (props.ISstudent) {
       console.log('this is a student')
-    }  
-    canvasCalls.getAssignments(canvasCalls.token, courseId).then(response => {
-      setCanvasAssignments(response);
+    }
+    axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+      setCanvasAssignments(response.data.data);
     });
+
     (async () => {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
@@ -136,7 +136,7 @@ function ToDoList(props) {
     name="Todos"
     data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
     info= "Get Started"
-    link= "/canvas/canvas"
+    link= "/canvas/canvasSelect"
   />
   }
 }

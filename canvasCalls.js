@@ -12,7 +12,7 @@ const getUsers = async (token, courseId) => {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  })
+  });
   const users = response.data.map(user => {
     const name = user.user.short_name.split(' ');
     if (name.length==1) {
@@ -25,7 +25,8 @@ const getUsers = async (token, courseId) => {
       enrollment: user.type,
       courseId: user.course_id
     }
-  })
+  });
+  console.log('env vars: ',process.env);
   return users
 }
 
