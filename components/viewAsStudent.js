@@ -80,15 +80,9 @@ function ViewAsStudent(props) {
                                 </Link>
                             </TableCell>
                         </TableRow>
-
-                    
-
-                </TableBody>
-                
+                </TableBody>     
             </Table>
-            <StudentViewOutline users={canvasUsers} />
         </div>
-    )
-};
+    )};
 
 export default ViewAsStudent;

@@ -28,21 +28,21 @@ function StudentView(props) {
       <Link href={"/"}>
         <a>Home</a>
       </Link>
-      <Link href={"/assignedreviews"}>
+      {/* <Link href={"/assignedreviews"}>
         <a>Assigned Peer Reviews</a>
-      </Link>
+      </Link> */}
       <Link href={"/grades"}>
         <a>Grades</a>
       </Link>
       <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
       </Link>
-      <Link href={"/grades/viewprgrade"}>
+      {/* <Link href={"/grades/viewprgrade"}>
         <a>PR Grade View</a>
-      </Link>
-      <Link href={"/grades/viewassignmentgrade"}>
+      </Link> */}
+      {/* <Link href={"/grades/viewassignmentgrade"}>
         <a>Assignment Grade View</a>
-      </Link>
+      </Link> */}
     </div>
   );
 }
@@ -59,18 +59,18 @@ function TeacherView(props) {
       <Link href={"/completedassignments"}>
         <a>Completed Assignments</a>
       </Link>
-      <Link href={"/assignments/fullassignmentview/fullassignmentview"}>
+      {/* <Link href={"/assignments/fullassignmentview/fullassignmentview"}>
         <a>View Assignment Details</a>
-      </Link>
+      </Link> */}
       <Link href={"/grading/tagrading"}>
         <a>TA Grading</a>
       </Link>
-      <Link href={"/canvas/canvas"}>
+      {/* <Link href={"/canvas/canvas"}>
         <a>Canvas</a>
-      </Link>
-      <Link href={"/canvas/canvasSelect"}>
+      </Link> */}
+      {/* <Link href={"/canvas/canvasSelect"}>
         <a>Canvas Select</a>
-      </Link>
+      </Link> */}
     </div>
   );
 }

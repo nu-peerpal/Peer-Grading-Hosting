@@ -11,7 +11,6 @@ function assignmentattributes(props) {
   const [assignmentData, setAssignmentData] = useState({submissionType: null,groupAssignment:null,published:null,ungradedSubmissions:null});
   useEffect(() => {
     axios.get(`/api/canvas/assignments?courseId=${courseId}&assignmentId=${props.assignmentId}`).then(response => {
-      console.log(response);
       setAssignmentData(response.data.data);
     });
   }, [])

@@ -26,7 +26,6 @@ const getUsers = async (token, courseId) => {
       courseId: user.course_id
     }
   });
-  console.log('env vars: ',process.env);
   return users
 }
 
@@ -121,7 +120,7 @@ const getGroups = async (token, courseId, assignmentId) => {
       'Authorization': `Bearer ${token}`
     }
   })
-  console.log(assignmentResponse)
+  // console.log(assignmentResponse)
   const groupCategoryId = assignmentResponse.data.group_category_id
   const categoryResponse = await axios.get(canvas + "group_categories/" + groupCategoryId + "/groups", {
     headers: {
@@ -202,7 +201,7 @@ const addRubrics = (rawRubrics) => {
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
 // If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
 const getSubmissions = async (token, courseId, assignmentId) => {
-  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&grouped=1&per_page=300", {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }

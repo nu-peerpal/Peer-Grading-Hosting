@@ -15,6 +15,7 @@ import sampleData from "../../../sample_data/peerMatching";
 import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
 import { useUserData } from "../../../components/storeAPI";
+import { useRouter } from 'next/router';
 const canvasCalls = require("../../../canvasCalls");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
@@ -28,15 +29,16 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
   const [graders, setGraders] = useState([]);
   const [peers, setPeers] = useState([]);
   const [submissions,setSubmissions] = useState([]);
+  const router = useRouter()
   const { userId, courseId, courseName, assignment } = useUserData();
 
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
-    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, assignment),canvasCalls.getGroups(canvasCalls.token, courseId, assignment)]).then((canvasData) => {
+    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, router.query.assignmentId)]).then((canvasData) => {
+      console.log('canvas data:',canvasData);
       let tempUsers = canvasData[0];
-      let submissionData = canvasData[1];
-      setSubmissionData(submissionData);
-      // let groupData = canvasData[2];
+      let tempSubmissionData = canvasData[1];
+      setSubmissionData(tempSubmissionData); //used for pushing submissions later
       // separate users, compile data for alg call
       let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
       let tempGraders = []; 
@@ -53,12 +55,33 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
       for (let peer in peerData) {
         tempPeers.push(peerData[peer]["canvasId"]);
       }
-      let tempSubmissions = [];
-      for (let sub in submissionData) {
-        tempSubmissions.push([submissionData[sub]["submitterId"],submissionData[sub]["canvasId"]]);
+      // organize submissions by group
+      let subGroups = {};
+      tempSubmissionData.forEach(submission => { // sort submissions by groupId
+        if (subGroups[submission.groupId]) {
+          subGroups[submission.groupId].push(submission.submitterId);
+          subGroups[submission.groupId].sort(function(a, b){return a-b})
+        } else {
+          subGroups[submission.groupId] = [submission.submitterId];
+        }
+      });
+      let tempGroup, tempSub, tempAid;
+      for (let sub in tempSubmissionData) { // grab group, find lowest group member, get aid
+        tempGroup = tempSubmissionData[sub]["groupId"];
+        tempSub = tempSubmissionData.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
+        tempAid = tempSub[0].canvasId;
+        tempSubmissionData[sub]["canvasId"] = tempAid;
       }
-      // organize submissions
-      
+        console.log('sub groups: ',subGroups)
+        // console.log('tempSubmissions: ',tempSubmissions);
+        // tempSub = submissionData.find(submission => submission.groupId == group.canvasId)
+        // console.log('found submission for group: ',tempSub);
+        // tempGroup = group.userIds.sort(function(a, b){return a-b});
+
+      let tempSubmissions = [];
+      for (let sub in tempSubmissionData) {
+        tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
+      }
       // let group_assignments;
       // let groups = [];
       // for (let group in groupData) { // in case you want to send groups to peerMatch
@@ -101,8 +124,8 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
   // run algo, produce matchings
   async function createMatchings(data, setSubmitting) {
     setSubmitting(true);
-    console.log('form data:',graders,peers,submissions);
-    console.log('graders:',graders);
+    // console.log('form data:',graders,peers,submissions);
+    // console.log('graders:',graders);
     let selectedGraders = graders.filter(function(ta){
       if(data.TA.includes(ta.name)){
         return ta;
@@ -116,6 +139,9 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
     // console.log("graders:",algGraders);
     // let graderList = data.TA;
     // console.log(graderList);
+    console.log('submissions:',submissions);
+    console.log('graders:', algGraders);
+    console.log('peers:', peers);
     const matchings = await peerMatch(
       algGraders, // groups
       peers,
@@ -259,7 +285,7 @@ function MatchingCell(props) {
     return (
       <div className={styles.matchingCell}>
         <div>
-          <p className={styles.matchingCell__title}>Reviewer #:</p>
+          <p className={styles.matchingCell__title}>Reviewer:</p>
           <p className={styles.matchingCell__value}>{props.reviewer}</p>
         </div>
         <div>
@@ -276,6 +302,7 @@ function Matching() {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [submissionData, setSubmissionData] = useState();
+  const router = useRouter()
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
   
   /* NOTE: The following code should be used instead when real data populated in database.
@@ -309,7 +336,7 @@ function Matching() {
 
   return (
     <div className="Content">
-      <Container name="Peer Matching">
+      <Container name={"Peer Matching: " + router.query.assignmentName}>
         <Accordion className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Settings

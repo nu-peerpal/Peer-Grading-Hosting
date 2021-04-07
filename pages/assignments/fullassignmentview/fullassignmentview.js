@@ -23,17 +23,15 @@ const FullAssignment = (props) => {
     <div className="Content">
       <Container name={"Assignment Details: " + router.query.name}>
         <div className={styles.view}>
-          <div className={styles.att}>
+          {/* <div className={styles.att}>
             <Attributes assignmentName={router.query.name} assignmentId={router.query.id}/>
           </div>
-          {/* <div className={styles.inf}> */}
           <Accordion className={styles.inf}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <FullDetails />
             </AccordionSummary>
             <AccordionDetails></AccordionDetails>
-          </Accordion>
-          {/* </div> */}
+          </Accordion> */}
           <div className={styles.check}>
             <Checklist assignmentName={router.query.name} assignmentId={router.query.id} />
           </div>
