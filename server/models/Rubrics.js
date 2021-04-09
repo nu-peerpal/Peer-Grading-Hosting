@@ -5,8 +5,8 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
 
-  Rubrics.associate = (db) => {
-    Rubrics.hasMany(db.assignments);
-  };
+  // Rubrics.associate = (db) => {
+  //   Rubrics.hasMany(db.assignments);
+  // };
   return Rubrics;
 };

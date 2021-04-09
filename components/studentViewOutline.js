@@ -4,6 +4,7 @@ import { useUserData } from "./storeAPI";
 import styles from "./styles/studentViewOutline.module.scss";
 import Link from "next/link";
 const canvasCalls = require("../canvasCalls");
+const axios = require("axios");
 
 
 function StudentViewOutline(props) {
@@ -12,7 +13,8 @@ function StudentViewOutline(props) {
     // console.log('studentview props',props);
 
     useEffect(() => {
-        canvasCalls.getUsers(canvasCalls.token, courseId).then(users => {
+        axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
+            let users = res.data.data;
             let peers = users.filter(user => user.enrollment == "StudentEnrollment");
             let customUsers = [];
             peers.forEach(obj => {

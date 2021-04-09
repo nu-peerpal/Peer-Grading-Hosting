@@ -20,7 +20,7 @@ const canvasCalls = require("../../../canvasCalls");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchings, setMatchingGrid }) {
+function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
@@ -35,7 +35,7 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
     Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, router.query.assignmentId)]).then((canvasData) => {
-      console.log('canvas data:',canvasData);
+      // console.log('canvas data:',canvasData);
       let tempUsers = canvasData[0];
       let tempSubmissionData = canvasData[1];
       setSubmissionData(tempSubmissionData); //used for pushing submissions later
@@ -72,25 +72,12 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
         tempAid = tempSub[0].canvasId;
         tempSubmissionData[sub]["canvasId"] = tempAid;
       }
-        console.log('sub groups: ',subGroups)
-        // console.log('tempSubmissions: ',tempSubmissions);
-        // tempSub = submissionData.find(submission => submission.groupId == group.canvasId)
-        // console.log('found submission for group: ',tempSub);
-        // tempGroup = group.userIds.sort(function(a, b){return a-b});
 
       let tempSubmissions = [];
       for (let sub in tempSubmissionData) {
         tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
       }
-      // let group_assignments;
-      // let groups = [];
-      // for (let group in groupData) { // in case you want to send groups to peerMatch
-      //   group_assignments[group][groupData[group]["canvasId"]] = groupData[group][userIds];
-      //   groups.push(groupData[group]["canvasId"]);
-      // }
-
-
-      console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
+      // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
       setTas([tempTas]);
       setUsers(tempUsers);
       setGraders(tempGraders); 
@@ -139,9 +126,9 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
     // console.log("graders:",algGraders);
     // let graderList = data.TA;
     // console.log(graderList);
-    console.log('submissions:',submissions);
-    console.log('graders:', algGraders);
-    console.log('peers:', peers);
+    // console.log('submissions:',submissions);
+    // console.log('graders:', algGraders);
+    // console.log('peers:', peers);
     const matchings = await peerMatch(
       algGraders, // groups
       peers,
@@ -197,6 +184,7 @@ function Settings({ /*graders, peers, submissions,*/setSubmissionData, setMatchi
     }
 
     setMatchingGrid(mg);
+    setSubmitted(true);
     setSubmitting(false);
   }
 
@@ -302,6 +290,7 @@ function Matching() {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [submissionData, setSubmissionData] = useState();
+  const [submitted, setSubmitted] = useState(false);
   const router = useRouter()
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
   
@@ -348,10 +337,11 @@ function Matching() {
               setSubmissionData={setSubmissionData}
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
+              setSubmitted={setSubmitted}
             />
           </AccordionDetails>
         </Accordion>
-        {/* <UploadSubmissions submissions={submissionData} /> */}
+        {submitted && <UploadSubmissions submissions={submissionData} />}
         <div className={styles.matchingGrid}>
           {matchingGrid}
         </div>

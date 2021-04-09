@@ -13,13 +13,13 @@ import Cookies from 'js-cookie';
 import utilities from '../global_styles/utilities.scss';
 
 export default function MyApp({ Component, pageProps }) {
-  const [isstudent, setisstudent] = useState(false);
+  const [isstudent, setisstudent] = useState(true);
   useEffect(() => {
     if (Cookies.get('userData')) {
       const userData = JSON.parse(Cookies.get('userData'));
       // console.log('appjs user data: ', userData);
-      if (userData.student) {
-        setisstudent(true);
+      if (userData.ta || userData.instructor) {
+        setisstudent(false);
       }
     }
   }, [])

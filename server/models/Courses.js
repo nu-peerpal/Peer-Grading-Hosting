@@ -16,11 +16,11 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
 
-  Courses.associate = (db) => {
-    Courses.hasMany(db.assignments);
-    Courses.hasMany(db.announcements);
-    Courses.hasMany(db.course_enrollments);
-  };
+  // Courses.associate = (db) => {
+  //   Courses.hasMany(db.assignments);
+  //   Courses.hasMany(db.announcements);
+  //   Courses.hasMany(db.course_enrollments);
+  // };
 
   return Courses;
 };
