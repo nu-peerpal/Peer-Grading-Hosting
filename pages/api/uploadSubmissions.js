@@ -9,7 +9,7 @@ export const config = {
     bodyParser: false,
   },
 }
-// console.log(process.env.AWS_ID, process.env.AWS_SECRET,process.env.SUBMISSIONS_BUCKET);
+// set up AWS
 const ID = process.env.AWS_ID;
 const SECRET = process.env.AWS_SECRET;
 const BUCKET_NAME = process.env.SUBMISSIONS_BUCKET;
@@ -20,24 +20,26 @@ const s3 = new AWS.S3({
 
 const submissionUpload = async (file) => {
   try {
-    let {data, headers} = await axios.get(file, {responseType: 'stream'});
-    let id = crypto.randomBytes(8).toString('hex');
-    let link = headers['content-type'];
-    let format = link.split("/").pop();
-    let key = Date.now() + id + "." + format;
-    const objectParams = {
-        Bucket: BUCKET_NAME,
-        ACL: 'public-read',
-        ContentLength: headers['content-length'],
-        Body: data,
-        ContentType: headers['content-type'],
-        Key: key
-    };
-    // console.log(objectParams);
-    data = await s3.putObject(objectParams).promise();
-    console.log(`File uploaded successfully. ${data.Location}`);
+    if (file.startsWith("http")) { // make sure it is a file upload
+      let {data, headers} = await axios.get(file, {responseType: 'stream'});
+      let id = crypto.randomBytes(8).toString('hex');
+      let link = headers['content-type'];
+      let format = link.split("/").pop();
+      let key = Date.now() + id + "." + format;
+      const objectParams = {
+          Bucket: BUCKET_NAME,
+          ACL: 'public-read',
+          ContentLength: headers['content-length'],
+          Body: data,
+          ContentType: headers['content-type'],
+          Key: key
+      };
+      data = await s3.putObject(objectParams).promise();
+      console.log(`File uploaded successfully. ${key}`);
+      return "https://" + BUCKET_NAME + ".s3.us-east-2.amazonaws.com/" + key;
+    } else return file; // otherwise just return text
   } catch(err){
-    console.log("Error:", err);
+    return null;
   }
 }
 
@@ -46,18 +48,34 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "POST":
-        let fileContent;
+        let uploadRes;
         if (req.query.type === "multiple") {
-            console.log('multi query');
-            console.log('body:', req.body);
-        //   await Promise.all(
-        //     req.body.map(gradeReport =>
-        //       db.review_grades_reports.create(gradeReport),
-        //     ),
-        //   );
+          await Promise.all(
+            req.body.map(submission => 
+              submissionUpload(submission.submission).then(key => {
+                db.assignment_submissions.create({
+                  canvasId: submission.canvasId,
+                  grade: null,
+                  report: null,
+                  s3Link: key,
+                  submissionType: submission.submissionType,
+                  assignmentId: submission.assignmentId,
+                  groupId: submission.groupId,
+                })}),
+            ),
+          );
         } else {
-          await submissionUpload(req.body.link);
-        //   await db.review_grades_reports.create(req.body);
+          await submissionUpload(req.body.submission).then(key => {
+            db.assignment_submissions.create({
+              canvasId: req.body.canvasId,
+              grade: null,
+              report: null,
+              s3Link: key,
+              submissionType: req.body.submissionType,
+              assignmentId: req.body.assignmentId,
+              groupId: req.body.groupId,
+            })
+          });
         }
         responseHandler.msgResponse201(
           res,

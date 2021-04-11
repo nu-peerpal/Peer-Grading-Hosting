@@ -23,7 +23,7 @@ const PeerReview = (props) => {
       [10, "Clarity"],
     ],
   };
-  const pdfUrl = "https://peer-grading-submissions.s3.us-east-2.amazonaws.com/becker-trellis-jcgs.pdf";
+  const pdfUrl = "https://peerpal-submissions-test-bucket.s3.us-east-2.amazonaws.com/1618112012741ce6903b9f610f5d7.pdf";
 
   useEffect(() => {
     (async () => {
