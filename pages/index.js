@@ -9,16 +9,15 @@ const axios = require("axios");
 function Dashboard(props) {
   const studentUserId = 1;
   const taUserId = 2;
-  const [assignments, setAssignments] = useState('');
   const [canvasAssignments, setCanvasAssignments] = useState();
-  const [announcements, setAnnouncements] = useState([]);
+  // const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
   const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
 
   useEffect(() => {
-    if (Cookies.get('userData') && !savedStudentId) {
-      console.log('updating user data');
+    if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
+      console.log('creating user data');
       const userData = JSON.parse(Cookies.get('userData'));
       // console.log('user data: ', userData);
       createUser(userData);
@@ -41,11 +40,10 @@ function Dashboard(props) {
       );
       resData = await res.json();
       const assignments = resData.data;
-
       let statusUpdates = [];
       if (!props.ISstudent) {
         statusUpdates = assignments.map(assignment => ({
-          name: "Status " + assignment.reviewStatus,
+          name: "Status: " + assignment.reviewStatus,
           info: assignment.name,
           data: assignment,
         }));
@@ -60,9 +58,10 @@ function Dashboard(props) {
         );
         resData = await res.json();
         const peerMatchings = resData.data;
+        console.log('peer matchings:',peerMatchings);
 
         if (props.ISstudent) {
-          toDoReviews.push({ name, info: reviewDueDate, data: peerMatchings });
+          toDoReviews.push({ name, dueDate: reviewDueDate, data: peerMatchings });
         } else {
           for (const peerMatching of peerMatchings) {
             toDoReviews.push({
@@ -89,12 +88,12 @@ function Dashboard(props) {
           student={props.ISstudent}
           link="/peer_reviews/peerreview"
         />
-        <ListContainer
+        {/* <ListContainer
           name="Announcements"
           data={announcements}
           student={props.ISstudent}
           link=""
-        />
+        /> */}
         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
       </div>
     );

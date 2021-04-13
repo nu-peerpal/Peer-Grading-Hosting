@@ -10,8 +10,23 @@ const uploadSubmissions = ({ submissions }) => {
     const [submittedDocs, setSubmittedDocs] = useState();
 
     async function sendSubmissions() {
-        // let submission = {link: exampleDownload};
-        let res = await axios.post(`/api/uploadSubmissions?type=multiple`, submissions);
+        // remove duplicates
+        function contains(a, id) {
+            var i = a.length;
+            while (i--) {
+               if (a[i].canvasId === id) {
+                   return true;
+               }
+            }
+            return false;
+        }
+        let reduced_subs = []
+        submissions.forEach(submission => {
+            if (!contains(reduced_subs,submission.canvasId)) {
+                reduced_subs.push(submission);
+            }
+        });
+        let res = await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
         console.log('post res: ',res);
     }
 

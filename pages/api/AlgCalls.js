@@ -83,7 +83,7 @@ function ensureSufficientReviews(graders, reviews, matching) {
     )
     .then(
       response => {
-        console.log(response);
+        // console.log(response);
         if (response.status !== 200) {
           console.log("failed call");
           return response.status;

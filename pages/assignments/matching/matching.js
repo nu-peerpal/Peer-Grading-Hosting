@@ -35,7 +35,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
     Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, router.query.assignmentId)]).then((canvasData) => {
-      // console.log('canvas data:',canvasData);
+      console.log('canvas data:',canvasData);
       let tempUsers = canvasData[0];
       let tempSubmissionData = canvasData[1];
       setSubmissionData(tempSubmissionData); //used for pushing submissions later

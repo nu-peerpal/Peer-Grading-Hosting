@@ -29,7 +29,6 @@ class ListContainer extends React.Component {
 
   getData = function () {
     var information = this.props;
-    //console.log('hi', information)
     var list = "";
     var assignname = "";
     var student = information.student;

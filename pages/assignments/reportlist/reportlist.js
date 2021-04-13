@@ -15,6 +15,7 @@ import { useRouter } from 'next/router'
 const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm')
 const canvasCalls = require("../../../canvasCalls");
+const axios = require("axios");
 
 
 const ReviewReports = () => {
@@ -25,13 +26,17 @@ const ReviewReports = () => {
   const [revReports, setRevReports] = useState([]);
   const { assignmentId, assignmentName } = router.query;
 
-  function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric),canvasCalls.getUsers(canvasCalls.token,courseId)])
+  async function generateReports() {
+    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`)])
     .then(reports => {
       console.log('reports',reports);
+      let users = reports[2].data.data;
+      // Change Submissions to Names for Submission Reports
+      // for (let subRep in reports[0][1]) {
+        
+      // }
       setSubReports(reports[0][1]);
       // Change User ID to User Name for Review Reports
-      let users = reports[2];
       for (let revRep in reports[1][1]) {
         let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0])
         reports[1][1][revRep][0] = users[i]["firstName"] + " "+ users[i]["lastName"];

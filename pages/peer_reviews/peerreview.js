@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import Submission from "../../components/submissionview";
 import StudentViewOutline from '../../components/studentViewOutline';
+import { useUserData } from "../../components/storeAPI";
 
 const getData = async url => {
   const res = await fetch(url);
@@ -10,11 +11,14 @@ const getData = async url => {
 };
 
 const PeerReview = (props) => {
+  const { userId, courseId, courseName, assignment } = useUserData();
   const [submissionLink, setSubmissionLink] = useState("");
   const [rubric, setRubric] = useState([]);
 
   const submissionId = 1;
   const rubricId = 1;
+  const groupId = 1;
+  const assignmentId = 41;
   const rubricOne = {
     id: 1,
     rubric: [
@@ -28,7 +32,7 @@ const PeerReview = (props) => {
   useEffect(() => {
     (async () => {
       const [submission, rubric] = await Promise.all([
-        getData(`/api/submissions/${submissionId}`),
+        getData(`/api/submissions?groupId=?${groupId}&assignmentId=${assignmentId}`),
         getData(`/api/rubrics/${rubricId}`),
       ]);
       console.log("RUBRIC:",rubricOne);
