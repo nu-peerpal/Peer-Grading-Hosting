@@ -16,6 +16,7 @@ import TableFooter from "@material-ui/core/TableFooter";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import Tooltip from '@material-ui/core/Tooltip';
 
 const fetcher = (url) => fetch(url, { method: "POST" }).then((r) => r.json());
 
@@ -27,7 +28,7 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    // console.log('what do i look like', gradingrubric)
+    console.log('what do i look like', gradingrubric)
     return (
       <div className={styles.sub}>
         <Accordion className={styles.acc}>
@@ -63,7 +64,7 @@ function getMaxScore(rubric) {
   var len = rubric.length;
   var score = 0;
   for (var i = 0; i < len; i++) {
-    score = score + rubric[i][0];
+    score = score + rubric[i]["points"];
   }
   return score;
 }
@@ -422,8 +423,14 @@ function Grading(rubric) {
               </TableHead>
               <TableBody>
                 {rubric.map((row, index) => (
-                  <TableRow key={row[1]}>
-                    <TableCell>{row[1]}</TableCell>
+                  <TableRow key={row["description"]}>
+                    <TableCell>
+                    <Tooltip title={row["long_description"]} placement="bottom">
+                      <p>{row["description"]}</p>
+                      
+                    </Tooltip>
+                      
+                    </TableCell>
                     <TableCell align='center' style={{ width: 600 }}>
                       <Field
                         name={"Comments[" + index + "]"}
@@ -443,7 +450,7 @@ function Grading(rubric) {
                         type='number'
                         value={values.Grades[index] || ""}
                         InputProps={{
-                          inputProps: { min: 0, max: row[0], step: 1 },
+                          inputProps: { min: 0, max: row["points"], step: 1 },
                         }}
                         id='outlined-basic'
                         variant='outlined'
@@ -451,7 +458,7 @@ function Grading(rubric) {
                         as={TextField}
                         className={styles.pms}
                       />
-                      <br></br>/{row[0]}
+                      <br></br>/{row["points"]}
                     </TableCell>
                   </TableRow>
                 ))}
