@@ -1,6 +1,11 @@
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 
 export default async (req, res) => {
   try {

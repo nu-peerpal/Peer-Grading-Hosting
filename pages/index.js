@@ -30,6 +30,7 @@ function Dashboard(props) {
     }
     axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
       setCanvasAssignments(response.data.data);
+      console.log(response.data.data);
     });
 
     (async () => {
