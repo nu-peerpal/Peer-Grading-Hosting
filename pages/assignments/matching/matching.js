@@ -16,7 +16,7 @@ import { peerMatch } from "../../api/AlgCalls.js";
 import useSWR from "swr";
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
-const canvasCalls = require("../../../canvasCalls");
+const axios = require("axios");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
@@ -35,10 +35,10 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
 
   useEffect(() => {
     // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
-    Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, router.query.assignmentId)]).then((canvasData) => {
+    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${router.query.assignmentId}`)]).then((canvasData) => {
       console.log('canvas data:',canvasData);
-      let tempUsers = canvasData[0];
-      let tempSubmissionData = canvasData[1];
+      let tempUsers = canvasData[0].data.data;
+      let tempSubmissionData = canvasData[1].data.data;
       setSubmissionData(tempSubmissionData); //used for pushing submissions later
       // separate users, compile data for alg call
       let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
@@ -73,7 +73,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         tempAid = tempSub[0].canvasId;
         tempSubmissionData[sub]["canvasId"] = tempAid;
       }
-      console.log({tempSubmissionData});
+      // console.log({tempSubmissionData});
       let subStudents = {};
       let tempSubmissions = []; // set submissions for peerMatch alg
       for (let sub in tempSubmissionData) {
@@ -86,7 +86,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
       }
-      console.log({subStudents})
+      // console.log({subStudents})
       setSubmissionGroups(subStudents);
       // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
       setTas([tempTas]);
@@ -134,70 +134,75 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       algGraders.push(selectedGraders[i]["id"])
     }
     algGraders = algGraders.sort(function(a, b){return a-b});
-    const matchings = await peerMatch(
-      algGraders,
-      peers,
-      submissions,
-      Number(data.peerLoad),
-      Number(data.graderLoad)
-    );
-    let matched_users = {};
-    let submissionBuckets = {};
-    let grader, sub, user;
-    console.log({submissions});
-    for (let i in matchings) {
-      [grader, sub] = matchings[i];
-      let subGroupString = ""
-      // console.log({submissionGroups})
-      for (let k in submissionGroups[sub]) {
-        subGroupString += submissionGroups[sub][k]+", "
-      }
-      sub = subGroupString.slice(0,-2);
-      if (!matched_users[grader]) {
-        for (let j in users) {
-          user = users[j];
-          if (grader == user["canvasId"]) {
-            matched_users[grader] = {
-              name: user["firstName"] + " " + user["lastName"],
-              enrollment: user["enrollment"],
-              submissions: []
+    try {
+      const matchings = await peerMatch(
+        algGraders,
+        peers,
+        submissions,
+        Number(data.peerLoad),
+        Number(data.graderLoad)
+      );
+      let matched_users = {};
+      let submissionBuckets = {};
+      let grader, sub, user;
+      // console.log({submissions});
+      for (let i in matchings) {
+        [grader, sub] = matchings[i];
+        let subGroupString = ""
+        // console.log({submissionGroups})
+        for (let k in submissionGroups[sub]) {
+          subGroupString += submissionGroups[sub][k]+", "
+        }
+        sub = subGroupString.slice(0,-2);
+        if (!matched_users[grader]) {
+          for (let j in users) {
+            user = users[j];
+            if (grader == user["canvasId"]) {
+              matched_users[grader] = {
+                name: user["firstName"] + " " + user["lastName"],
+                enrollment: user["enrollment"],
+                submissions: []
+              }
             }
           }
         }
+        if (matched_users[grader]["submissions"]) {
+          matched_users[grader]["submissions"].push(sub);
+        } else {
+          matched_users[grader]["submissions"] = [sub];
+        }
+        if (submissionBuckets[sub]) {
+          submissionBuckets[sub].push(matched_users[grader]);
+        } else {
+          submissionBuckets[sub] = [matched_users[grader]];
+        }
       }
-      if (matched_users[grader]["submissions"]) {
-        matched_users[grader]["submissions"].push(sub);
-      } else {
-        matched_users[grader]["submissions"] = [sub];
-      }
-      if (submissionBuckets[sub]) {
-        submissionBuckets[sub].push(matched_users[grader]);
-      } else {
-        submissionBuckets[sub] = [matched_users[grader]];
-      }
-    }
-    setMatchedUsers(matched_users);
-    setMatchedSubs(submissionBuckets);
+      setMatchedUsers(matched_users);
+      setMatchedSubs(submissionBuckets);
 
-    // create the grid that will show the matchings
-    var mg = []
+      // create the grid that will show the matchings
+      var mg = []
 
-    // if they want to see submissions first
-    if (subFirstView) {
-      // console.log(submissionBuckets);
-      for (var obj in submissionBuckets) {
-        mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+      // if they want to see submissions first
+      if (subFirstView) {
+        // console.log(submissionBuckets);
+        for (var obj in submissionBuckets) {
+          mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+        }
       }
-    }
-    else{
-      for (var obj in matched_users) {
-        mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} />)
+      else{
+        for (var obj in matched_users) {
+          mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} />)
+        }
       }
+
+      setMatchingGrid(mg);
+      setSubmitted(true);
+      setSubmitting(false);
+    } catch(err) {
+      alert('Algorithm failed! Try adjusting Peer or Grader Load.');
     }
 
-    setMatchingGrid(mg);
-    setSubmitted(true);
-    setSubmitting(false);
   }
 
   return (
