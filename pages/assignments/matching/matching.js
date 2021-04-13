@@ -25,6 +25,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
   const [matchedSubs, setMatchedSubs] = useState();
+  const [submissionGroups, setSubmissionGroups] = useState();
   const [users, setUsers] = useState();
   const [graders, setGraders] = useState([]);
   const [peers, setPeers] = useState([]);
@@ -57,7 +58,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       }
       // organize submissions by group
       let subGroups = {};
-      tempSubmissionData.forEach(submission => { // sort submissions by groupId
+      tempSubmissionData.forEach(submission => { // sort submissions by {groupId: [...userIds]}
         if (subGroups[submission.groupId]) {
           subGroups[submission.groupId].push(submission.submitterId);
           subGroups[submission.groupId].sort(function(a, b){return a-b})
@@ -72,11 +73,21 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         tempAid = tempSub[0].canvasId;
         tempSubmissionData[sub]["canvasId"] = tempAid;
       }
-
-      let tempSubmissions = [];
+      console.log({tempSubmissionData});
+      let subStudents = {};
+      let tempSubmissions = []; // set submissions for peerMatch alg
       for (let sub in tempSubmissionData) {
+        let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"])
+        student = student[0]["firstName"] + student[0]["lastName"];
+        if (subStudents[tempSubmissionData[sub]["canvasId"]]) {
+          subStudents[tempSubmissionData[sub]["canvasId"]].push(student);
+        } else {
+          subStudents[tempSubmissionData[sub]["canvasId"]] = [student];
+        }
         tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
       }
+      console.log({subStudents})
+      setSubmissionGroups(subStudents);
       // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
       setTas([tempTas]);
       setUsers(tempUsers);
@@ -100,7 +111,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         else{
           for (var obj in matchedUsers) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={JSON.stringify(matchedUsers[obj]["name"])} submissions={JSON.stringify(matchedUsers[obj]["submissions"])} />)
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} />)
           }
         }
 
@@ -123,14 +134,8 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       algGraders.push(selectedGraders[i]["id"])
     }
     algGraders = algGraders.sort(function(a, b){return a-b});
-    // console.log("graders:",algGraders);
-    // let graderList = data.TA;
-    // console.log(graderList);
-    // console.log('submissions:',submissions);
-    // console.log('graders:', algGraders);
-    // console.log('peers:', peers);
     const matchings = await peerMatch(
-      algGraders, // groups
+      algGraders,
       peers,
       submissions,
       Number(data.peerLoad),
@@ -139,16 +144,24 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
     let matched_users = {};
     let submissionBuckets = {};
     let grader, sub, user;
+    console.log({submissions});
     for (let i in matchings) {
-      // console.log('matching: ',matchings[i]);
       [grader, sub] = matchings[i];
-      for (let j in users) {
-        user = users[j];
-        if (grader == user["canvasId"]) {
-          matched_users[grader] = {
-            name: user["firstName"] + " " + user["lastName"],
-            enrollment: user["enrollment"],
-            submissions: []
+      let subGroupString = ""
+      // console.log({submissionGroups})
+      for (let k in submissionGroups[sub]) {
+        subGroupString += submissionGroups[sub][k]+", "
+      }
+      sub = subGroupString.slice(0,-2);
+      if (!matched_users[grader]) {
+        for (let j in users) {
+          user = users[j];
+          if (grader == user["canvasId"]) {
+            matched_users[grader] = {
+              name: user["firstName"] + " " + user["lastName"],
+              enrollment: user["enrollment"],
+              submissions: []
+            }
           }
         }
       }
@@ -157,7 +170,6 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       } else {
         matched_users[grader]["submissions"] = [sub];
       }
-
       if (submissionBuckets[sub]) {
         submissionBuckets[sub].push(matched_users[grader]);
       } else {
@@ -248,10 +260,21 @@ function MatchingCell(props) {
 
   // nicely format the list of peers reviewing the submissions
   var formattedPeers = "";
+  let numPeers;
   if (props.peers){
-    for (var i = 0; i < props.peers.length; i++) {
-      formattedPeers += (JSON.stringify(props.peers[i]["name"]));
+    numPeers = props.peers.length;
+    for (var i = 0; i < numPeers; i++) {
+      formattedPeers += (props.peers[i]["name"]);
       formattedPeers += (", ")
+    }
+  }
+  var formattedSubs = "";
+  let numSubs;
+  if (props.submissions){
+    numSubs = props.submissions.length;
+    for (var i = 0; i < numSubs; i++) {
+      formattedSubs += (JSON.stringify(props.submissions[i]));
+      formattedSubs += (", ")
     }
   }
 
@@ -259,11 +282,11 @@ function MatchingCell(props) {
     return (
       <div className={styles.matchingCell}>
         <div>
-          <p className={styles.matchingCell__title}>Submission #:</p>
+          <p className={styles.matchingCell__title}><b>Submission:</b></p>
           <p className={styles.matchingCell__value}>{props.submission}</p>
         </div>
         <div>
-          <p className={styles.matchingCell__title}>Reviewers:</p>
+          <p className={styles.matchingCell__title}><b>({numPeers}) Reviewers:</b></p>
           <p className={styles.matchingCell__value}>{formattedPeers.slice(0, -2)}</p>
         </div>
       </div>
@@ -273,12 +296,12 @@ function MatchingCell(props) {
     return (
       <div className={styles.matchingCell}>
         <div>
-          <p className={styles.matchingCell__title}>Reviewer:</p>
+          <p className={styles.matchingCell__title}><b>Reviewer:</b></p>
           <p className={styles.matchingCell__value}>{props.reviewer}</p>
         </div>
         <div>
-          <p className={styles.matchingCell__title}>Submissions:</p>
-          <p className={styles.matchingCell__value}>{props.submissions}</p>
+          <p className={styles.matchingCell__title}><b>({numSubs}) Submissions:</b></p>
+          <p className={styles.matchingCell__value}>{formattedSubs.slice(0,-2)}</p>
         </div>
       </div>
     );
