@@ -29,20 +29,23 @@ const getUsers = async (token, courseId) => {
   return users
 }
 
-//getUsers(token, 1).then(response => console.log(response))
+// getUsers(token, 1).then(response => console.log(response))
 
 // adds users to the db
 const addUsers = (userData) => {
   const users = userData.map(user => {
     return {
+      id: user.canvasId,
       canvasId: user.canvasId,
       lastName: user.lastName,
       firstName: user.firstName
     }
   })
+  console.log("adding users", users);
   return axios.post(`${server}/api/users?type=multiple`, users)
 }
 
+// getUsers(token, 1).then(response => addUsers(response))
 
 // gets assignments for a course given a courseid
 const getAssignments = async (token, courseId) => {
@@ -255,7 +258,6 @@ const postGrades = (token, courseId, assignmentId, grades) => {
 //  courseId: Canvas ID of original assignment
 //  assignmentId: Canvas ID of original assignment
 //  assignmentName: Name of original assignment
-//  assignmentDueDate: Due date of original assignmnet
 //  dueDate: Due date for the new review assignment in ISO 8601 format, e.g. 2014-10-21T18:48:00Z
 //  rubric: Rubric for the peer review
 // 
@@ -264,7 +266,7 @@ const postGrades = (token, courseId, assignmentId, grades) => {
 //  - rubricId and reviewRubricId not included, because we currently have no use for them
 
 
-async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, prName, prDueDate, prGroup, rubric) {
+async function createReviewAssignment(token, courseId, assignmentName, prName, prDueDate, prGroup, rubric) {
   console.log('pr due date: ',prDueDate)
   const data = {
     assignment: { 
@@ -292,14 +294,12 @@ async function createReviewAssignment(token, courseId, assignmentId, assignmentN
     headers: {'Authorization': `Bearer ${token}`}
   })
   const assignment = {
-    assignmentDueDate: assignmentDueDate,
     reviewDueDate: newAssignment.due_at,
     reviewStatus: 0,
-    canvasId: assignmentId,
     reviewCanvasId: newAssignment.id,
     graded: false,
     name: assignmentName,
-    courseId: courseId,
+    courseId: parseInt(courseId),
   }
   return assignment
 }
@@ -311,7 +311,7 @@ async function createReviewAssignment(token, courseId, assignmentId, assignmentN
 // })
 
 // adds assignment to the db
-function addReviewAssignment(token, assignment) {
+function addReviewAssignment(assignment) {
   return axios.post(`${server}/api/assignments`, assignment)
 }
 
@@ -384,6 +384,7 @@ module.exports = {
   getAssignmentGroups,
   getSubmissions,
   getUsers,
+  addUsers,
   getGroups,
   createReviewAssignment,
   addReviewAssignment,

@@ -17,14 +17,14 @@ const axios = require("axios");
 const InitialChecklist = () => {
   const router = useRouter()
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
-  const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
+  // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
   const [prGroup, setPrGroup] = React.useState(0); // list of group names and ids
   const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
   const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
   const [rubricId, setRubricId] = React.useState(0); // selecting rubric ID for PR assignment
   const { userId, courseId, assignment } = useUserData(); // data from LTI launch
-  const { assignmentId, assignmentName } = router.query; // currently selected assignment from dashboard
+  const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
@@ -41,6 +41,28 @@ const InitialChecklist = () => {
     console.log(res);
   }
 
+  function handleSubmit() {
+    var rubric = null;
+    var i;
+    
+    for (i = 0; i < rubricOptions.length; i++) {
+      if (rubricOptions[i].id == rubricId) {
+        rubric = rubricOptions[i];
+        break;
+      }
+    }
+    canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentName, prName, prDueDate, prGroup, rubric).then(assignment => {
+      assignment["reviewRubricId"] = parseInt(rubricId);
+      if (dueDate != "") {
+        assignment["assignmentDueDate"] = dueDate.replace("T", " ");
+      }
+      assignment["canvasId"] = parseInt(assignmentId);
+      assignment["id"] = parseInt(assignmentId);
+      console.log(assignment)
+      canvasCalls.addReviewAssignment(assignment)
+    })
+  }
+
   useEffect(() => {
     axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
       console.log('rubrics: ', response.data.data)
@@ -49,9 +71,9 @@ const InitialChecklist = () => {
     axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
       setPrGroupOptions(response.data.data);
     });
-    setDueDate(null)
+    // setDueDate(null)
     
-  }, []); 
+  }, []);
 
   return (
     <div className="Content">
@@ -88,17 +110,9 @@ const InitialChecklist = () => {
             </div>
             <div className={styles.column__content}>
               Due date for the original assignment:
-              <form noValidate>
-                <TextField
-                  id="datetime-local"
-                  type="datetime-local"
-                  defaultValue={"2021-05-24T11:59:59Z"}
-                  onChange={e => setDueDate(e.target.value+":59Z")}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </form>
+              <div>
+                <p>{dueDate}</p>
+              </div>
               <div style={{marginTop: '25px'}}>
               Due date for the peer review assignment:
               <form noValidate>
@@ -137,24 +151,7 @@ const InitialChecklist = () => {
       </Container>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-        <Button onClick={() => {
-          var rubric = null;
-          var i;
-          
-          for (i = 0; i < rubricOptions.length; i++) {
-            if (rubricOptions[i].id == rubricId) {
-              rubric = rubricOptions[i];
-              break;
-            }
-          }
-          console.log('date: ',prDueDate);
-          canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentId, assignmentName, dueDate, prName, prDueDate, prGroup, rubric).then(assignment => {
-            // uploadRubrics(rubricOptions);
-            console.log(assignment)
-            // axios.post(`/api/assignments`, assignment).then(res => console.log(res));
-            // canvasCalls.addReviewAssignment(canvasCalls.token, assignment)
-          })
-        }}>
+        <Button onClick={handleSubmit}>
           Create Peer Review Assignment
         </Button>
       </div>

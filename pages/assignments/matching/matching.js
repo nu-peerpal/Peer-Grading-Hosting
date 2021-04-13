@@ -17,10 +17,12 @@ import useSWR from "swr";
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
 const canvasCalls = require("../../../canvasCalls");
+const axios = require("axios");
+const { server } = require("../../../config/index.js");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid }) {
+function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid, setUserList }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
@@ -37,6 +39,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
     Promise.all([canvasCalls.getUsers(canvasCalls.token, courseId),canvasCalls.getSubmissions(canvasCalls.token, courseId, router.query.assignmentId)]).then((canvasData) => {
       // console.log('canvas data:',canvasData);
       let tempUsers = canvasData[0];
+      setUserList(tempUsers);
       let tempSubmissionData = canvasData[1];
       setSubmissionData(tempSubmissionData); //used for pushing submissions later
       // separate users, compile data for alg call
@@ -105,6 +108,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
 
         setMatchingGrid(mg);
+        setMatchings(matchings);
       }
     },[subFirstView])
 
@@ -291,6 +295,7 @@ function Matching() {
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [submissionData, setSubmissionData] = useState();
   const [submitted, setSubmitted] = useState(false);
+  const [users, setUsers] = useState([]);
   const router = useRouter()
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
   
@@ -323,6 +328,33 @@ function Matching() {
     ]);
   } */
 
+  function handleSubmit() {
+    // canvasCalls.addUsers(users); // add users to the db
+    // const testUser = {
+    //   id: 7,
+    //   canvasId: 7,
+    //   lastName: "Gulson1",
+    //   firstName: "Nick"
+    // }
+    // axios.post(`${server}/api/users`, testUser)
+    // .then(res => console.log("res", res))
+    // .catch(err => console.log(err));
+    const peerMatchings = matchings.map(matching => {
+      return {
+        matchingType: "initial",
+        review: null,
+        reviewReview: null,
+        assignmentId: assignment,
+        submissionId: matching[1],
+        userId: matching[0]
+      }
+    })
+    console.log("POST peer matchings", peerMatchings)
+    axios.post(`${server}/api/peerReviews?type=multiple`, peerMatchings)
+    .then(res => console.log("res", res))
+    .catch(err => console.log(err));
+  }
+
   return (
     <div className="Content">
       <Container name={"Peer Matching: " + router.query.assignmentName}>
@@ -338,6 +370,7 @@ function Matching() {
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
               setSubmitted={setSubmitted}
+              setUserList={setUsers}
             />
           </AccordionDetails>
         </Accordion>
@@ -346,6 +379,11 @@ function Matching() {
           {matchingGrid}
         </div>
       </Container>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+        <Button onClick={handleSubmit}>
+          Confirm Matchings
+        </Button>
+      </div>
     </div>
   );
 }
