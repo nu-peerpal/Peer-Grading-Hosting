@@ -57,7 +57,7 @@ const PeerReview = (props) => {
       }
     ]
   };
-  const pdfUrl = "https://peerpal-submissions-test-bucket.s3.us-east-2.amazonaws.com/1618112012741ce6903b9f610f5d7.pdf";
+  const pdfUrl = "https://peerpal-submissions-test-bucket.s3.us-east-2.amazonaws.com/161828455722023be536169fef053.pdf";
 
   useEffect(() => {
     (async () => {

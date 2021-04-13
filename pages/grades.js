@@ -5,7 +5,7 @@ import StudentViewOutline from '../components/studentViewOutline';
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Grades() {
+function Grades(props) {
   const [submissionGrades, setSubmissionGrades] = useState([]);
   const [reviewGrades, setReviewGrades] = useState([]);
   const userId = 1;
@@ -83,7 +83,7 @@ function Grades() {
         data={submissionGrades}
         link="/grades/viewassignmentgrade"
       />
-      <StudentViewOutline />
+      <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
     </div>
   );
 }

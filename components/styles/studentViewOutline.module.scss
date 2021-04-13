@@ -3,7 +3,7 @@
 .outline{
     height: 98%;
     width: 99.5%;
-    position: absolute;
+    position: fixed;
     border: 5px solid $outline_color;
     top: 0;
     left: 0;
@@ -28,7 +28,7 @@
 
     &__revertButton{
         background-color: $outline_color;
-        position: absolute;
+        position: fixed;
         right: 50px;
         bottom: 20px;
 
