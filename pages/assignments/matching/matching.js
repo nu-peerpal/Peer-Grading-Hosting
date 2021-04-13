@@ -93,6 +93,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
       setTas([tempTas]);
       setUsers(tempUsers);
+      setUserList(tempUsers);
       setGraders(tempGraders); 
       setPeers(tempPeers.sort(function(a, b){return a-b}));// sort by increasing user id
       setSubmissions(tempSubmissions);
@@ -199,6 +200,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
       }
 
       setMatchingGrid(mg);
+      setMatchings(matchings);
       setSubmitted(true);
       setSubmitting(false);
     } catch(err) {
@@ -321,7 +323,7 @@ function Matching() {
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [submissionData, setSubmissionData] = useState();
   const [submitted, setSubmitted] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [userList, setUserList] = useState([]);
   const router = useRouter()
   const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
   
@@ -354,17 +356,27 @@ function Matching() {
     ]);
   } */
 
-  function handleSubmit() {
-    // canvasCalls.addUsers(users); // add users to the db
-    // const testUser = {
-    //   id: 7,
-    //   canvasId: 7,
-    //   lastName: "Gulson1",
-    //   firstName: "Nick"
-    // }
-    // axios.post(`${server}/api/users`, testUser)
-    // .then(res => console.log("res", res))
-    // .catch(err => console.log(err));
+  async function handleSubmit() {
+    await canvasCalls.addUsers(userList); // add users to the db
+    // remove duplicates
+    function contains(a, id) {
+      var i = a.length;
+      while (i--) {
+         if (a[i].canvasId === id) {
+             return true;
+         }
+      }
+      return false;
+    }
+    let reduced_subs = []
+    submissionData.forEach(submission => {
+        if (!contains(reduced_subs,submission.canvasId)) {
+            reduced_subs.push(submission);
+        }
+    });
+    let res = await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
+    console.log('submission post res: ',res);
+
     const peerMatchings = matchings.map(matching => {
       return {
         matchingType: "initial",
@@ -376,7 +388,7 @@ function Matching() {
       }
     })
     console.log("POST peer matchings", peerMatchings)
-    axios.post(`${server}/api/peerReviews?type=multiple`, peerMatchings)
+    axios.post(`/api/peerReviews?type=multiple`, peerMatchings)
     .then(res => console.log("res", res))
     .catch(err => console.log(err));
   }
@@ -396,20 +408,19 @@ function Matching() {
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
               setSubmitted={setSubmitted}
-              setUserList={setUsers}
+              setUserList={setUserList}
             />
           </AccordionDetails>
         </Accordion>
-        {submitted && <UploadSubmissions submissions={submissionData} />}
         <div className={styles.matchingGrid}>
           {matchingGrid}
         </div>
       </Container>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+      {submitted && <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
         <Button onClick={handleSubmit}>
           Confirm Matchings
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }
