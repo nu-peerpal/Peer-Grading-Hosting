@@ -28,40 +28,40 @@ export default async (req, res) => {
   };
   
 
-console.log('pr due date: ',prDueDate)
-  const data = {
-    assignment: { 
-      name: prName,
-      due_at: prDueDate, //"2021-05-01T11:59:00Z"
-      description: "Peer Review Assignment for " + assignmentName,
-      published: true,
-      assignment_group_id: prGroup,
-      points: rubric.points_possible
-    }
-  }
-  const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
-    headers: {'Authorization': `Bearer ${token}`}
-  })
-  const newAssignment = response.data
-  const rubricData = {
-    rubric_association: {
-      rubric_id: rubric.id,
-      association_id: newAssignment.id,
-      association_type: "Assignment",
-      purpose: "grading"
-    }
-  }
-  axios.post(canvas + "courses/" + courseId + "/rubric_associations", rubricData, {
-    headers: {'Authorization': `Bearer ${token}`}
-  })
-  const assignment = {
-    assignmentDueDate: assignmentDueDate,
-    reviewDueDate: newAssignment.due_at,
-    reviewStatus: 0,
-    canvasId: assignmentId,
-    reviewCanvasId: newAssignment.id,
-    graded: false,
-    name: assignmentName,
-    courseId: courseId,
-  }
-  return assignment
+// console.log('pr due date: ',prDueDate)
+//   const data = {
+//     assignment: { 
+//       name: prName,
+//       due_at: prDueDate, //"2021-05-01T11:59:00Z"
+//       description: "Peer Review Assignment for " + assignmentName,
+//       published: true,
+//       assignment_group_id: prGroup,
+//       points: rubric.points_possible
+//     }
+//   }
+//   const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
+//     headers: {'Authorization': `Bearer ${token}`}
+//   })
+//   const newAssignment = response.data
+//   const rubricData = {
+//     rubric_association: {
+//       rubric_id: rubric.id,
+//       association_id: newAssignment.id,
+//       association_type: "Assignment",
+//       purpose: "grading"
+//     }
+//   }
+//   axios.post(canvas + "courses/" + courseId + "/rubric_associations", rubricData, {
+//     headers: {'Authorization': `Bearer ${token}`}
+//   })
+//   const assignment = {
+//     assignmentDueDate: assignmentDueDate,
+//     reviewDueDate: newAssignment.due_at,
+//     reviewStatus: 0,
+//     canvasId: assignmentId,
+//     reviewCanvasId: newAssignment.id,
+//     graded: false,
+//     name: assignmentName,
+//     courseId: courseId,
+//   }
+//   return assignment
