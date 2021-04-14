@@ -325,8 +325,7 @@ function Matching() {
   const [submitted, setSubmitted] = useState(false);
   const [userList, setUserList] = useState([]);
   const router = useRouter()
-  const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
-  
+  let {assignmentId, assignmentName} = router.query;
   /* NOTE: The following code should be used instead when real data populated in database.
   const courseId = 1;
   const assignmentId = 1;
@@ -382,7 +381,7 @@ function Matching() {
         matchingType: "initial",
         review: null,
         reviewReview: null,
-        assignmentId: assignment,
+        assignmentId: assignmentId,
         submissionId: matching[1],
         userId: matching[0]
       }

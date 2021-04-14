@@ -28,12 +28,11 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    console.log('what do i look like', gradingrubric)
     return (
       <div className={styles.sub}>
         <Accordion className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            User 1's Submission
+            Submission {this.props.submission.canvasId}
           </AccordionSummary>
           <AccordionDetails>
             <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe>
@@ -96,10 +95,10 @@ function Grading(rubric) {
       initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        fetch("/api/peerReviews/detailedView?id=4", {
-          method: "POST",
-          body: JSON.stringify(getFinalScore(data, rubric)),
-        });
+        // fetch(`/api/peerReviews/detailedView?id=${}`, {
+        //   method: "POST",
+        //   body: JSON.stringify(getFinalScore(data, rubric)),
+        // });
         setSubmitting(false);
         document.getElementById("submitted").style.display = "";
       }}

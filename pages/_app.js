@@ -35,28 +35,12 @@ export default function MyApp({ Component, pageProps }) {
     }
   };
 
-  function UserView(){
-    return(
-      <StoreProvider>
-      <ToggleButtonGroup exclusive onChange={handleUser} aria-label="State" className={Styles.tog}>
-        <ToggleButton value="student" aria-label="student">
-          Student
-        </ToggleButton>
-        <ToggleButton value="prof/ta" aria-label="prof/ta">
-          Prof/TA
-        </ToggleButton>
-      </ToggleButtonGroup>
-      </StoreProvider>
-    )
-  }
-
   return (
     <div>
       <StoreProvider>
         <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
         {/* <div style={userId == 10 ? {border:"5px solid red", width: "100%", height: "95vh"} : null}> */}
         <Header />
-        <UserView/>
         <Navbar ISstudent={isstudent} />
         <Component ISstudent={isstudent} SetIsStudent={setisstudent} {...pageProps} />
         {/* </div> */}

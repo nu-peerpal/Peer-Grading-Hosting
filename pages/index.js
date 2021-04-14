@@ -7,18 +7,16 @@ import StudentViewOutline from '../components/studentViewOutline';
 const axios = require("axios");
 
 function Dashboard(props) {
-  const studentUserId = 1;
-  const taUserId = 2;
   const [canvasAssignments, setCanvasAssignments] = useState();
   // const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState([]);
   const [taToDos, setTaToDos] = useState([]);
   const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
-
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
       console.log('creating user data');
       const userData = JSON.parse(Cookies.get('userData'));
+      console.log({userData});
       // console.log('user data: ', userData);
       createUser(userData);
     }
@@ -53,16 +51,22 @@ function Dashboard(props) {
       const toDoReviews = [];
       for (const { id, name, reviewDueDate } of assignments) {
         res = await fetch(
-          `/api/peerReviews?userId=${
-            props.ISstudent ? studentUserId : taUserId
-          }&assignmentId=${id}`,
+          `/api/peerReviews?userId=${userId}&assignmentId=${id}`,
         );
         resData = await res.json();
         const peerMatchings = resData.data;
-        console.log('peer matchings:',peerMatchings);
+        console.log({peerMatchings});
+        console.log({id},{name},{reviewDueDate})
 
         if (props.ISstudent) {
-          toDoReviews.push({ name, dueDate: reviewDueDate, data: peerMatchings });
+          // toDoReviews.push({ name, dueDate: reviewDueDate, data: peerMatchings });
+          for (const peerMatching of peerMatchings) {
+            toDoReviews.push({
+              name: "Grade Submission " + peerMatching.submissionId,
+              info: name,
+              data: peerMatching,
+            });
+          }
         } else {
           for (const peerMatching of peerMatchings) {
             toDoReviews.push({
@@ -102,21 +106,8 @@ function Dashboard(props) {
     return (
       <div className="Content">
         <ToDoList data={taToDos}/>
-        
-        {/* <ListContainer
-          name="View As Student"
-          data={[{ name: "View As", info: "VIEW" }]}
-          link=""
-        /> */}
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
-
-        {/*link needs to be figured out later, might always be blank*/}
         <CanvasAssignments assignments={canvasAssignments} />
-        {/* <ListContainer
-          name="Canvas Assignments"
-          data={canvasAssignments}
-          link="/assignments/fullassignmentview/fullassignmentview"
-        /> */}
         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
       </div>
     );

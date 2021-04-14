@@ -3,6 +3,7 @@ import Container from "../../components/container";
 import Submission from "../../components/submissionview";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
+import { useRouter } from 'next/router';
 
 const getData = async url => {
   const res = await fetch(url);
@@ -12,13 +13,13 @@ const getData = async url => {
 
 const PeerReview = (props) => {
   const { userId, courseId, courseName, assignment } = useUserData();
-  const [submissionLink, setSubmissionLink] = useState("");
+  const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
+  const router = useRouter()
+  let { submissionId } = router.query;
 
-  const submissionId = 1;
+  // const submissionId = 1;
   const rubricId = 1;
-  const groupId = 1;
-  const assignmentId = 41;
   const rubricOne = {
     id: 1,
     rubric: [
@@ -60,21 +61,21 @@ const PeerReview = (props) => {
 
   useEffect(() => {
     (async () => {
-      const [submission, rubric] = await Promise.all([
-        getData(`/api/submissions?groupId=?${groupId}&assignmentId=${assignmentId}`),
-        getData(`/api/rubrics/${rubricId}`),
+      const [submission, assignmentData] = await Promise.all([
+        getData(`/api/submissions?type=peerreview&submissionId=${submissionId}`),
+        getData(`/api/assignments/${assignment}`),
       ]);
-      console.log("RUBRIC:",rubricOne);
-      // setSubmissionLink(submission.s3Link);
+      console.log({assignmentData})
+      setSubmission(submission);
       setRubric(rubricOne.rubric);
-      setSubmissionLink(pdfUrl);
+      // setSubmissionLink(pdfUrl);
     })();
   }, []);
 
   return (
     <div className="Content">
-      <Container name="Grade User 1's Submission">
-        <Submission sublink={submissionLink} rubric={rubric} />
+      <Container name={"Grade Submission " + submissionId}>
+        <Submission sublink={submission.s3Link} submission={submission} rubric={rubric} />
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
