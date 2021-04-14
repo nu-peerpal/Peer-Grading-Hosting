@@ -24,18 +24,21 @@ module.exports = (sequelize, Sequelize) => {
     graded: {
       type: Sequelize.BOOLEAN,
     },
+    rubricId: {
+      type: Sequelize.STRING,
+    },
   });
 
   Assignments.associate = (db) => {
-    Assignments.belongsTo(db.courses, {
-      foreignKey: "courseId",
-    });
-    Assignments.belongsTo(db.rubrics, { as: "rubric" });
-    Assignments.belongsTo(db.rubrics, { as: "reviewRubric" });
+    // Assignments.belongsTo(db.courses, {
+    //   foreignKey: "courseId",
+    // });
+    // Assignments.belongsTo(db.rubrics, { as: "rubric" });
+    // Assignments.belongsTo(db.rubrics, { as: "reviewRubric" });
     Assignments.hasMany(db.peer_matchings);
     Assignments.hasMany(db.assignment_submissions);
     Assignments.hasMany(db.review_grades_reports);
-    Assignments.hasMany(db.groups);
+    // Assignments.hasMany(db.groups);
   };
   return Assignments;
 };

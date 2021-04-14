@@ -5,20 +5,30 @@ const submissionsHandler = async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
-        if (!req.query.groupId && !req.query.assignmentId) {
-          throw new Error("Query parameter groupId OR assignmentId required");
+        let submissions, params;
+        if (req.query.type === "peerreview") {
+          if (!req.query.submissionId) {
+            throw new Error("Query parameter submissionId required");
+          }
+          params = {canvasId: req.query.submissionId};
+          submissions = await db.assignment_submissions.findOne({
+            where: params,
+          });
+        } else {
+          if (!req.query.groupId && !req.query.assignmentId) {
+            throw new Error("Query parameter groupId OR assignmentId required");
+          }
+          params = {};
+          if (req.query.assignmentId) {
+            params.assignmentId = req.query.assignmentId;
+          }
+          if (req.query.groupId) {
+            params.groupId = req.query.groupId;
+          }
+          submissions = await db.assignment_submissions.findAll({
+            where: params,
+          });
         }
-        const params = {};
-        if (req.query.assignmentId) {
-          params.assignmentId = req.query.assignmentId;
-        }
-        if (req.query.groupId) {
-          params.groupId = req.query.groupId;
-        }
-        let submissions = await db.assignment_submissions.findAll({
-          where: params,
-        });
-
         responseHandler.response200(res, submissions);
         break;
 

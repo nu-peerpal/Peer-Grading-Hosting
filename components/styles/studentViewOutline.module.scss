@@ -1,0 +1,39 @@
+@import '../../global_styles/colors.scss';
+
+.outline{
+    height: 98%;
+    width: 99.5%;
+    position: fixed;
+    border: 5px solid $outline_color;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    background-color: transparent;
+    pointer-events: none;
+
+    &_invisible{
+        display: none;
+    }
+
+    &__tag{
+        background-color: $outline_color;
+        padding: 5px;
+        padding-bottom: 50px;
+        color: white;
+    }
+
+    &__revertButton{
+        background-color: $outline_color;
+        position: fixed;
+        right: 50px;
+        bottom: 20px;
+
+        &_invisible{
+            display: none;
+        }
+    }
+}

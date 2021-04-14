@@ -6,9 +6,9 @@ if (process.env.NODE_ENV === "test") {
   dbUri = `sqlite:///${process.cwd()}/pages/api/__tests__/test.db`;
   options = {};
 } else {
-  dbUri =
-    "postgres://pga:Jas0n5468@peergrading.cxypn0cpzlbv.us-east-2.rds.amazonaws.com/postgres";
+    dbUri = process.env.DB_URI;
   options = {
+    ssl: 'Amazon RDS',
     pool: {
       max: 5,
       min: 0,
@@ -16,7 +16,6 @@ if (process.env.NODE_ENV === "test") {
     },
   };
 }
-
 const sequelize = new Sequelize(dbUri, options); // Example for postgres
 const db = {};
 

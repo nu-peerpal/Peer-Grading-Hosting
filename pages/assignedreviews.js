@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ListContainer from "../components/listcontainer";
 import useSWR from "swr";
+import StudentViewOutline from '../components/studentViewOutline';
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
@@ -15,6 +16,7 @@ function AssignedReviews() {
   );
   // use memoized val to prevent re-initialization of assignments arr
   const assignments = useMemo(() => (res ? res.data : []), [res]);
+
 
   useEffect(() => {
     (async () => {
@@ -62,6 +64,7 @@ function AssignedReviews() {
         link="/peer_reviews/peerreview"
       />
       <ListContainer name="Past Peer Reviews" data={pastReviews} link="" />
+      <StudentViewOutline />
     </div>
   );
 }

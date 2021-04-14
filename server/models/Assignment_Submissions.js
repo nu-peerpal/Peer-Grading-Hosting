@@ -21,9 +21,9 @@ module.exports = (sequelize, Sequelize) => {
     Assignment_Submissions.belongsTo(db.assignments, {
       foreignKey: "assignmentId",
     });
-    Assignment_Submissions.belongsTo(db.groups, {
-      foreignKey: "groupId",
-    });
+    // Assignment_Submissions.belongsTo(db.groups, {
+    //   foreignKey: "groupId",
+    // });
     Assignment_Submissions.hasMany(db.peer_matchings);
   };
 

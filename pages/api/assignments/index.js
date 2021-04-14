@@ -15,7 +15,6 @@ const assignmentsHandler = async (req, res) => {
           throw new Error("Query parameter courseId required");
         }
         const params = { courseId: req.query.courseId };
-
         if (req.query.minReviewDueDate) {
           params.reviewDueDate = {
             [Op.gte]: new Date(req.query.minReviewDueDate),

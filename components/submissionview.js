@@ -16,6 +16,7 @@ import TableFooter from "@material-ui/core/TableFooter";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import Tooltip from '@material-ui/core/Tooltip';
 
 const fetcher = (url) => fetch(url, { method: "POST" }).then((r) => r.json());
 
@@ -27,12 +28,11 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    // console.log('what do i look like', gradingrubric)
     return (
-      <div class={styles.sub}>
-        <Accordion class={styles.acc}>
+      <div className={styles.sub}>
+        <Accordion className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            User 1's Submission
+            Submission {this.props.submission.canvasId}
           </AccordionSummary>
           <AccordionDetails>
             <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe>
@@ -63,7 +63,7 @@ function getMaxScore(rubric) {
   var len = rubric.length;
   var score = 0;
   for (var i = 0; i < len; i++) {
-    score = score + rubric[i][0];
+    score = score + rubric[i]["points"];
   }
   return score;
 }
@@ -87,312 +87,6 @@ function getFinalScore(data, rubric) {
   return body;
 }
 
-var js = {
-  graders: [3, 1, 2],
-  reviews: [
-    [
-      11,
-      112,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      11,
-      118,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      12,
-      119,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      12,
-      114,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      13,
-      112,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      13,
-      118,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      14,
-      113,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      14,
-      120,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      15,
-      119,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      15,
-      114,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      16,
-      115,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      16,
-      113,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      17,
-      118,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      17,
-      116,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      18,
-      114,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      18,
-      111,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      19,
-      113,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      19,
-      117,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      20,
-      117,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      20,
-      113,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      1,
-      114,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      2,
-      118,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      3,
-      113,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      1,
-      115,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      2,
-      120,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-    [
-      2,
-      111,
-      {
-        scores: [
-          [0.6, "okay"],
-          [0.4, "bad"],
-        ],
-        comments: "Try harder",
-      },
-    ],
-    [
-      3,
-      116,
-      {
-        scores: [
-          [0.9, "good"],
-          [0.8, "decent"],
-        ],
-        comments: "Nice Work",
-      },
-    ],
-  ],
-  rubric: [
-    [50, "Content"],
-    [50, "Writing Quality"],
-  ],
-};
 // console.log('what reviews should look like', js.reviews[0])
 function Grading(rubric) {
   var maxScore = getMaxScore(rubric);
@@ -401,10 +95,10 @@ function Grading(rubric) {
       initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        fetch("/api/peerReviews/detailedView?id=4", {
-          method: "POST",
-          body: JSON.stringify(getFinalScore(data, rubric)),
-        });
+        // fetch(`/api/peerReviews/detailedView?id=${}`, {
+        //   method: "POST",
+        //   body: JSON.stringify(getFinalScore(data, rubric)),
+        // });
         setSubmitting(false);
         document.getElementById("submitted").style.display = "";
       }}
@@ -422,8 +116,14 @@ function Grading(rubric) {
               </TableHead>
               <TableBody>
                 {rubric.map((row, index) => (
-                  <TableRow key={row[1]}>
-                    <TableCell>{row[1]}</TableCell>
+                  <TableRow key={row["description"]}>
+                    <TableCell>
+                    <Tooltip title={row["long_description"]} placement="bottom">
+                      <p>{row["description"]}</p>
+                      
+                    </Tooltip>
+                      
+                    </TableCell>
                     <TableCell align='center' style={{ width: 600 }}>
                       <Field
                         name={"Comments[" + index + "]"}
@@ -434,7 +134,7 @@ function Grading(rubric) {
                         variant='outlined'
                         required={true}
                         as={TextareaAutosize}
-                        class={styles.pms}
+                        className={styles.pms}
                       />
                     </TableCell>
                     <TableCell style={{ width: 100 }} align='center'>
@@ -443,15 +143,15 @@ function Grading(rubric) {
                         type='number'
                         value={values.Grades[index] || ""}
                         InputProps={{
-                          inputProps: { min: 0, max: row[0], step: 1 },
+                          inputProps: { min: 0, max: row["points"], step: 1 },
                         }}
                         id='outlined-basic'
                         variant='outlined'
                         required={true}
                         as={TextField}
-                        class={styles.pms}
+                        className={styles.pms}
                       />
-                      <br></br>/{row[0]}
+                      <br></br>/{row["points"]}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -475,12 +175,12 @@ function Grading(rubric) {
               </TableBody>
               <TableFooter>
                 <TableRow>
-                  <TableCell class={styles.save} style={{ color: "black" }}>
+                  <TableCell className={styles.save} style={{ color: "black" }}>
                     Total Score: {getTotalScore(values.Grades)} / {maxScore}
                   </TableCell>
                   <TableCell>
                     <Button
-                      class={styles.save}
+                      className={styles.save}
                       disabled={isSubmitting}
                       type='submit'
                     >
@@ -489,7 +189,7 @@ function Grading(rubric) {
                   </TableCell>
                   <TableCell
                     id='submitted'
-                    class={styles.save}
+                    className={styles.save}
                     style={{ color: "black", display: "none" }}
                   >
                     Submitted

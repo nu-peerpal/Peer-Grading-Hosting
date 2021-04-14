@@ -12,7 +12,7 @@ const getUsers = async (token, courseId) => {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  })
+  });
   const users = response.data.map(user => {
     const name = user.user.short_name.split(' ');
     if (name.length==1) {
@@ -25,24 +25,27 @@ const getUsers = async (token, courseId) => {
       enrollment: user.type,
       courseId: user.course_id
     }
-  })
+  });
   return users
 }
 
-//getUsers(token, 1).then(response => console.log(response))
+// getUsers(token, 1).then(response => console.log(response))
 
 // adds users to the db
 const addUsers = (userData) => {
   const users = userData.map(user => {
     return {
+      id: user.canvasId,
       canvasId: user.canvasId,
       lastName: user.lastName,
       firstName: user.firstName
     }
   })
+  console.log("adding users", users);
   return axios.post(`${server}/api/users?type=multiple`, users)
 }
 
+// getUsers(token, 1).then(response => addUsers(response))
 
 // gets assignments for a course given a courseid
 const getAssignments = async (token, courseId) => {
@@ -201,18 +204,16 @@ const addRubrics = (rawRubrics) => {
 // If 'submissionType' is 'online_text_entry', the submission was submitted as text and the text will be under 'submission'
 // If 'submissionType' is 'online_upload', the submission was submitted as pdf and the link to download will be under 'submission'
 const getSubmissions = async (token, courseId, assignmentId) => {
-  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&grouped=1&per_page=300", {
+  const response = await axios.get(canvas + "courses/" + courseId + "/assignments/" + assignmentId +"/submissions?include[]=group&per_page=300", {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   })
   const filteredSubmissions = response.data.filter(submission => {
-    // console.log('submission: ', submission);
     return submission.workflow_state == 'submitted';
   })
   const submissions = filteredSubmissions.map(submission => {
     var submissionBody = submission.body
-    // console.log(submission);
     if (submission.submission_type == 'online_upload') {
       submissionBody = submission.attachments[0].url
       // submissionBody = submission.preview_url; // possibly a way to get the document itself from this link
@@ -257,7 +258,6 @@ const postGrades = (token, courseId, assignmentId, grades) => {
 //  courseId: Canvas ID of original assignment
 //  assignmentId: Canvas ID of original assignment
 //  assignmentName: Name of original assignment
-//  assignmentDueDate: Due date of original assignmnet
 //  dueDate: Due date for the new review assignment in ISO 8601 format, e.g. 2014-10-21T18:48:00Z
 //  rubric: Rubric for the peer review
 // 
@@ -266,7 +266,7 @@ const postGrades = (token, courseId, assignmentId, grades) => {
 //  - rubricId and reviewRubricId not included, because we currently have no use for them
 
 
-async function createReviewAssignment(token, courseId, assignmentId, assignmentName, assignmentDueDate, prName, prDueDate, prGroup, rubric) {
+async function createReviewAssignment(token, courseId, assignmentName, prName, prDueDate, prGroup, rubric) {
   console.log('pr due date: ',prDueDate)
   const data = {
     assignment: { 
@@ -294,14 +294,12 @@ async function createReviewAssignment(token, courseId, assignmentId, assignmentN
     headers: {'Authorization': `Bearer ${token}`}
   })
   const assignment = {
-    assignmentDueDate: assignmentDueDate,
     reviewDueDate: newAssignment.due_at,
     reviewStatus: 0,
-    canvasId: assignmentId,
     reviewCanvasId: newAssignment.id,
     graded: false,
     name: assignmentName,
-    courseId: courseId,
+    courseId: parseInt(courseId),
   }
   return assignment
 }
@@ -313,7 +311,7 @@ async function createReviewAssignment(token, courseId, assignmentId, assignmentN
 // })
 
 // adds assignment to the db
-function addReviewAssignment(token, assignment) {
+function addReviewAssignment(assignment) {
   return axios.post(`${server}/api/assignments`, assignment)
 }
 
@@ -386,6 +384,7 @@ module.exports = {
   getAssignmentGroups,
   getSubmissions,
   getUsers,
+  addUsers,
   getGroups,
   createReviewAssignment,
   addReviewAssignment,

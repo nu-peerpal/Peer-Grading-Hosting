@@ -14,8 +14,8 @@ module.exports = (sequelize, Sequelize) => {
   Users.associate = db => {
     Users.hasMany(db.peer_matchings);
     Users.hasMany(db.review_grades_reports);
-    Users.hasMany(db.group_enrollments);
-    Users.hasMany(db.course_enrollments);
+    // Users.hasMany(db.group_enrollments);
+    // Users.hasMany(db.course_enrollments);
   };
 
   return Users;
