@@ -16,7 +16,7 @@ const lti = require("ims-lti");
 
 const jsonParser = bodyParser.json();
 const consumer_key = "my_consumer_key"
-const consumer_secret = process.env.DEV_CANVAS_SECRET;
+const consumer_secret = process.env.CANVAS_SECRET;
 const AUTH_HOURS = 16;
 
 // // LTI server stuff
