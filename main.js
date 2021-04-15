@@ -40,9 +40,9 @@ app
     
     server.post("*", async function(req, res, next) {
 
-      //If the user is authenticated, immediately handle the request
+      //If the user is authenticated (and not another LTI launch), immediately handle the request
       var userData = {};
-      if (req.cookies && req.cookies.authToken){
+      if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
         var nonce = req.cookies.authToken;
         userData = await keyv.get(nonce);
         // console.log(userData)
@@ -57,7 +57,7 @@ app
       var provider = new lti.Provider(consumer_key, consumer_secret)
       provider.valid_request(req, (err, is_valid) => {
         if (is_valid) {
-          console.log(provider);
+          // console.log(provider);
           //copying all the useful data from the provider to what will be stored for the user
           userData.user_id = provider.body.custom_canvas_user_id;
           userData.context_id = provider.body.custom_canvas_course_id;
