@@ -41,7 +41,10 @@ app
     
     server.post("*", async function(req, res, next) {
       try {
-        console.log('LTI REQ:', req);
+        // console.log('LTI REQ:', req);
+        console.log('LTI TIME:', req.body.oauth_timestamp);
+        // console.log('CURRENT TIME:',Date.now());
+        console.log('CURRENT TIME:',Date.now()/1000)
         //If the user is authenticated (and not another LTI launch), immediately handle the request
         var userData = {};
         if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
@@ -59,7 +62,7 @@ app
         var provider = new lti.Provider(consumer_key, consumer_secret)
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {
-            console.log(provider);
+            // console.log(provider);
             //copying all the useful data from the provider to what will be stored for the user
             userData.user_id = provider.body.custom_canvas_user_id;
             userData.context_id = provider.body.custom_canvas_course_id;
