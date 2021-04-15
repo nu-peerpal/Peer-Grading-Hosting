@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import StudentViewOutline from './studentViewOutline';
-const canvasCalls = require("../canvasCalls");
+const axios = require("axios");
 
 function ViewAsStudent(props) {
     const [currentUserId, setCurrentUserId] = useState('');
@@ -25,7 +25,8 @@ function ViewAsStudent(props) {
         setCurrentUserId(event.target.value);
     };
     useEffect(() => {
-        canvasCalls.getUsers(canvasCalls.token, courseId).then(users => {
+        axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
+            let users = res.data.data;
             let peers = users.filter(user => user.enrollment == "StudentEnrollment");
             let customUsers = [];
             peers.forEach(obj => {
@@ -37,10 +38,11 @@ function ViewAsStudent(props) {
             // console.log('custom users:',customUsers);
             setCanvasUsers(customUsers)});
     }, [])
-    useEffect(() => {
-        console.log('user id is now:', userId);
-        console.log('saved id: ', savedStudentId);
-    }, [userId])
+
+    // useEffect(() => {
+    //     console.log('user id is now:', userId);
+    //     console.log('saved id: ', savedStudentId);
+    // }, [userId])
 
     return (
         <div>

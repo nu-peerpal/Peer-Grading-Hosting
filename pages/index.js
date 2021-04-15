@@ -35,7 +35,7 @@ function Dashboard(props) {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
       res = await fetch(
-        `/api/assignments?courseId=1&minReviewDueDate=${today}`,
+        `/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`,
       );
       resData = await res.json();
       const assignments = resData.data;

@@ -14,7 +14,6 @@ import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
 const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm')
-const canvasCalls = require("../../../canvasCalls");
 const axios = require("axios");
 
 

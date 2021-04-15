@@ -3,7 +3,6 @@ import Button from "@material-ui/core/Button";
 import { useUserData } from "./storeAPI";
 import styles from "./styles/studentViewOutline.module.scss";
 import Link from "next/link";
-const canvasCalls = require("../canvasCalls");
 const axios = require("axios");
 
 

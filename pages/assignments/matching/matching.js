@@ -17,7 +17,6 @@ import useSWR from "swr";
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
-const canvasCalls = require("../../../canvasCalls");
 const { server } = require("../../../config/index.js");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
@@ -356,8 +355,17 @@ function Matching() {
   } */
 
   async function handleSubmit() {
-    await canvasCalls.addUsers(userList); // add users to the db
-    // remove duplicates
+    let usersData = userList.map(user => {
+      return {
+        id: user.canvasId,
+        canvasId: user.canvasId,
+        lastName: user.lastName,
+        firstName: user.firstName
+      }
+    })
+    console.log("adding users", usersData);
+    await axios.post(`/api/users?type=multiple`, usersData);
+    // remove duplicate submission data
     function contains(a, id) {
       var i = a.length;
       while (i--) {
@@ -373,9 +381,10 @@ function Matching() {
             reduced_subs.push(submission);
         }
     });
-    let res = await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
-    console.log('submission post res: ',res);
+    // post submissions
+    await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
 
+    // post peer matchings
     const peerMatchings = matchings.map(matching => {
       return {
         matchingType: "initial",
@@ -387,7 +396,7 @@ function Matching() {
       }
     })
     console.log("POST peer matchings", peerMatchings)
-    axios.post(`/api/peerReviews?type=multiple`, peerMatchings)
+    await axios.post(`/api/peerReviews?type=multiple`, peerMatchings)
     .then(res => console.log("res", res))
     .catch(err => console.log(err));
   }

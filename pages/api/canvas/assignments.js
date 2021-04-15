@@ -1,8 +1,8 @@
 const axios = require("axios")
 const { server } = require("../../../config/index.js");
 
-const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
-const token = process.env.DEV_CANVAS_TOKEN;
+const canvas = process.env.CANVAS_HOST;
+const token = process.env.CANVAS_TOKEN;
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {

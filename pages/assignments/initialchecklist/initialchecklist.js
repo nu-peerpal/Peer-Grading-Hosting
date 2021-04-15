@@ -7,7 +7,6 @@ import { Field, Formik, Form } from "formik";
 import sampleData from "../../../sample_data/peerMatching";
 import AutoComplete from "../../../components/autocomplete";
 import TextField from '@material-ui/core/TextField';
-const canvasCalls = require("../../../canvasCalls");
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
 import { PanoramaFishEye } from "@material-ui/icons";

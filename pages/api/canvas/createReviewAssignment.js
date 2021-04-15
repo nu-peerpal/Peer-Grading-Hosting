@@ -5,8 +5,8 @@ export const config = {
   },
 }
 
-const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
-const token = process.env.DEV_CANVAS_TOKEN;
+const canvas = process.env.CANVAS_HOST;
+const token = process.env.CANVAS_TOKEN;
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {
@@ -65,49 +65,3 @@ export default async (req, res) => {
     responseHandler.response400(res, err);
   }
 };
-
-
-async function createReviewAssignment(token, courseId, assignmentName, prName, prDueDate, prGroup, rubric) {
-  const data = {
-    assignment: { 
-      name: prName,
-      due_at: prDueDate, //"2021-05-01T11:59:00Z"
-      description: "Peer Review Assignment for " + assignmentName,
-      published: true,
-      assignment_group_id: prGroup,
-      points: rubric.points_possible,
-      submission_types: [ "external_tool" ],
-      external_tool_tag_attributes: {
-        url: 'http://localhost:8081',
-        new_tab: true,
-        external_data: '',
-        content_type: 'ContextExternalTool',
-      }
-    }
-  }
-  const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
-    headers: {'Authorization': `Bearer ${token}`}
-  })
-  console.log(response)
-  const newAssignment = response.data
-  const rubricData = {
-    rubric_association: {
-      rubric_id: rubric.id,
-      association_id: newAssignment.id,
-      association_type: "Assignment",
-      purpose: "grading"
-    }
-  }
-  axios.post(canvas + "courses/" + courseId + "/rubric_associations", rubricData, {
-    headers: {'Authorization': `Bearer ${token}`}
-  }).then(res => console.log(res))
-  const assignment = {
-    reviewDueDate: newAssignment.due_at,
-    reviewStatus: 0,
-    reviewCanvasId: newAssignment.id,
-    graded: false,
-    name: assignmentName,
-    courseId: parseInt(courseId),
-  }
-  return assignment
-}
