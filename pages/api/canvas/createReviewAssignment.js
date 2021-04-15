@@ -7,6 +7,9 @@ export const config = {
 
 const canvas = process.env.CANVAS_HOST;
 const token = process.env.CANVAS_TOKEN;
+const launch_url = process.env.LAUNCH_URL;
+const resource_link_id = process.env.RESOURCE_LINK_ID;
+const content_id = process.env.CONTENT_ID;
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {
@@ -24,12 +27,12 @@ export default async (req, res) => {
             points: rubric.points_possible,
             submission_types: [ "external_tool" ],
             external_tool_tag_attributes: {
-              url: 'http://localhost:8081',
+              url: launch_url,
               new_tab: true,
-              resource_link_id: '953a070579c571fc4b9b8a7a95bf6c0dc1b365d6',
+              resource_link_id: resource_link_id,
               external_data: '',
               content_type: 'ContextExternalTool',
-              content_id: 14
+              content_id: content_id
             }
           }
         }
