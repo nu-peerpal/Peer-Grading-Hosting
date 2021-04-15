@@ -32,7 +32,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
-    // server.enable('trust proxy');
+    server.enable('trust proxy');
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
