@@ -32,6 +32,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
+    server.enable('trust proxy');
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
@@ -40,49 +41,50 @@ app
     
     server.post("*", async function(req, res, next) {
       try {
-      //If the user is authenticated (and not another LTI launch), immediately handle the request
-      var userData = {};
-      if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
-        var nonce = req.cookies.authToken;
-        userData = await keyv.get(nonce);
-        // console.log(userData)
-        if (userData){
-          // req.userData = userData;
-          console.log("AUTHENTICATED.")
-          return handle(req, res);
-        }
-      } 
-      
-      //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
-      var provider = new lti.Provider(consumer_key, consumer_secret)
-      provider.valid_request(req, (err, is_valid) => {
-        if (is_valid) {
-          console.log(provider);
-          //copying all the useful data from the provider to what will be stored for the user
-          userData.user_id = provider.body.custom_canvas_user_id;
-          userData.context_id = provider.body.custom_canvas_course_id;
-          userData.context_name = provider.body.custom_canvas_assignment_title;
-          userData.instructor = provider.instructor;
-          userData.ta = provider.ta;
-          userData.student = provider.student;
-          userData.admin = provider.admin;
-          userData.assignment = provider.body.custom_canvas_assignment_id;
-          //The nonce is used as the auth token to identify the user to their data
-          var nonce = Object.keys(provider.nonceStore.used)[0];
-          res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
-          res.cookie('userData', JSON.stringify(userData));
-          keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
+        console.log('LTI REQ:', req);
+        //If the user is authenticated (and not another LTI launch), immediately handle the request
+        var userData = {};
+        if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
+          var nonce = req.cookies.authToken;
+          userData = await keyv.get(nonce);
+          // console.log(userData)
+          if (userData){
+            // req.userData = userData;
+            console.log("AUTHENTICATED.")
+            return handle(req, res);
+          }
+        } 
+        
+        //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
+        var provider = new lti.Provider(consumer_key, consumer_secret)
+        provider.valid_request(req, (err, is_valid) => {
+          if (is_valid) {
+            console.log(provider);
+            //copying all the useful data from the provider to what will be stored for the user
+            userData.user_id = provider.body.custom_canvas_user_id;
+            userData.context_id = provider.body.custom_canvas_course_id;
+            userData.context_name = provider.body.custom_canvas_assignment_title;
+            userData.instructor = provider.instructor;
+            userData.ta = provider.ta;
+            userData.student = provider.student;
+            userData.admin = provider.admin;
+            userData.assignment = provider.body.custom_canvas_assignment_id;
+            //The nonce is used as the auth token to identify the user to their data
+            var nonce = Object.keys(provider.nonceStore.used)[0];
+            res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
+            res.cookie('userData', JSON.stringify(userData));
+            keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
+            req.userData = userData;
+          } else {
+            console.log('Error Occured in LTI: ', err);
+          }
+        });
+        //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
+        if (Object.keys(userData).length > 0) {
           req.userData = userData;
-        } else {
-          console.log('Error Occured in LTI: ', err);
         }
-      });
-      //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
-      if (Object.keys(userData).length > 0) {
-        req.userData = userData;
-      }
-      console.log("DOING NEXT");
-      return handle(req, res);
+        console.log("DOING NEXT");
+        return handle(req, res);
     } catch(err) {
       console.log(err);
     }
