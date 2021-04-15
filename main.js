@@ -32,7 +32,7 @@ app
     server.use(bodyParser.urlencoded({ extended: false }))
     server.use(bodyParser.json());
     server.use(cookieParser());
-    server.enable('trust proxy');
+    // server.enable('trust proxy');
     
     //connecting to database, connect function defined in /models/index.js
     (async () => {
@@ -61,8 +61,8 @@ app
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret)
         // req.connection.encrypted = true;
-        console.log('lti provider:',provider)
-        console.log('lti request: ',req);
+        // console.log('lti provider:',provider)
+        // console.log('lti request: ',req);
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {
             // console.log(provider);
