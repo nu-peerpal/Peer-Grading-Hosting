@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Router from 'next/router';
 import ListContainer from "./listcontainer";
 import { Formik, Field, Form } from 'formik';
-import { token, getAssignments } from '../canvasCalls';
 import styles from './styles/selectAssignmentForm.module.scss';
 import { useUserData } from "./storeAPI";
-const canvasCalls = require("../canvasCalls");
 const axios = require("axios");
 
 
@@ -18,9 +16,9 @@ const SelectAssignmentForm = (props) => {
     const [ineligible, setIneligible] = useState([]);
 
     useEffect(() => {
-      canvasCalls.getAssignments(canvasCalls.token, 1).then(response => {
-        setAssignments(response);
-        
+      axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+        setAssignments(response.data.data);
+        // console.log(response.data.data);
       });
     }, []); 
 

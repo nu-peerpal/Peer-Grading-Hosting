@@ -28,19 +28,19 @@ function Dashboard(props) {
     }
     axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
       setCanvasAssignments(response.data.data);
-      console.log(response.data.data);
+      // console.log(response.data.data);
     });
 
     (async () => {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
       res = await fetch(
-        `/api/assignments?courseId=1&minReviewDueDate=${today}`,
+        `/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`,
       );
       resData = await res.json();
       const assignments = resData.data;
       let statusUpdates = [];
-      if (!props.ISstudent) {
+      if (!props.ISstudent && assignments) {
         statusUpdates = assignments.map(assignment => ({
           name: "Status: " + assignment.reviewStatus,
           info: assignment.name,
@@ -49,7 +49,7 @@ function Dashboard(props) {
       }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate } of assignments) {
+      if (assignments) for (const { id, name, reviewDueDate } of assignments) {
         res = await fetch(
           `/api/peerReviews?userId=${userId}&assignmentId=${id}`,
         );

@@ -66,6 +66,10 @@ const getAssignments = async (token, courseId) => {
 
 // getAssignments(token, 1).then(response => console.log(response))
 
+// axios.get(canvas + "courses/1/assignments/71", {
+//   headers: { 'Authorization': `Bearer ${token}` } 
+// }).then(res => console.log(res))
+
 
 // gets list of courses associated with a user token
 const getCourses = async (token) => {
@@ -275,7 +279,14 @@ async function createReviewAssignment(token, courseId, assignmentName, prName, p
       description: "Peer Review Assignment for " + assignmentName,
       published: true,
       assignment_group_id: prGroup,
-      points: rubric.points_possible
+      points: rubric.points_possible,
+      submission_types: [ "external_tool" ],
+      external_tool_tag_attributes: {
+        url: 'http://localhost:8081',
+        new_tab: true,
+        external_data: '',
+        content_type: 'ContextExternalTool',
+      }
     }
   }
   const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
