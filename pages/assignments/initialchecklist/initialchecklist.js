@@ -51,15 +51,25 @@ const InitialChecklist = () => {
         break;
       }
     }
-    canvasCalls.createReviewAssignment(canvasCalls.token, courseId, assignmentName, prName, prDueDate, prGroup, rubric).then(assignment => {
+    const reviewAssignment = {
+      courseId: courseId,
+      assignmentName: assignmentName,
+      prName: prName,
+      prDueDate: prDueDate,
+      prGroup: prGroup,
+      rubric: rubric
+    }
+    axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
+      assignment = assignment.data.data
+      console.log({assignment})
       assignment["reviewRubricId"] = parseInt(rubricId);
       if (dueDate != "") {
         assignment["assignmentDueDate"] = dueDate.replace("T", " ");
       }
       assignment["canvasId"] = parseInt(assignmentId);
       assignment["id"] = parseInt(assignmentId);
-      console.log(assignment)
-      canvasCalls.addReviewAssignment(assignment)
+
+      axios.post(`/api/assignments`, assignment)
     })
   }
 
