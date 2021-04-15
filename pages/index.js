@@ -28,7 +28,7 @@ function Dashboard(props) {
     }
     axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
       setCanvasAssignments(response.data.data);
-      // console.log(response.data.data);
+      // console.log({response});
     });
 
     (async () => {
@@ -38,9 +38,10 @@ function Dashboard(props) {
         `/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`,
       );
       resData = await res.json();
+      // console.log({resData});
       const assignments = resData.data;
       let statusUpdates = [];
-      if (!props.ISstudent && assignments) {
+      if (!props.ISstudent) {
         statusUpdates = assignments.map(assignment => ({
           name: "Status: " + assignment.reviewStatus,
           info: assignment.name,
@@ -49,7 +50,7 @@ function Dashboard(props) {
       }
 
       const toDoReviews = [];
-      if (assignments) for (const { id, name, reviewDueDate } of assignments) {
+      for (const { id, name, reviewDueDate } of assignments) {
         res = await fetch(
           `/api/peerReviews?userId=${userId}&assignmentId=${id}`,
         );
@@ -81,7 +82,7 @@ function Dashboard(props) {
       props.ISstudent
         ? setToDoReviews(toDoReviews)
         : setTaToDos([...toDoReviews, ...statusUpdates]);
-    })();
+    })().catch( e => { console.error(e) });
   }, [props.ISstudent]);
 
   if (props.ISstudent) {

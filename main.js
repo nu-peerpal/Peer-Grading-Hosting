@@ -39,7 +39,7 @@ app
     })();
     
     server.post("*", async function(req, res, next) {
-
+      try {
       //If the user is authenticated (and not another LTI launch), immediately handle the request
       var userData = {};
       if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
@@ -73,6 +73,8 @@ app
           res.cookie('userData', JSON.stringify(userData));
           keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
           req.userData = userData;
+        } else {
+          console.log('Error Occured in LTI: ', err);
         }
       });
       //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
@@ -81,8 +83,9 @@ app
       }
       console.log("DOING NEXT");
       return handle(req, res);
-      
-      
+    } catch(err) {
+      console.log(err);
+    }
     });
     server.get("*", async (req, res) => {
       var userData = {};
