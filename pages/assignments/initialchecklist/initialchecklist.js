@@ -18,13 +18,14 @@ const InitialChecklist = () => {
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
-  const [prGroup, setPrGroup] = React.useState(0); // list of group names and ids
+  const [prGroup, setPrGroup] = React.useState(-1); // list of group names and ids
   const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
-  const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
-  const [rubricId, setRubricId] = React.useState(0); // selecting rubric ID for PR assignment
+  const [prDueDate, setPrDueDate] = React.useState(null); // PR assignment due date
+  const [rubricId, setRubricId] = React.useState(-1); // selecting rubric ID for PR assignment
   const { userId, courseId, assignment } = useUserData(); // data from LTI launch
   const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
+  const [fieldsReady, setFieldsReady] = React.useState(false);
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
@@ -43,6 +44,7 @@ const InitialChecklist = () => {
   function handleSubmit() {
     var rubric = null;
     var i;
+    uploadRubrics(rubricOptions);
     
     for (i = 0; i < rubricOptions.length; i++) {
       if (rubricOptions[i].id == rubricId) {
@@ -67,14 +69,14 @@ const InitialChecklist = () => {
       }
       assignment["canvasId"] = parseInt(assignmentId);
       assignment["id"] = parseInt(assignmentId);
-
+      assignment["rubricId"] = parseInt(router.query.rubricId);
       axios.post(`/api/assignments`, assignment)
     })
   }
 
   useEffect(() => {
     axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
-      console.log('rubrics: ', response.data.data)
+      // console.log('rubrics: ', response.data.data)
       setRubricOptions(response.data.data);
     });
     axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
@@ -104,6 +106,7 @@ const InitialChecklist = () => {
               Select peer review assignment group:
               <form>
                 <select value={prGroup} onChange={e => setPrGroup(e.target.value)} >
+                <option key={0} value={-1}>Select Assignment Group</option>
                   {prGroupOptions.map(prGroup => {
                     return <option key={prGroup.id} value={prGroup.id}>{prGroup.name}</option>;
                   })}
@@ -149,6 +152,7 @@ const InitialChecklist = () => {
               Select a rubric for the peer review assignment.
               <form>
                 <select value={rubricId} onChange={e => setRubricId(e.target.value)} >
+                <option key={0} value={-1}>Select Rubric</option>
                   {rubricOptions.map(rubricObj => {
                     return <option key={rubricObj.id} value={rubricObj.id}>{rubricObj.title}</option>;
                   })}
@@ -160,9 +164,9 @@ const InitialChecklist = () => {
       </Container>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-        <Button onClick={handleSubmit}>
+      {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
           Create Peer Review Assignment
-        </Button>
+        </Button>}
       </div>
 
     </div>

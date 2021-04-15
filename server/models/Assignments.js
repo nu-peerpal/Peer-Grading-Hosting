@@ -27,6 +27,12 @@ module.exports = (sequelize, Sequelize) => {
     rubricId: {
       type: Sequelize.STRING,
     },
+    reviewRubricId: {
+      type: Sequelize.STRING,
+    },
+    courseId: {
+      type: Sequelize.STRING,
+    }
   });
 
   Assignments.associate = (db) => {
@@ -35,9 +41,9 @@ module.exports = (sequelize, Sequelize) => {
     // });
     // Assignments.belongsTo(db.rubrics, { as: "rubric" });
     // Assignments.belongsTo(db.rubrics, { as: "reviewRubric" });
-    Assignments.hasMany(db.peer_matchings);
-    Assignments.hasMany(db.assignment_submissions);
-    Assignments.hasMany(db.review_grades_reports);
+    // Assignments.hasMany(db.peer_matchings);
+    // Assignments.hasMany(db.assignment_submissions);
+    // Assignments.hasMany(db.review_grades_reports);
     // Assignments.hasMany(db.groups);
   };
   return Assignments;

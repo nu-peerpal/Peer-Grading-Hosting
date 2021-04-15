@@ -18,12 +18,16 @@ export default async (req, res) => {
               headers: { 'Authorization': `Bearer ${token}` } 
             });
             assignments = response.data.map(assignment => {
+              let rubricId = null;
+              if (assignment.rubric_settings) {
+                rubricId = assignment.rubric_settings.id;
+              }
               return {
                 courseId: req.query.courseId,
                 assignmentDueDate: assignment.due_at,
                 canvasId: assignment.id,
                 name: assignment.name,
-                // assignmentGroup: assignment.assignment_group_id
+                rubricId: rubricId,
               }
             });
           } else {

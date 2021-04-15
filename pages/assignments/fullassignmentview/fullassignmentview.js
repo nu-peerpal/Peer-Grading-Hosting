@@ -33,7 +33,7 @@ const FullAssignment = (props) => {
             <AccordionDetails></AccordionDetails>
           </Accordion> */}
           <div className={styles.check}>
-            <Checklist assignmentName={router.query.name} assignmentId={router.query.id} dueDate={router.query.dueDate} />
+            <Checklist assignmentName={router.query.name} assignmentId={router.query.id} rubricId={router.query.rubricId} dueDate={router.query.dueDate} />
           </div>
         </div>
       </Container>

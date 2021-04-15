@@ -63,6 +63,7 @@ function assignmentchecklist(props) {
   let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
   let dueDate = props.dueDate;
+  let rubricId = props.rubricId;
   const steps = getSteps();
 
   return (
@@ -105,7 +106,7 @@ function assignmentchecklist(props) {
             return (
               <Step key={label[0]}>
                 <StepLabel>{label[0]}
-                <Link href={{ pathname: label[1].link, query: { assignmentId: assignmentId, assignmentName: assignmentName, dueDate: dueDate } }}>
+                <Link href={{ pathname: label[1].link, query: { assignmentId: assignmentId, assignmentName: assignmentName, rubricId: rubricId, dueDate: dueDate } }}>
                   Edit
                 </Link>
                   {/* <Link href={label[1].link} assignmentId={assignmentId} assignmentName={assignmentName}>Edit</Link> */}

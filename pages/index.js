@@ -40,7 +40,7 @@ function Dashboard(props) {
       resData = await res.json();
       const assignments = resData.data;
       let statusUpdates = [];
-      if (!props.ISstudent) {
+      if (!props.ISstudent && assignments) {
         statusUpdates = assignments.map(assignment => ({
           name: "Status: " + assignment.reviewStatus,
           info: assignment.name,
@@ -49,7 +49,7 @@ function Dashboard(props) {
       }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate } of assignments) {
+      if (assignments) for (const { id, name, reviewDueDate } of assignments) {
         res = await fetch(
           `/api/peerReviews?userId=${userId}&assignmentId=${id}`,
         );
