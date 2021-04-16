@@ -41,10 +41,11 @@ app
     
     server.post("*", async function(req, res, next) {
       try {
-        // console.log('LTI REQ:', req);
-        console.log('LTI TIME:', req.body.oauth_timestamp);
+        console.log('LTI REQ:', req);
+        console.log('SECRET COMP:',consumer_secret);
+        // console.log('LTI TIME:', req.body.oauth_timestamp);
         // console.log('CURRENT TIME:',Date.now());
-        console.log('CURRENT TIME:',Date.now()/1000)
+        // console.log('CURRENT TIME:',Date.now()/1000)
         //If the user is authenticated (and not another LTI launch), immediately handle the request
         var userData = {};
         if (req.cookies && req.cookies.authToken && !req.body.lti_message_type){
@@ -52,14 +53,14 @@ app
           userData = await keyv.get(nonce);
           // console.log(userData)
           if (userData){
-            // req.userData = userData;
+            req.userData = userData;
             console.log("AUTHENTICATED.")
             return handle(req, res);
           }
         } 
         
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
-        var provider = new lti.Provider(consumer_key, consumer_secret)
+        var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
         // console.log('lti provider:',provider)
         // console.log('lti request: ',req);
@@ -82,7 +83,7 @@ app
             keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
             req.userData = userData;
           } else {
-            console.log('Error Occured in LTI: ', err);
+            console.log('Error Occured in LTI: ', JSON.stringify(err));
           }
         });
         //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
@@ -108,6 +109,18 @@ app
       return handle(req, res);
 
     });
+
+    server.patch("*", async (req, res) => {
+      if (req.cookies && req.cookies.authToken){
+        var nonce = req.cookies.authToken;
+        userData = await keyv.get(nonce);
+        if (userData){
+          req.userData = userData;
+        } 
+      } 
+      var data  = await req.userData;
+      return handle(req, res);
+    })
    
     server.listen(port, (err) => {
       if (err) throw err;

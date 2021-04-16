@@ -15,59 +15,22 @@ const PeerReview = (props) => {
   const { userId, courseId, courseName, assignment } = useUserData();
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
+  const [isDocument, setIsDocument] = useState(false);
   const router = useRouter()
-  let { submissionId } = router.query;
-
-  // const submissionId = 1;
-  const rubricId = 1;
-  const rubricOne = {
-    id: 1,
-    rubric: [
-      {
-        id: '12441_483',
-        description: 'Poem is long enough. Deduct one point for each line missing below 10.',
-        long_description: 'Poem is long enough. Deduct one point for each line missing below 10.Poem is long enough. Deduct one point for each line missing below 10.',
-        points: 10,
-        mastery_points: null,
-        ignore_for_scoring: null,
-        learning_outcome_migration_id: null,
-        title: 'Poem is long enough. Deduct one point for each line missing below 10.',
-        ratings: [ [Object], [Object], [Object] ]
-      },
-      {
-        id: '12441_6812',
-        description: 'Poem contains at least one Greek character.',
-        long_description: 'Poem is long enough. Deduct one point for each line missing below 10.Poem is long enough. Deduct one point for each line missing below 10.',
-        points: 5,
-        mastery_points: null,
-        ignore_for_scoring: null,
-        learning_outcome_migration_id: null,
-        title: 'Poem contains at least one Greek character.',
-        ratings: [ [Object], [Object] ]
-      },
-      {
-        id: '12441_7888',
-        description: 'Poem contains a mathematical symbol.',
-        long_description: 'Poem is long enough. Deduct one point for each line missing below 10.Poem is long enough. Deduct one point for each line missing below 10.',
-        points: 5,
-        mastery_points: null,
-        ignore_for_scoring: null,
-        learning_outcome_migration_id: null,
-        title: 'Poem contains a mathematical symbol.',
-        ratings: [ [Object], [Object] ]
-      }
-    ]
-  };
+  let { submissionId, rubricId, matchingId } = router.query;
 
   useEffect(() => {
     (async () => {
-      const [submission, assignmentData] = await Promise.all([
+      const [submission, rubricData] = await Promise.all([
         getData(`/api/submissions?type=peerreview&submissionId=${submissionId}`),
-        getData(`/api/assignments/${assignment}`),
+        getData(`/api/rubrics/${rubricId}`),
       ]);
-      console.log({assignmentData})
+      console.log({submission});
+      if (submission.s3Link.includes('http')) { // if link, then view using iframe
+        setIsDocument(true);
+      }
       setSubmission(submission);
-      setRubric(rubricOne.rubric);
+      setRubric(rubricData.rubric);
       // setSubmissionLink(pdfUrl);
     })();
   }, []);
@@ -75,7 +38,7 @@ const PeerReview = (props) => {
   return (
     <div className="Content">
       <Container name={"Grade Submission " + submissionId}>
-        <Submission sublink={submission.s3Link} submission={submission} rubric={rubric} />
+        <Submission sublink={submission.s3Link} matchingId={matchingId} submission={submission} isDocument={isDocument} rubric={rubric} />
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>

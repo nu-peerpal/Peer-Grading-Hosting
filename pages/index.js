@@ -9,7 +9,7 @@ const axios = require("axios");
 function Dashboard(props) {
   const [canvasAssignments, setCanvasAssignments] = useState();
   // const [announcements, setAnnouncements] = useState([]);
-  const [toDoReviews, setToDoReviews] = useState([]);
+  const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
   const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
   useEffect(() => {
@@ -28,17 +28,15 @@ function Dashboard(props) {
     }
     axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
       setCanvasAssignments(response.data.data);
-      // console.log({response});
+      console.log({response});
     });
 
     (async () => {
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
-      res = await fetch(
-        `/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`,
-      );
-      resData = await res.json();
-      // console.log({resData});
+      res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
+      resData = res.data;
+      console.log({resData});
       const assignments = resData.data;
       let statusUpdates = [];
       if (!props.ISstudent) {
@@ -50,33 +48,8 @@ function Dashboard(props) {
       }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate } of assignments) {
-        res = await fetch(
-          `/api/peerReviews?userId=${userId}&assignmentId=${id}`,
-        );
-        resData = await res.json();
-        const peerMatchings = resData.data;
-        console.log({peerMatchings});
-        console.log({id},{name},{reviewDueDate})
-
-        if (props.ISstudent) {
-          // toDoReviews.push({ name, dueDate: reviewDueDate, data: peerMatchings });
-          for (const peerMatching of peerMatchings) {
-            toDoReviews.push({
-              name: "Grade Submission " + peerMatching.submissionId,
-              info: name,
-              data: peerMatching,
-            });
-          }
-        } else {
-          for (const peerMatching of peerMatchings) {
-            toDoReviews.push({
-              name: "Grade Submission " + peerMatching.submissionId,
-              info: name,
-              data: peerMatching,
-            });
-          }
-        }
+      for (const { id, name, reviewDueDate, reviewRubricId } of assignments) {
+        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: reviewRubricId});
       }
 
       props.ISstudent
@@ -88,12 +61,16 @@ function Dashboard(props) {
   if (props.ISstudent) {
     return (
       <div className="Content">
-        <ListContainer
+        <StudentToDoList 
+          toDoReviews={toDoReviews}
+          ISstudent={props.ISstudent}
+          />
+        {/* <ListContainer
           name="Todos"
           data={toDoReviews}
           student={props.ISstudent}
           link="/peer_reviews/peerreview"
-        />
+        /> */}
         {/* <ListContainer
           name="Announcements"
           data={announcements}
@@ -130,6 +107,18 @@ function ToDoList(props) {
     info= "Get Started"
     link= "/canvas/canvasSelect"
   />
+  }
+}
+function StudentToDoList(props) {
+  if (props.toDoReviews) {
+    return <ListContainer
+    name="Assignments to Review"
+    data={props.toDoReviews}
+    student={props.ISstudent}
+    link="/peer_reviews/selectReview"
+  />
+  } else {
+    return null;
   }
 }
 function CanvasAssignments(props) {

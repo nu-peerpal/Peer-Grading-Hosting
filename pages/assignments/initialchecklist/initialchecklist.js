@@ -29,14 +29,18 @@ const InitialChecklist = () => {
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
+  // console.log({rubricOptions});
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
     var rubrics = rawRubrics.map(rubricObj => {
-      const rubric = rubricObj.data.map(rubricData => {
-        return [rubricData.points, rubricData.description, rubricData.long_description]
-      })
-      return {rubric: rubric}
+      // const rubric = rubricObj.data.map(rubricData => {
+      //   return [rubricData.points, rubricData.description, rubricData.long_description]
+      // })
+      return {
+        id: rubricObj.id,
+        rubric: rubricObj.data}
     });
+    console.log({rubrics});
     const res = await axios.post(`/api/rubrics?type=multiple`, rubrics);
     console.log(res);
   }

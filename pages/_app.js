@@ -25,25 +25,14 @@ export default function MyApp({ Component, pageProps }) {
   }, [])
 
   // console.log(pageProps);
-  const handleUser = (event, view) => {
-    
-    if (view === 'prof/ta') {
-      setisstudent(false)
-    }
-    else {
-      setisstudent(true)
-    }
-  };
 
   return (
     <div>
       <StoreProvider>
         <GoogleFonts href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-        {/* <div style={userId == 10 ? {border:"5px solid red", width: "100%", height: "95vh"} : null}> */}
         <Header />
         <Navbar ISstudent={isstudent} />
         <Component ISstudent={isstudent} SetIsStudent={setisstudent} {...pageProps} />
-        {/* </div> */}
       </StoreProvider>
     </div>
 

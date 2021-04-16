@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Field, Formik, Form } from "formik";
 import TextField from "@material-ui/core/TextField";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import Typography from '@material-ui/core/Typography';
 import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -17,6 +18,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
+const axios = require("axios");
 
 const fetcher = (url) => fetch(url, { method: "POST" }).then((r) => r.json());
 
@@ -35,11 +37,11 @@ class Submission extends React.Component {
             Submission {this.props.submission.canvasId}
           </AccordionSummary>
           <AccordionDetails>
-            <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe>
+            {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe> : <Typography>{this.props.sublink}</Typography>}
           </AccordionDetails>
         </Accordion>
         <br />
-        {Grading(gradingrubric)}
+        {Grading(gradingrubric, this.props.matchingId)}
       </div>
     );
   }
@@ -88,19 +90,22 @@ function getFinalScore(data, rubric) {
 }
 
 // console.log('what reviews should look like', js.reviews[0])
-function Grading(rubric) {
+function Grading(rubric, matching) {
   var maxScore = getMaxScore(rubric);
   return (
     <Formik
       initialValues={getInitialValues(rubric)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        // fetch(`/api/peerReviews/detailedView?id=${}`, {
-        //   method: "POST",
+        axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+          console.log('rubric post:', res);
+          setSubmitting(false);
+          document.getElementById("submitted").style.display = "";
+        });
+        // fetch(`/api/peerReviews/${matching}`, {
+        //   method: "PATCH",
         //   body: JSON.stringify(getFinalScore(data, rubric)),
         // });
-        setSubmitting(false);
-        document.getElementById("submitted").style.display = "";
       }}
     >
       {({ values, isSubmitting }) => (

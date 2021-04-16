@@ -78,7 +78,7 @@ function ViewAsStudent(props) {
 
                             <TableCell className={styles.info}>
                                 <Link href={{ pathname: '/'}} className={styles.hov}>
-                                    <Button onClick={currentUserId != '' ? () => {actAsStudent(currentUserId); props.SetIsStudent(true)} : null}>View</Button>
+                                    <Button onClick={currentUserId != '' ? () => { actAsStudent(currentUserId); props.SetIsStudent(true) } : null}>View</Button>
                                 </Link>
                             </TableCell>
                         </TableRow>

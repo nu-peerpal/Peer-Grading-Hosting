@@ -14,6 +14,7 @@ export default async (req, res) => {
         responseHandler.response200(res, peerMatching);
         break;
       case "PATCH":
+        console.log(req.body);
         for (const property in req.body) {
           peerMatching[property] = req.body[property];
         }
