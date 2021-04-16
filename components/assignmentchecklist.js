@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from 'next/link'
 import styles from './styles/assignmentchecklist.module.scss'
 import { makeStyles } from "@material-ui/core/styles";
@@ -55,11 +55,11 @@ function incActiveStep(activeStep){
 }
 function assignmentchecklist(props) {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(1);
+  const [activeStep, setActiveStep] = React.useState(0);
   const [peerReviews, setPeerReviews] = React.useState(true); // true if peer reviews are enabled
   const [rubric, setRubric] = React.useState(''); // state for the rubric
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
-  const [prDueDate, setPrDueDate] = React.useState(Date.now()); // PR assignment due date
+  const [prDueDate, setPrDueDate] = React.useState(); // PR assignment due date
   let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
   let dueDate = props.dueDate;

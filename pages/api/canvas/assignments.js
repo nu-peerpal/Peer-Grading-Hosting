@@ -14,7 +14,7 @@ export default async (req, res) => {
           }
           let response, assignments;
           if (req.query.type === "multiple") {
-            response = await axios.get(canvas + "courses/" + req.query.courseId + "/assignments", {
+            response = await axios.get(canvas + "courses/" + req.query.courseId + "/assignments?per_page=80", {
               headers: { 'Authorization': `Bearer ${token}` } 
             });
             assignments = response.data.map(assignment => {

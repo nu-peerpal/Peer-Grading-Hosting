@@ -11,6 +11,7 @@ function Dashboard(props) {
   // const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
+  const [userCreated, setUserCreated] = useState(false);
   const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -19,19 +20,19 @@ function Dashboard(props) {
       console.log({userData});
       // console.log('user data: ', userData);
       createUser(userData);
+      setUserCreated(!userCreated);
     }
   }, []);
 
   useEffect(() => {
-    if (props.ISstudent) {
-      console.log('this is a student')
-    }
-    axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
-      setCanvasAssignments(response.data.data);
-      console.log({response});
-    });
-
     (async () => {
+      if (props.ISstudent) {
+        console.log('this is a student')
+      }
+      axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+        setCanvasAssignments(response.data.data);
+        console.log({response});
+      });
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
       res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
