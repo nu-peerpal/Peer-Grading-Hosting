@@ -49,8 +49,8 @@ function Dashboard(props) {
       }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate, reviewRubricId } of assignments) {
-        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: reviewRubricId});
+      for (const { id, name, reviewDueDate, rubricId } of assignments) {
+        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId});
       }
 
       props.ISstudent
