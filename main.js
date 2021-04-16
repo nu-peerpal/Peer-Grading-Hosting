@@ -41,8 +41,7 @@ app
     
     server.post("*", async function(req, res, next) {
       try {
-        console.log('LTI REQ:', req);
-        console.log('SECRET COMP:',consumer_secret);
+        // console.log('LTI REQ:', req);
         // console.log('LTI TIME:', req.body.oauth_timestamp);
         // console.log('CURRENT TIME:',Date.now());
         // console.log('CURRENT TIME:',Date.now()/1000)
@@ -62,7 +61,7 @@ app
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
-        console.log('lti provider:',provider)
+        // console.log('lti provider:',provider)
         // console.log('lti request: ',req);
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {

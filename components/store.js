@@ -2,11 +2,11 @@ import React, { createContext, useContext, useReducer } from 'react';
 
 const StoreContext = createContext();
 const initialState = {
-    user_id: '1',
-    context_id: '1',
+    user_id: '',
+    context_id: '',
     context_name: '',
     roles: [],
-    assignment: '41', // Course Evaluation Essay
+    assignment: '', 
     saved_user_id: ''
 };
 
