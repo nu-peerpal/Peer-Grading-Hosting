@@ -90,14 +90,6 @@ const InitialChecklist = () => {
     
   }, []);
 
-  function convertToCanvasTime(time) {
-    // "2021-05-24T11:59:50Z"
-    let cutTime = time.split(0,-1);
-    console.log('time', cutTime)
-    // console.log('time: ', time.getHours);
-    setPrDueDate( cutTime +":59Z")
-  }
-
   return (
     <div className="Content">
       {/* peer review enabling section */}
@@ -144,7 +136,7 @@ const InitialChecklist = () => {
                   id="datetime-local"
                   type="datetime-local"
                   defaultValue={"2021-05-24T11:59:50Z"}
-                  onChange={e => convertToCanvasTime(e.target.value)}
+                  onChange={e => setPrDueDate(e.target.value+":59Z")}
                   InputLabelProps={{
                     shrink: true,
                   }}
