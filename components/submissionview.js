@@ -27,7 +27,7 @@ class Submission extends React.Component {
   }
   render() {
     var gradingrubric = [];
-    console.log('sub rub:',this.props.rubric)
+    // console.log('sub rub:',this.props.rubric)
     this.props.rubric.map((x) => gradingrubric.push(x));
     return (
       <div className={styles.sub}>

@@ -364,7 +364,11 @@ function Matching() {
       }
     })
     console.log("adding users", usersData);
-    await axios.post(`/api/users?type=multiple`, usersData);
+    try {
+      await axios.post(`/api/users?type=multiple`, usersData);
+    } catch(err) {
+      console.log('new users not posted.');
+    }
     // remove duplicate submission data
     function contains(a, id) {
       var i = a.length;
@@ -381,9 +385,13 @@ function Matching() {
             reduced_subs.push(submission);
         }
     });
+    console.log('adding submissions:',reduced_subs);
     // post submissions
-    await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
-
+    try {
+      await axios.post(`/api/uploadSubmissions?type=multiple`, reduced_subs);
+    } catch(err) {
+      console.log('new submissions not posted.')
+    }
     // post peer matchings
     const peerMatchings = matchings.map(matching => {
       return {
@@ -395,7 +403,7 @@ function Matching() {
         userId: matching[0]
       }
     })
-    console.log("POST peer matchings", peerMatchings)
+    console.log("POST peer matchings", peerMatchings);
     await axios.post(`/api/peerReviews?type=multiple`, peerMatchings)
     .then(res => console.log("res", res))
     .catch(err => console.log(err));
