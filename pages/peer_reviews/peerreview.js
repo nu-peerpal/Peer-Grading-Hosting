@@ -16,33 +16,40 @@ const PeerReview = (props) => {
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
   const [isDocument, setIsDocument] = useState(false);
+  const [review, setReview] = useState();
   const router = useRouter()
-  let { submissionId, rubricId, matchingId } = router.query;
+  let { submissionId, rubricId, matchingId, subId } = router.query;
 
   useEffect(() => {
     (async () => {
-      const [submission, rubricData] = await Promise.all([
+      const [submission, matchingData, rubricData] = await Promise.all([
         getData(`/api/submissions?type=peerreview&submissionId=${submissionId}`),
-        getData(`/api/rubrics/${rubricId}`),
+        getData(`/api/peerReviews/${matchingId}`),
+        getData(`/api/rubrics/${rubricId}`)
       ]);
-      console.log({submission});
+      console.log('rubric data:',rubricData);
+      console.log('matching data:',matchingData);
       if (submission.s3Link.includes('http')) { // if link, then view using iframe
         setIsDocument(true);
       }
+      if (matchingData.review) {
+        setReview(matchingData.review.reviewBody);
+      }
       setSubmission(submission);
       setRubric(rubricData.rubric);
-      // setSubmissionLink(pdfUrl);
     })();
   }, []);
 
   return (
     <div className="Content">
-      <Container name={"Grade Submission " + submissionId}>
-        <Submission sublink={submission.s3Link} matchingId={matchingId} submission={submission} isDocument={isDocument} rubric={rubric} />
+      <Container name={"Grade Submission " + subId}>
+      <Submission matchingId={matchingId} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} />
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };
+
+
 
 export default PeerReview;

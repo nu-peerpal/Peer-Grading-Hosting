@@ -20,8 +20,6 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
 const axios = require("axios");
 
-const fetcher = (url) => fetch(url, { method: "POST" }).then((r) => r.json());
-
 class Submission extends React.Component {
   constructor(props) {
     super(props);
@@ -29,19 +27,20 @@ class Submission extends React.Component {
   }
   render() {
     var gradingrubric = [];
+    console.log('sub rub:',this.props.rubric)
     this.props.rubric.map((x) => gradingrubric.push(x));
     return (
       <div className={styles.sub}>
-        <Accordion className={styles.acc}>
+        <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Submission {this.props.submission.canvasId}
+            Submission {this.props.subId}
           </AccordionSummary>
           <AccordionDetails>
-            {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.sublink}></iframe> : <Typography>{this.props.sublink}</Typography>}
+            {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
           </AccordionDetails>
         </Accordion>
         <br />
-        {Grading(gradingrubric, this.props.matchingId)}
+        {Grading(gradingrubric, this.props.matchingId, this.props.review)}
       </div>
     );
   }
@@ -49,15 +48,26 @@ class Submission extends React.Component {
 
 export default Submission;
 
-function getInitialValues(rubric) {
+  function getInitialValues(rubric, review) {
+  // console.log({rubric});
+  // console.log({review});
+  
   var len = rubric.length;
   var comments = [];
   var grades = [];
   var finalcomment = "";
-  for (var i = 0; i < len; i++) {
-    comments.push("");
-    grades.push(0);
+  if (review){
+    for (var i = 0; i < len; i++) {
+      comments.push(review.scores[i][1]);
+      grades.push(review.scores[i][0]);
+    }
+  } else {
+    for (var i = 0; i < len; i++) {
+      comments.push("");
+      grades.push(0);
+    }
   }
+  // console.log({grades})
   return { Grades: grades, Comments: comments, FinalComment: finalcomment };
 }
 
@@ -90,16 +100,17 @@ function getFinalScore(data, rubric) {
 }
 
 // console.log('what reviews should look like', js.reviews[0])
-function Grading(rubric, matching) {
+function Grading(rubric, matching, review) {
   var maxScore = getMaxScore(rubric);
   return (
     <Formik
-      initialValues={getInitialValues(rubric)}
+      enableReinitialize= {true}
+      initialValues={getInitialValues(rubric, review)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
         axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
-          setSubmitting(false);
+          // setSubmitting(false);
           document.getElementById("submitted").style.display = "";
         });
         // fetch(`/api/peerReviews/${matching}`, {
@@ -114,7 +125,7 @@ function Grading(rubric, matching) {
             <Table aria-label='spanning table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Criteria</TableCell>
+                  <TableCell>Criteria <span className={styles.btw}>(Hover for details)</span></TableCell>
                   <TableCell align='center'>Comments</TableCell>
                   <TableCell align='center'>Grade</TableCell>
                 </TableRow>

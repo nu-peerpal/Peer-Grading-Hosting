@@ -6,12 +6,6 @@ import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 
-const getData = async url => {
-  const res = await fetch(url);
-  const resData = await res.json();
-  return resData.data;
-};
-
 const SelectReview = (props) => {
   const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
@@ -23,16 +17,21 @@ const SelectReview = (props) => {
         // console.log({resData})
         const peerMatchings = res.data.data;
         console.log({peerMatchings});
+        peerMatchings.sort(function(a, b){return a.id-b.id})
+        console.log({peerMatchings});
 
         const toDoReviews = [];
         // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
+        let reviewIndex = 0;
         for (const peerMatching of peerMatchings) {
-        toDoReviews.push({
-            name: "Grade Submission " + peerMatching.submissionId,
-            assignmentDueDate: dueDate,
-            rubricId: rubricId,
-            data: peerMatching,
-        });
+          reviewIndex = reviewIndex + 1;
+          toDoReviews.push({
+              name: "Grade Submission " + reviewIndex,
+              assignmentDueDate: dueDate,
+              rubricId: rubricId,
+              data: peerMatching,
+              submissionAlias: reviewIndex
+          });
         }
 
       setToDoReviews(toDoReviews)

@@ -34,9 +34,9 @@ function StudentView(props) {
       <Link href={"/grades"}>
         <a>Grades</a>
       </Link>
-      <Link href={"/peer_reviews/peerreview"}>
+      {/* <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
-      </Link>
+      </Link> */}
       {/* <Link href={"/grades/viewprgrade"}>
         <a>PR Grade View</a>
       </Link> */}
