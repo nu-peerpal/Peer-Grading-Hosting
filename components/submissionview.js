@@ -110,7 +110,7 @@ function Grading(rubric, matching, review) {
         setSubmitting(true);
         axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
-          // setSubmitting(false);
+          setSubmitting(false);
           document.getElementById("submitted").style.display = "";
         });
         // fetch(`/api/peerReviews/${matching}`, {
