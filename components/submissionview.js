@@ -27,7 +27,6 @@ class Submission extends React.Component {
   }
   render() {
     var gradingrubric = [];
-    // console.log('sub rub:',this.props.rubric)
     this.props.rubric.map((x) => gradingrubric.push(x));
     return (
       <div className={styles.sub}>
@@ -49,9 +48,6 @@ class Submission extends React.Component {
 export default Submission;
 
   function getInitialValues(rubric, review) {
-  // console.log({rubric});
-  // console.log({review});
-  
   var len = rubric.length;
   var comments = [];
   var grades = [];
@@ -110,8 +106,11 @@ function Grading(rubric, matching, review) {
         setSubmitting(true);
         axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
-          setSubmitting(false);
-          document.getElementById("submitted").style.display = "";
+          // setSubmitting(false);
+          if (res.status === 200) {
+            document.getElementById("submitted").innerHTML = "Submitted";
+            document.getElementById("submitted").style.display = "";
+          }
         });
         // fetch(`/api/peerReviews/${matching}`, {
         //   method: "PATCH",
@@ -119,7 +118,7 @@ function Grading(rubric, matching, review) {
         // });
       }}
     >
-      {({ values, isSubmitting }) => (
+      {({ values, handleChange, dirty }) => (
         <Form>
           <TableContainer component={Paper}>
             <Table aria-label='spanning table'>
@@ -146,6 +145,7 @@ function Grading(rubric, matching, review) {
                         type='input'
                         rowsMin={4}
                         value={values.Comments[index]}
+                        onKeyUp={handleChange}
                         id='outlined-basic'
                         variant='outlined'
                         required={true}
@@ -158,6 +158,7 @@ function Grading(rubric, matching, review) {
                         name={"Grades[" + index + "]"}
                         type='number'
                         value={values.Grades[index] || ""}
+                        onKeyUp={handleChange}
                         InputProps={{
                           inputProps: { min: 0, max: row["points"], step: 1 },
                         }}
@@ -197,7 +198,7 @@ function Grading(rubric, matching, review) {
                   <TableCell>
                     <Button
                       className={styles.save}
-                      disabled={isSubmitting}
+                      disabled={!dirty}
                       type='submit'
                     >
                       Save
