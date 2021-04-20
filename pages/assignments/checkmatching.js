@@ -13,9 +13,8 @@ function CheckMatching() {
   const [reviews, setReviews] = useState([]);
   const [matching, setMatching] = useState([]);
   const router = useRouter();
-  const { assignmentId } = router.query;
-  // const { rubricId } = router.query;
-  const rubricId = 1;
+  const { assignmentId, rubricId } = router.query;
+
 
   useEffect(() => {
     Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(data => {

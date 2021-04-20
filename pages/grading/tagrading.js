@@ -119,8 +119,8 @@ const TAGrading = () => {
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}
-          submissionId={submissionId}
-          isDocument={isDocument}
+          // submissionId={submissionId}
+          // isDocument={isDocument}
         />
         {/* { rubric && reviewRubric && peerMatchings ? <div>Loading...</div> : <TAsubmission
           assignmentRubric={rubric}
