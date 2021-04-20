@@ -84,8 +84,8 @@ function Dashboard(props) {
     return (
       <div className="Content">
         <ToDoList data={taToDos}/>
-        {/* {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> } */}
-        <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
+        {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
+        {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
         <CanvasAssignments assignments={canvasAssignments} />
         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
