@@ -53,9 +53,8 @@ function Dashboard(props) {
         toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, link:"/assignments/fullassignmentview/fullassignmentview"});
       }
 
-      props.ISstudent
-        ? setToDoReviews(toDoReviews)
-        : setTaToDos([...toDoReviews, ...statusUpdates]);
+      setToDoReviews(toDoReviews);
+      setTaToDos([...toDoReviews, ...statusUpdates]);
     })().catch( e => { console.error(e) });
   }, [props.ISstudent]);
 
@@ -85,6 +84,8 @@ function Dashboard(props) {
     return (
       <div className="Content">
         <ToDoList data={taToDos}/>
+        {/* {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> } */}
+        <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
         <CanvasAssignments assignments={canvasAssignments} />
         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
@@ -96,7 +97,7 @@ function Dashboard(props) {
 function ToDoList(props) {
   if (props.data[0]) {
     return <ListContainer
-      name="Todos"
+      name="Peer Review Enabled Assignments"
       data={props.data}
       student={props.ISstudent}
       link={props.link}
@@ -122,6 +123,19 @@ function StudentToDoList(props) {
     return null;
   }
 }
+function TaToDoList(props) {
+  if (props.toDoReviews) {
+    return <ListContainer
+    name="Assignments to Review as TA"
+    data={props.toDoReviews}
+    student={props.ISstudent}
+    link="/peer_reviews/selectReview"
+  />
+  } else {
+    return null;
+  }
+}
+
 function CanvasAssignments(props) {
   if (props.assignments) {
     return <ListContainer
