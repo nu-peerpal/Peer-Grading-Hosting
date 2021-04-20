@@ -40,17 +40,17 @@ function Dashboard(props) {
       console.log({resData});
       const assignments = resData.data;
       let statusUpdates = [];
-      if (!props.ISstudent) {
-        statusUpdates = assignments.map(assignment => ({
-          name: "Status: " + assignment.reviewStatus,
-          info: assignment.name,
-          data: assignment,
-        }));
-      }
+      // if (!props.ISstudent) {
+      //   statusUpdates = assignments.map(assignment => ({
+      //     name: "Status: " + assignment.reviewStatus,
+      //     info: assignment.name,
+      //     data: assignment,
+      //   }));
+      // }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate, rubricId } of assignments) {
-        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId});
+      for (const { id, name, reviewDueDate, rubricId } of assignments) { // push OG assignments
+        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, link:"/assignments/fullassignmentview/fullassignmentview"});
       }
 
       props.ISstudent

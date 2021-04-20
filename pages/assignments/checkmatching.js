@@ -3,47 +3,64 @@ import Container from "../../components/container";
 import Tree from "../../components/tree";
 import sampleData from "../../sample_data/ensureSufficientReviews";
 import { ensureSufficientReviews } from "../api/AlgCalls.js";
-
-// Note: following imports should be used with the commented-out
-// code below after real data is populated in database.
-import useSWR from "swr";
-const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
+import { useRouter } from 'next/router';
+import { useUserData } from "../../components/storeAPI";
+const axios = require("axios");
 
 function CheckMatching() {
-  // NOTE: The following code should be removed upon usage of real data.
-  const { graders, reviews, matching } = sampleData;
+  const { userId, courseId, courseName, assignment } = useUserData();
+  const [graders, setGraders] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [matching, setMatching] = useState([]);
+  const router = useRouter();
+  const { assignmentId } = router.query;
 
-  /* NOTE: The following code should be used when real data populated in database.
-  const courseId = 1;
-  const assignmentId = 1;
+  useEffect(() => {
+    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`)]).then(data => {
+      console.log({data});
+      const usersRes = data[0].data;
+      const completeReviewsRes = data[1].data;
+      const allMatchingsRes = data[2].data;
 
-  const { data: usersRes } = useSWR(
-    `/api/users?courseId=${courseId}&assignmentId=${assignmentId}`,
-    fetcher
-  );
-  const { data: completeReviewsRes } = useSWR(
-    `/api/peerReviews?done=true&assignmentId=${assignmentId}`
-  );
-  const { data: allMatchingsRes } = useSWR(
-    `/api/peerReviews?assignmentId=${assignmentId}`
-  );
+      let tempGraders, tempReviews, tempMatching;
+      tempGraders = tempReviews = tempMatching = [];
+      if (usersRes && completeReviewsRes && allMatchingsRes) {
+        let justGraders = usersRes.data.filter(user => user.enrollment == "TaEnrollment");
+        tempGraders = justGraders.map(user => user.canvasId);
+        tempReviews = completeReviewsRes.data.map(
+          ({ submissionId, userId, review }) => [userId, submissionId, review] // format as algorithm input
+        );
+        tempMatching = allMatchingsRes.data.map(({ submissionId, userId }) => [
+          userId,
+          submissionId
+        ]); // format as algorithm input
+      }
+      tempGraders.sort(function(a, b){return a-b});
+      tempReviews.sort(function(a, b){return a[0]-b[0]})
+      // sort first by userid, then by submission id
+      let cmp = function(a,b) {
+        if (a>b) return +1;
+        if (a<b) return -1;
+        return 0;
+      }
+      tempMatching.sort(function(a, b){return cmp(a[0],b[0]) || cmp(a[1],b[1])})
+      setGraders(tempGraders);
+      setReviews(tempReviews);
+      setMatching(tempMatching);
+      return () => { // if component isn't mounted
+        setGraders([]);
+        setReviews([]);
+        setMatching([]);
+      };
+    })
+  }, []);
 
-  let graders, reviews, matching;
-  graders = reviews = matching = [];
-  if (usersRes && completeReviewsRes && allMatchingsRes) {
-    graders = usersRes.data.map(user => user.id);
-    reviews = completeReviewsRes.data.map(
-      ({ submissionId, userId, review }) => [userId, submissionId, review] // format as algorithm input
-    );
-    matching = allMatchingsRes.data.map(({ submissionId, userId }) => [
-      userId,
-      submissionId
-    ]); // format as algorithm input
-  } */
-
+  
   const [additionalMatchings, setAdditionalMatchings] = useState([]);
   useEffect(() => {
     (async () => {
+      console.log('alg inputs:')
+      console.log({graders}, {reviews}, {matching})
       const matchings = await ensureSufficientReviews(
         graders,
         reviews,

@@ -38,7 +38,8 @@ function getSteps() {
     ["Peer Matching: ", { 'link': "/assignments/matching/matching" }],
     ["Review Due Date: ", { 'date': "status" }],
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }],
-    ["TA Grading: ", { 'link': "/assignments/tamatchinglist/tamatchinglist" }],
+    // ["TA Grading: ", { 'link': "/assignments/tamatchinglist/tamatchinglist" }],
+    ["TA Grading: ", { 'link': "/grading/selectTaGrading" }],
     ["Review and Submission Reports: ", { 'link': "/assignments/reportlist/reportlist" }],
     // ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
     ["Appeal Period: ", { 'status': "Either Not started, Ongoing or Passed" }]
@@ -65,6 +66,11 @@ function assignmentchecklist(props) {
   let dueDate = props.dueDate;
   let rubricId = props.rubricId;
   const steps = getSteps();
+
+
+  // useEffect(() => {
+    
+  // }, []);
 
   return (
     <div className={classes.root}>
