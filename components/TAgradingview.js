@@ -22,7 +22,8 @@ const TAsubmission = (props) => {
           User 1's submission
         </AccordionSummary>
         <AccordionDetails>
-        {props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={props.submission.s3Link}></iframe> : <Typography>{props.submission.s3Link}</Typography>}
+          Should display pdf
+        {/* {props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={props.submission.s3Link}></iframe> : <Typography>{props.submission.s3Link}</Typography>} */}
         </AccordionDetails>
       </Accordion>
       <PeerReviewMatrix
