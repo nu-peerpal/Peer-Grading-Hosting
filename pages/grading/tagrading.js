@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import TAsubmission from "../../components/TAgradingview";
 import useSWR from "swr";
+const axios = require("axios");
+import { useUserData } from "../../components/storeAPI";
+import { useRouter } from 'next/router';
 
 const fetcher = url => fetch(url).then(res => res.json());
 
 const transformRubric = rubric =>
-  rubric.map(([maxPoints, element]) => ({ maxPoints, element }));
+  rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
 const transformMatchings = (matchings, assignmentRubric, users) =>
   matchings.map(matching => {
     const { firstName, lastName } = users.find(
@@ -30,28 +33,42 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
   });
 
 const TAGrading = () => {
-  const [rawRubric, setRawRubric] = useState([]);
+  const { userId, courseId, courseName, assignment } = useUserData();
+  const router = useRouter();
   const [rubric, setRubric] = useState([]);
   const [reviewRubric, setReviewRubric] = useState([]);
   const [peerMatchings, setPeerMatchings] = useState([]);
+  const [submission, setSubmission] = useState();
+  const [isDocument, setIsDocument] = useState(false);
+  let { id, submissionId } = router.query;
 
   // NOTE: need to change when using real matchings in database
-  const assignmentId = 1;
-  const submissionId = 1;
-  const courseId = 1;
+  // const submissionId = 324;
 
-  const { data: assignmentRes } = useSWR(
-    `/api/assignments/${assignmentId}`,
-    fetcher
-  );
-  const { data: matchingsRes } = useSWR(
-    `/api/peerReviews?assignmentId=${assignmentId}&done=true`,
-    fetcher
-  );
-  const { data: usersRes } = useSWR(`/api/users?courseId=${courseId}`, fetcher);
+  // const { data: assignmentRes } = useSWR(
+  //   `/api/assignments/${assignmentId}`,
+  //   fetcher
+  // );
+  
+  // const { data: matchingsRes } = useSWR(
+  //   `/api/peerReviews?assignmentId=${assignmentId}&done=true`,
+  //   fetcher
+  // );
+  // const { data: usersRes } = useSWR(`/api/users?courseId=${courseId}`, fetcher);
 
   useEffect(() => {
-    (async () => {
+    var assignmentRes, matchingsRes, usersRes;
+    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}`)]).then(async (data) => {
+      console.log({data})
+      assignmentRes = data[0].data;
+      matchingsRes = data[2].data;
+      usersRes = data[1].data;
+      setSubmission(data[3].data.data);
+      if (data[3].data.data.s3Link.includes('http')){
+        setIsDocument(true);
+      }
+      
+      let rawRubric, tempRubric, tempReviewRubric;
       if (assignmentRes) {
         const [rubricRes, reviewRubricRes] = await Promise.all(
           [
@@ -59,23 +76,41 @@ const TAGrading = () => {
             `/api/rubrics/${assignmentRes.data.reviewRubricId}`
           ].map(fetcher)
         );
-        setRawRubric(rubricRes.data.rubric);
-        setRubric(transformRubric(rubricRes.data.rubric));
-        setReviewRubric(transformRubric(reviewRubricRes.data.rubric));
+        console.log('rubrics:', rubricRes,reviewRubricRes);
+        rawRubric = rubricRes.data.rubric;
+        tempRubric = transformRubric(rubricRes.data.rubric);
+        tempReviewRubric = transformRubric(reviewRubricRes.data.rubric);
       }
-    })();
-  }, [assignmentRes]);
+      if (matchingsRes && usersRes && rawRubric.length > 0) {
+        const peerMatchings = matchingsRes.data.filter(
+          matching => matching.submissionId === submissionId
+        );
+        setPeerMatchings(
+          transformMatchings(peerMatchings, rawRubric, usersRes.data)
+        );
+        setRubric(tempRubric);
+        setReviewRubric(tempReviewRubric);
+      }
 
-  useEffect(() => {
-    if (matchingsRes && usersRes && rawRubric.length > 0) {
-      const peerMatchings = matchingsRes.data.filter(
-        matching => matching.submissionId === submissionId
-      );
-      setPeerMatchings(
-        transformMatchings(peerMatchings, rawRubric, usersRes.data)
-      );
-    }
-  }, [matchingsRes, usersRes, rawRubric]);
+    })
+
+    return () => { // if component isn't mounted
+      setPeerMatchings([]);
+      setRubric([]);
+      setReviewRubric([]);
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (matchingsRes && usersRes && rawRubric.length > 0) {
+  //     const peerMatchings = matchingsRes.data.filter(
+  //       matching => matching.submissionId === submissionId
+  //     );
+  //     setPeerMatchings(
+  //       transformMatchings(peerMatchings, rawRubric, usersRes.data)
+  //     );
+  //   }
+  // }, [matchingsRes, usersRes, rawRubric]);
 
   return (
     <div className="Content">
@@ -84,7 +119,14 @@ const TAGrading = () => {
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}
+          submissionId={submissionId}
+          isDocument={isDocument}
         />
+        {/* { rubric && reviewRubric && peerMatchings ? <div>Loading...</div> : <TAsubmission
+          assignmentRubric={rubric}
+          reviewRubric={reviewRubric}
+          peerMatchings={peerMatchings}
+        /> } */}
       </Container>
     </div>
   );
