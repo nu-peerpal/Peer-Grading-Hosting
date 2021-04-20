@@ -14,13 +14,16 @@ function CheckMatching() {
   const [matching, setMatching] = useState([]);
   const router = useRouter();
   const { assignmentId } = router.query;
+  // const { rubricId } = router.query;
+  const rubricId = 1;
 
   useEffect(() => {
-    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`)]).then(data => {
-      console.log({data});
+    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(data => {
+      // console.log({data});
       const usersRes = data[0].data;
       const completeReviewsRes = data[1].data;
       const allMatchingsRes = data[2].data;
+      const rubricRes = data[3].data.data;
 
       let tempGraders, tempReviews, tempMatching;
       tempGraders = tempReviews = tempMatching = [];
@@ -28,7 +31,13 @@ function CheckMatching() {
         let justGraders = usersRes.data.filter(user => user.enrollment == "TaEnrollment");
         tempGraders = justGraders.map(user => user.canvasId);
         tempReviews = completeReviewsRes.data.map(
-          ({ submissionId, userId, review }) => [userId, submissionId, review] // format as algorithm input
+          ({ submissionId, userId, review }) => {
+            let simpleReview = review.reviewBody.scores.map((row, index) => {
+              let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
+              return [percent, row[1]]
+            });
+
+            return [userId, submissionId, simpleReview]} // format as algorithm input
         );
         tempMatching = allMatchingsRes.data.map(({ submissionId, userId }) => [
           userId,
@@ -59,14 +68,15 @@ function CheckMatching() {
   const [additionalMatchings, setAdditionalMatchings] = useState([]);
   useEffect(() => {
     (async () => {
-      console.log('alg inputs:')
-      console.log({graders}, {reviews}, {matching})
+      // console.log('alg inputs:')
+      // console.log({graders}, {reviews}, {matching})
       const matchings = await ensureSufficientReviews(
         graders,
         reviews,
         matching
       );
       setAdditionalMatchings(matchings);
+      console.log({matchings});
     })();
   }, [graders, reviews, matching]);
 
