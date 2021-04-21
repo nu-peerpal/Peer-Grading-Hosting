@@ -10,29 +10,57 @@ const SelectTaGrading = (props) => {
   const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
-  let { assignmentName, assignmentId, name, id } = router.query;
+  var { assignmentName, assignmentId, name, id } = router.query;
   if (!assignmentName) assignmentName = name;
   if (!assignmentId) assignmentId = id;
+  // console.log({assignmentId})
   useEffect(() => {
-    (async () => {
-        let res = await axios.get(`/api/submissions?assignmentId=${assignmentId}`);
-        console.log({res})
-        const submissions = res.data.data;
-        // console.log({completedReviews});
-        submissions.sort(function(a, b){return a.groupId-b.groupId})
+    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}&userId=${userId}`)]).then(data => {
+      console.log({data})
+      const submissions = data[0].data.data;
+      const taMatchings = data[1].data.data;
+      // console.log({completedReviews});
+      let reviewReviews = [];
+      let subMatch;
+      taMatchings.forEach(match => {
+        console.log({match})
+        subMatch = submissions.filter(submission => submission.canvasId == match.submissionId);
+        reviewReviews.push(subMatch[0]);
+      });
+      reviewReviews.sort(function(a, b){return a.groupId-b.groupId})
 
-        const toDoReviews = [];
-        // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
-        for (const sub of submissions) {
-          toDoReviews.push({
-              name: "Grade group " + sub.groupId + "'s reviews",
-              canvasId: assignmentId,
-              data: {submissionId: sub.canvasId},
-          });
-        }
+      const toDoReviews = [];
+      console.log({reviewReviews})
+      // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
+      for (const sub of reviewReviews) {
+        toDoReviews.push({
+            name: "Grade group " + sub.groupId + "'s reviews",
+            canvasId: assignmentId,
+            data: {submissionId: sub.canvasId},
+        });
+      }
 
-      setToDoReviews(toDoReviews)
-    })().catch( e => { console.error(e) });
+    setToDoReviews(toDoReviews)
+  });
+    // (async () => {
+    //     let res = await axios.get(`/api/submissions?assignmentId=${assignmentId}`);
+    //     console.log({res})
+    //     const submissions = res.data.data;
+    //     // console.log({completedReviews});
+    //     submissions.sort(function(a, b){return a.groupId-b.groupId})
+
+    //     const toDoReviews = [];
+    //     // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
+    //     for (const sub of submissions) {
+    //       toDoReviews.push({
+    //           name: "Grade group " + sub.groupId + "'s reviews",
+    //           canvasId: assignmentId,
+    //           data: {submissionId: sub.canvasId},
+    //       });
+    //     }
+
+    // //   setToDoReviews(toDoReviews)
+    // })().catch( e => { console.error(e) });
   }, []);
 
   function TaToDoList(props) {

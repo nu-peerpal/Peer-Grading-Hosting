@@ -132,8 +132,7 @@ function TaToDoList(props) {
     return <ListContainer
     name="Assignments to Review as TA"
     data={props.toDoReviews}
-    student={props.ISstudent}
-    link="/peer_reviews/selectReview"
+    link="/grading/selectTaGrading"
   />
   } else {
     return null;
