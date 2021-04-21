@@ -8,8 +8,8 @@ import PeerReviewMatrix from "./UI/PeerReviewMatrix";
 import Typography from '@material-ui/core/Typography';
 
 const TAsubmission = (props) => {
-  console.log('rubric',props.assignmentRubric)
-  console.log('review rubric',props.reviewRubric)
+  // console.log('rubric',props.assignmentRubric)
+  // console.log('review rubric',props.reviewRubric)
   console.log('peer matchings',props.peerMatchings)
   return (
     <div className={styles.sub}>

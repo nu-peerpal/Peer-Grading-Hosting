@@ -30,6 +30,7 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
     return {
       userId: matching.userId,
       review: transformedReview,
+      reviewReview: matching.reviewReview,
       firstName,
       lastName,
       matchingId: matching.id

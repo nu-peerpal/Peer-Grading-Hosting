@@ -29,20 +29,34 @@ export const createGradeValidator = maxPoints => {
 
 const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
   const values = {};
-  for (const { userId } of peerMatchings) {
-    const key = userId;
-    values[key] = reviewRubric.map(section => ({
+  // console.log({reviewRubric})
+  if (peerMatchings[0].reviewReview) {
+    for (let i in peerMatchings) {
+      const key = peerMatchings[i].userId;
+      values[key] = peerMatchings[i].reviewReview.reviewBody;
+    }
+    let iGrades = peerMatchings[0].reviewReview.instructorGrades;
+    values.instructorGrades = assignmentRubric.map((section, i) => ({
+      ...section,
+      points: iGrades[i].points,
+      comment: iGrades[i].comment
+    }))
+  } else {
+    for (const { userId } of peerMatchings) {
+      const key = userId;
+      values[key] = reviewRubric.map(section => ({
+        ...section,
+        points: 0,
+        comment: ""
+      }));
+    }
+
+    values.instructorGrades = assignmentRubric.map(section => ({
       ...section,
       points: 0,
       comment: ""
     }));
   }
-
-  values.instructorGrades = assignmentRubric.map(section => ({
-    ...section,
-    points: 0,
-    comment: ""
-  }));
 
   return values;
 };
@@ -83,19 +97,23 @@ const PeerReviewMatrix = ({
         )}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(true);
+          let finalResponse;
           peerMatchings.forEach(async matching => {
             console.log({matching})
             // console.log({values})
             await axios.patch(`/api/peerReviews/${matching.matchingId}`,{reviewReview: {reviewBody: values[matching.userId], instructorGrades: values.instructorGrades}}).then(res => {
               console.log('rubric post:', res);
-              
+              if (res.status === 200) {
+                document.getElementById("submitted").innerHTML = "Submitted";
+                document.getElementById("submitted").style.display = "";
+              } else {
+                document.getElementById("submitted").innerHTML = "Submission failed.";
+                document.getElementById("submitted").style.display = "";
+              }
             });
           });
           setSubmitting(false);
-          if (res.status === 200) {
-            document.getElementById("submitted").innerHTML = "Submitted";
-            document.getElementById("submitted").style.display = "";
-          }
+          
         }}
       >
         {({ errors, values, setValues }) => (
