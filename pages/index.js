@@ -35,7 +35,11 @@ function Dashboard(props) {
       });
       let res, resData;
       const today = new Date().toISOString().split("T")[0];
-      res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
+      if (props.ISstudent) {
+        res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
+      } else {
+        res = await axios.get(`/api/assignments?courseId=${courseId}`);
+      }
       resData = res.data;
       console.log({resData});
       const assignments = resData.data;
