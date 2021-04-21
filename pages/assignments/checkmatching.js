@@ -5,9 +5,10 @@ import sampleData from "../../sample_data/ensureSufficientReviews";
 import { ensureSufficientReviews } from "../api/AlgCalls.js";
 import { useRouter } from 'next/router';
 import { useUserData } from "../../components/storeAPI";
+import StudentViewOutline from '../../components/studentViewOutline';
 const axios = require("axios");
 
-function CheckMatching() {
+function CheckMatching(props) {
   const { userId, courseId, courseName, assignment } = useUserData();
   const [graders, setGraders] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -84,6 +85,7 @@ function CheckMatching() {
       <Container name="Additional Matches">
         <Tree response={additionalMatchings} />
       </Container>
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
   // }

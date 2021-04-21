@@ -11,6 +11,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import useSWR from "swr";
 import { useRouter } from 'next/router';
 import { useUserData } from "../../../components/storeAPI";
+import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
@@ -36,6 +37,7 @@ const FullAssignment = (props) => {
             <Checklist assignmentName={router.query.name} assignmentId={router.query.id} rubricId={router.query.rubricId} dueDate={router.query.dueDate} />
           </div>
         </div>
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </Container>
     </div>
   );

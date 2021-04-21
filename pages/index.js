@@ -41,7 +41,7 @@ function Dashboard(props) {
         res = await axios.get(`/api/assignments?courseId=${courseId}`);
       }
       resData = res.data;
-      console.log({resData});
+      // console.log({resData});
       const assignments = resData.data;
       let statusUpdates = [];
       // if (!props.ISstudent) {
@@ -60,7 +60,7 @@ function Dashboard(props) {
       setToDoReviews(toDoReviews);
       setTaToDos([...toDoReviews, ...statusUpdates]);
     })().catch( e => { console.error(e) });
-  }, [props.ISstudent]);
+  }, [props.ISstudent, savedStudentId]);
 
   if (props.ISstudent) {
     return (
@@ -81,7 +81,7 @@ function Dashboard(props) {
           student={props.ISstudent}
           link=""
         /> */}
-        <StudentViewOutline SetIsStudent={props.SetIsStudent} />
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
   } else { // TA or Instructor View
@@ -92,7 +92,7 @@ function Dashboard(props) {
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
         <CanvasAssignments assignments={canvasAssignments} />
-        <StudentViewOutline SetIsStudent={props.SetIsStudent} />
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
   }

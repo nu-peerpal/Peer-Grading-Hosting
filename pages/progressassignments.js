@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import { useUserData } from "../components/storeAPI";
+import StudentViewOutline from '../components/studentViewOutline';
 const axios = require("axios");
 
 const InProgress = props => {
@@ -26,6 +27,7 @@ const InProgress = props => {
         data={assignments}
         link={"/assignments/fullassignmentview/fullassignmentview"}
       />
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };

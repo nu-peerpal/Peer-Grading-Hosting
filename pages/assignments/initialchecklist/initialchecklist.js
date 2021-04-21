@@ -10,10 +10,11 @@ import TextField from '@material-ui/core/TextField';
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
 import { PanoramaFishEye } from "@material-ui/icons";
+import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
 
 
-const InitialChecklist = () => {
+const InitialChecklist = (props) => {
   const router = useRouter()
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
@@ -172,7 +173,7 @@ const InitialChecklist = () => {
           Create Peer Review Assignment
         </Button>}
       </div>
-
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };
