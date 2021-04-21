@@ -10,17 +10,31 @@ function StudentViewOutline(props) {
     const { userId, courseId, revertFromStudent, savedStudentId } = useUserData();
     const [ canvasUsers, setCanvasUsers ] = useState(new Map());
     // console.log('studentview props',props);
+    // revert from student OR TA
+    const handleSubmit = () => {
+        revertFromStudent();
+        // if (props.isStudent) props.SetIsStudent(false)
+        props.SetIsStudent(false);
+    }
 
     useEffect(() => {
         axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
             let users = res.data.data;
             let peers = users.filter(user => user.enrollment == "StudentEnrollment");
+            let graders = users.filter(user => user.enrollment == "TaEnrollment");
             let customUsers = [];
             peers.forEach(obj => {
                 customUsers.push({
                     name: obj["firstName"] + " " + obj["lastName"],
                     id: obj["canvasId"]
                 });
+            });
+            graders.forEach(obj => {
+                customUsers.push({
+                    name: obj["firstName"] + " " + obj["lastName"] + " (TA)",
+                    id: obj["canvasId"],
+                    type: "ta"                    
+                })
             });
             // change data (array of objects) to a Map object
             let dataMap = new Map();
@@ -39,8 +53,7 @@ function StudentViewOutline(props) {
             <div className={savedStudentId ? styles.outline__revertButton : styles.outline__revertButton_invisible}>
             <Link href={"/"}>
                 <Button onClick={() => {
-                    revertFromStudent()
-                    props.SetIsStudent(false);}}>Revert to TA</Button>
+                    handleSubmit()}}>Revert to Self</Button>
             </Link>
             </div>
         </div>

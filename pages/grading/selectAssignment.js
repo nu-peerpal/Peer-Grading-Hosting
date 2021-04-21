@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../../components/listcontainer";
 import { useUserData } from "../../components/storeAPI";
+import StudentViewOutline from '../../components/studentViewOutline';
 const axios = require("axios");
 
-const InProgress = props => {
+const SelectAssignment = props => {
   const { userId, courseId } = useUserData();
   const [assignments, setAssignments] = useState([]);
 
@@ -21,8 +22,9 @@ const InProgress = props => {
         data={assignments}
         link={"/grading/selectTaGrading"}
       />
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };
 
-export default InProgress;
+export default SelectAssignment;

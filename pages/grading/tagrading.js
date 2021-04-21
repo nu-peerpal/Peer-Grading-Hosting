@@ -3,6 +3,7 @@ import Container from "../../components/container";
 import TAsubmission from "../../components/TAgradingview";
 import useSWR from "swr";
 const axios = require("axios");
+import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 
@@ -36,7 +37,7 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
   });
 
 
-const TAGrading = () => {
+const TAGrading = (props) => {
   const { userId, courseId } = useUserData();
   const router = useRouter();
   const [rubric, setRubric] = useState([]);
@@ -134,6 +135,7 @@ const TAGrading = () => {
           submission={submission}
           isDocument={isDocument}
         /> } */}
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </Container>
     </div>
   );

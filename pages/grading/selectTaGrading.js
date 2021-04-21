@@ -4,6 +4,7 @@ import ListContainer from "../../components/listcontainer";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
+
 const axios = require("axios");
 
 const SelectTaGrading = (props) => {
@@ -78,6 +79,7 @@ const SelectTaGrading = (props) => {
   return (
     <div className="Content">
         <TaToDoList toDoReviews={toDoReviews} />
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };

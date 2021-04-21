@@ -18,10 +18,11 @@ import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 const { server } = require("../../../config/index.js");
+import StudentViewOutline from '../../../components/studentViewOutline';
 
 const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 
-function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid, setUserList }) {
+function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
   const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
   const [tas, setTas] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState();
@@ -317,7 +318,7 @@ function MatchingCell(props) {
 
 }
 
-function Matching() {
+function Matching(props) {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [submissionData, setSubmissionData] = useState();
@@ -437,6 +438,7 @@ function Matching() {
           Confirm Matchings
         </Button>
       </div>}
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 }
