@@ -10,7 +10,9 @@ const SelectTaGrading = (props) => {
   const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
-  const { assignmentName, assignmentId, dueDate, rubricId } = router.query;
+  let { assignmentName, assignmentId, name, id } = router.query;
+  if (!assignmentName) assignmentName = name;
+  if (!assignmentId) assignmentId = id;
   useEffect(() => {
     (async () => {
         let res = await axios.get(`/api/submissions?assignmentId=${assignmentId}`);

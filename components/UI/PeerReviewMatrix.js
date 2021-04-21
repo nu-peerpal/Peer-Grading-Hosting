@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ReviewDisplayTable from "./ReviewDisplayTable";
+const axios = require("axios");
 
 export const createGradeValidator = maxPoints => {
   return value => {
@@ -29,7 +30,7 @@ export const createGradeValidator = maxPoints => {
 const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
   const values = {};
   for (const { userId } of peerMatchings) {
-    const key = "user_" + userId;
+    const key = userId;
     values[key] = reviewRubric.map(section => ({
       ...section,
       points: 0,
@@ -81,7 +82,20 @@ const PeerReviewMatrix = ({
           reviewRubric
         )}
         onSubmit={(values, { setSubmitting }) => {
-          console.log(values);
+          setSubmitting(true);
+          peerMatchings.forEach(async matching => {
+            console.log({matching})
+            // console.log({values})
+            await axios.patch(`/api/peerReviews/${matching.matchingId}`,{reviewReview: {reviewBody: values[matching.userId], instructorGrades: values.instructorGrades}}).then(res => {
+              console.log('rubric post:', res);
+              
+            });
+          });
+          setSubmitting(false);
+          if (res.status === 200) {
+            document.getElementById("submitted").innerHTML = "Submitted";
+            document.getElementById("submitted").style.display = "";
+          }
         }}
       >
         {({ errors, values, setValues }) => (
@@ -189,6 +203,7 @@ const PeerReviewMatrix = ({
 
                 <TableFooter>
                   <Button type="submit">Save</Button>
+                  <div style={{display: "none"}} id="submitted"></div>
                 </TableFooter>
               </Table>
             </TableContainer>

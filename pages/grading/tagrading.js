@@ -15,7 +15,7 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
     const { firstName, lastName } = users.find(
       user => user.canvasId === matching.userId
     );
-    // console.log({assignmentRubric})
+    console.log({matching})
     const reviewScoreComments = matching.review.reviewBody.scores;
     const transformedReview = reviewScoreComments.map(
       ([points, comment], i) => ({
@@ -30,7 +30,8 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
       userId: matching.userId,
       review: transformedReview,
       firstName,
-      lastName
+      lastName,
+      matchingId: matching.id
     };
   });
 

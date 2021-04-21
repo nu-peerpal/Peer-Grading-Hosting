@@ -25,7 +25,17 @@ export default async (req, res) => {
         let peerMatchings = await db.peer_matchings.findAll({ where: params });
         responseHandler.response200(res, peerMatchings);
         break;
-
+      case "PATCH":
+          console.log(req.body);
+          for (const property in req.body) {
+            peerMatching[property] = req.body[property];
+          }
+          await peerMatching.save();
+          responseHandler.msgResponse200(
+          res,
+          "Successfully updated database entry.",
+        );
+        break;
       case "POST":
         if (req.query.type === "multiple") {
           await Promise.all(
