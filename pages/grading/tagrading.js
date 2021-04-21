@@ -10,30 +10,34 @@ const fetcher = url => fetch(url).then(res => res.json());
 
 const transformRubric = rubric =>
   rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
-const transformMatchings = (matchings, assignmentRubric, users) =>
+const transformMatchings = (matchings, assignmentRubric, users) => 
   matchings.map(matching => {
     const { firstName, lastName } = users.find(
-      user => user.id === matching.userId
+      user => user.canvasId === matching.userId
     );
-    const reviewScoreComments = matching.review.scores;
+    console.log({matching})
+    const reviewScoreComments = matching.review.reviewBody.scores;
     const transformedReview = reviewScoreComments.map(
       ([points, comment], i) => ({
         points,
         comment,
-        maxPoints: assignmentRubric[i][0],
-        element: assignmentRubric[i][1]
+        maxPoints: assignmentRubric[i]["points"],
+        element: assignmentRubric[i]["title"]
       })
     );
+    // console.log(firstName,lastName,reviewScoreComments,transformedReview)
     return {
       userId: matching.userId,
       review: transformedReview,
       firstName,
-      lastName
+      lastName,
+      matchingId: matching.id
     };
   });
 
+
 const TAGrading = () => {
-  const { userId, courseId, courseName, assignment } = useUserData();
+  const { userId, courseId } = useUserData();
   const router = useRouter();
   const [rubric, setRubric] = useState([]);
   const [reviewRubric, setReviewRubric] = useState([]);
@@ -83,11 +87,12 @@ const TAGrading = () => {
       }
       if (matchingsRes && usersRes && rawRubric.length > 0) {
         const peerMatchings = matchingsRes.data.filter(
-          matching => matching.submissionId === submissionId
+          matching => matching.submissionId == submissionId
         );
-        setPeerMatchings(
-          transformMatchings(peerMatchings, rawRubric, usersRes.data)
-        );
+        // console.log({peerMatchings})
+        let tempPeerMatchings = transformMatchings(peerMatchings, rawRubric, usersRes.data);
+        // console.log({tempPeerMatchings})
+        setPeerMatchings(tempPeerMatchings);
         setRubric(tempRubric);
         setReviewRubric(tempReviewRubric);
       }
@@ -119,13 +124,15 @@ const TAGrading = () => {
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}
-          // submissionId={submissionId}
-          // isDocument={isDocument}
+          submission={submission}
+          isDocument={isDocument}
         />
-        {/* { rubric && reviewRubric && peerMatchings ? <div>Loading...</div> : <TAsubmission
+        {/* { peerMatchings ? <div>Loading...</div> : <TAsubmission
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}
+          submission={submission}
+          isDocument={isDocument}
         /> } */}
       </Container>
     </div>

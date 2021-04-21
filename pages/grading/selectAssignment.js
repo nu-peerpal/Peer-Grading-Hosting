@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ListContainer from "../components/listcontainer";
-import { useUserData } from "../components/storeAPI";
+import ListContainer from "../../components/listcontainer";
+import { useUserData } from "../../components/storeAPI";
 const axios = require("axios");
 
 const InProgress = props => {
@@ -13,18 +13,13 @@ const InProgress = props => {
       setAssignments(assignmentData.data.data);
     });
   }, []);
-  // const progress = [
-  //   { name: "Assignment 2: Bid Analysis", info: "TA Grading" },
-  //   { name: "Assignment 3: Online Learning", info: "Peer Review Stage" },
-  //   { name: "Assignment 4", info: "Peer Matching Required" },
-  // ];
 
   return (
     <div className="Content">
       <ListContainer
-        name="Peer Review Enabled Assignments"
+        name="Select Assignment to Review Reviews"
         data={assignments}
-        link={"/assignments/fullassignmentview/fullassignmentview"}
+        link={"/grading/selectTaGrading"}
       />
     </div>
   );

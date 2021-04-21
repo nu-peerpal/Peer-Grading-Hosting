@@ -28,16 +28,16 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
               <Field
                 as={TextField}
                 type="number"
-                name={`user_${userId}[${i}]["points"]`}
+                name={`${userId}[${i}]["points"]`}
                 style={{ width: "60px" }}
                 label="Points"
-                value={values[`user_${userId}`][i].points}
+                value={values[`${userId}`][i].points}
                 validate={createGradeValidator(maxPoints)}
               />
               {/* display error for grade validation */}
-              {errors[`user_${userId}`] && errors[`user_${userId}`][i] && (
+              {errors[`${userId}`] && errors[`${userId}`][i] && (
                 <div className={styles.err}>
-                  {errors[`user_${userId}`][i].points}
+                  {errors[`${userId}`][i].points}
                 </div>
               )}
             </TableCell>
@@ -45,7 +45,7 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
               <Field
                 as={TextField}
                 multiline
-                name={`user_${userId}[${i}]["comment"]`}
+                name={`${userId}[${i}]["comment"]`}
                 style={{ width: "75%" }}
                 rows={4}
                 label="Comments"
