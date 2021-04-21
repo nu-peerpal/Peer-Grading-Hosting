@@ -13,22 +13,19 @@ const SelectTaGrading = (props) => {
   const { assignmentName, assignmentId, dueDate, rubricId } = router.query;
   useEffect(() => {
     (async () => {
-        let res = await axios.get(`/api/peerReviews?assignmentId=${assignmentId}&done=true`);
-        // console.log({resData})
-        const completedReviews = res.data.data;
+        let res = await axios.get(`/api/submissions?assignmentId=${assignmentId}`);
+        console.log({res})
+        const submissions = res.data.data;
         // console.log({completedReviews});
-        completedReviews.sort(function(a, b){return a.id-b.id})
-        console.log({completedReviews});
+        submissions.sort(function(a, b){return a.groupId-b.groupId})
 
         const toDoReviews = [];
         // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
-        let reviewIndex = 0;
-        for (const peerMatching of completedReviews) {
+        for (const sub of submissions) {
           toDoReviews.push({
-              name: "Grade user " + peerMatching.userId + "'s review",
-              canvasId: peerMatching.assignmentId,
-              data: peerMatching,
-              submissionAlias: peerMatching.userId
+              name: "Grade group " + sub.groupId + "'s reviews",
+              canvasId: assignmentId,
+              data: {submissionId: sub.canvasId},
           });
         }
 
