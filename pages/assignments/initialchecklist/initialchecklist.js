@@ -14,7 +14,7 @@ import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
 
 
-const InitialChecklist = () => {
+const InitialChecklist = (props) => {
   const router = useRouter()
   const [prEnabled, setPrEnabled] = React.useState(true); // true if peer reviews are enabled
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
