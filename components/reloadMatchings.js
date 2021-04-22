@@ -13,8 +13,9 @@ function ReloadMatchings(props) {
     const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
     const PRs = props.matchings;
     useEffect(() => {
-        axios.get(`/api/canvas/users?courseId=${courseId}`).then(userData => {
+        axios.get(`/api/users`).then(userData => {
             let users = userData.data.data;
+            console.log({users})
             let tempUser;
             let subBuckets = {};
             let userBuckets = {};
@@ -22,6 +23,7 @@ function ReloadMatchings(props) {
             PRs.forEach(review => {
                 tempUser = users.filter(user => user.canvasId == review.userId);
                 tempUser = tempUser[0];
+                console.log({users})
                 if (userBuckets[tempUser.canvasId]) {
                     userBuckets[tempUser.canvasId]["submissions"].push(review.submissionId);
                 } else {
