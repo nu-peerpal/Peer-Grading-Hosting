@@ -7,15 +7,19 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
 import Settings from "../../../components/settings";
+import reloadMatchings from "../../../components/reloadMatchings";
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 import StudentViewOutline from '../../../components/studentViewOutline';
+import ReloadMatchings from "../../../components/reloadMatchings";
 
 
 function Matching(props) {
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
+  const [matchingExists, setMatchingExists] = useState(false);
+  const [peerReviews, setPeerReviews] = useState([]);
   const [submissionData, setSubmissionData] = useState();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState("");
@@ -23,6 +27,15 @@ function Matching(props) {
   const router = useRouter()
   let {assignmentId, assignmentName} = router.query;
 
+  useEffect(() => {
+    axios.get(`/api/peerReviews?assignmentId=${assignmentId}`).then(prData => {
+      let peerReviewData = prData.data.data;
+      if (peerReviewData.length > 0) {
+        setMatchingExists(true);
+        setPeerReviews(peerReviewData)
+      }
+    })
+  }, [])
 
   async function handleSubmit() {
     let usersData = userList.map(user => {
@@ -87,12 +100,21 @@ function Matching(props) {
   return (
     <div className="Content">
       <Container name={"Peer Matching: " + router.query.assignmentName}>
+      {matchingExists ? <Accordion className={styles.matching}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            Existing Matching
+          </AccordionSummary>
+          <AccordionDetails>
+             <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid} />
+          </AccordionDetails>
+        </Accordion>
+        :
         <Accordion className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Settings
           </AccordionSummary>
           <AccordionDetails>
-            <Settings
+             <Settings
               // graders={graders}
               // peers={peers}
               setSubmissionData={setSubmissionData}
@@ -103,6 +125,7 @@ function Matching(props) {
             />
           </AccordionDetails>
         </Accordion>
+        }
         <div className={styles.matchingGrid}>
           {matchingGrid}
         </div>
