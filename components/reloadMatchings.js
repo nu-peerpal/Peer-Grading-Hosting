@@ -15,15 +15,15 @@ function ReloadMatchings(props) {
     useEffect(() => {
         axios.get(`/api/users`).then(userData => {
             let users = userData.data.data;
-            console.log({users})
+            // console.log({users})
             let tempUser;
             let subBuckets = {};
             let userBuckets = {};
-            console.log({PRs})
+            // console.log({PRs})
             PRs.forEach(review => {
                 tempUser = users.filter(user => user.canvasId == review.userId);
                 tempUser = tempUser[0];
-                console.log({users})
+                // console.log({users})
                 if (userBuckets[tempUser.canvasId]) {
                     userBuckets[tempUser.canvasId]["submissions"].push(review.submissionId);
                 } else {
@@ -48,8 +48,8 @@ function ReloadMatchings(props) {
             setMatchedSubs(subBuckets);
 
 
-            console.log({subBuckets});
-            console.log({userBuckets});
+            // console.log({subBuckets});
+            // console.log({userBuckets});
             // create the grid that will show the matchings
             var mg = []
             // if they want to see submissions first
