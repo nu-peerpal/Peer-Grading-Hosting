@@ -165,7 +165,7 @@ async function reviewReports(graders, reviews, rubric) {
 
   const resData = res.data;
   if (resData.response.success) {
-    return [resData.response.review_grades, resData.response.review_reports];
+    return [resData.response.review_grades, resData.response.review_reports, resData.response.grade_matrices];
   } else {
     return resData.log;
   }

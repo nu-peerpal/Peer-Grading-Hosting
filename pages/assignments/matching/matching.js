@@ -51,7 +51,7 @@ function Matching(props) {
 
     await axios.post(`/api/users?type=multiple`, usersData).catch(error => {
       console.log(error);
-      errs.push('Redundant users not posted.');
+      // errs.push('Redundant users not posted.');
     });
     // remove duplicate submission data
     function contains(a, id) {
@@ -94,7 +94,11 @@ function Matching(props) {
       console.log(err);
       errs.push('Peer Matchings not posted');
     });
-    setErrors(String(errs));
+    if (errs.length == 0) {
+      setErrors("Submitted Successfully.")
+    } else {
+      setErrors(String(errs));
+      }
   }
 
   return (
@@ -131,7 +135,7 @@ function Matching(props) {
         </div>
       </Container>
       {submitted && <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-        <Button onClick={handleSubmit}>
+        <Button disabled={matchingExists} onClick={handleSubmit}>
           Confirm Matchings
         </Button>
         {errors}
