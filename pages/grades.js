@@ -1,87 +1,92 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import StudentViewOutline from '../components/studentViewOutline';
-
-
-const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
+import { useUserData } from "../components/storeAPI";
+const axios = require("axios");
 
 function Grades(props) {
+  const { userId, courseId, courseName, assignment } = useUserData();
   const [submissionGrades, setSubmissionGrades] = useState([]);
+  const [gradedAssignments, setGradedAssignments] = useState([])
   const [reviewGrades, setReviewGrades] = useState([]);
-  const userId = 1;
 
   useEffect(() => {
-    (async () => {
-      let resData = await fetcher("/api/assignments?graded=true&courseId=1");
-      let assignments = resData.data;
+    axios.get(`/api/assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
+      setGradedAssignments(assignmentData.data.data);
 
-      let submissions = [];
-      let reviewGrades = [];
+    })
+  }, [])
+  // useEffect(() => {
+  //   (async () => {
+  //     let resData = await axios.get(`/api/assignments?graded=true&courseId=${courseId}`);
+  //     let assignments = resData.data.data;
 
-      const submissionReviewGrades = await Promise.all(
-        assignments.map(async ({ id }) => {
-          const getSubmissions = async () => {
-            let resData = await fetcher(
-              `/api/groups?assignmentId=${id}&userId=${userId}`,
-            );
-            const groupId = resData.data[0].id; // user should only have one group for the assignment
+  //     let submissions = [];
+  //     let reviewGrades = [];
 
-            resData = await fetcher(
-              `/api/submissions?assignmentId=${id}&groupId=${groupId}`,
-            );
-            return resData.data; // should only be 0 or 1 submission grade per assignment
-          };
+  //     const submissionReviewGrades = await Promise.all(
+  //       assignments.map(async ({ id }) => {
+  //         const getSubmissions = async () => {
+  //           resData = await axios.get(`/api/submissions?assignmentId=${id}`);
+  //           return resData.data.data; // should only be 0 or 1 submission grade per assignment
+  //         };
 
-          const getReviewGrades = async () => {
-            let resData = await fetcher(
-              `/api/reviewGradesReports?assignmentId=${id}&userId=${userId}`,
-            );
-            return resData.data; // should only be 0 or 1 review grade per assignment
-          };
+  //         const getReviewGrades = async () => {
+  //           console.log(id, userId)
+  //           let resData = await axios.get(`/api/reviewGradesReports?assignmentId=${id}&userId=${userId}`);
+  //           return resData.data.data; // should only be 0 or 1 review grade per assignment
+  //         };
 
-          return Promise.all([getSubmissions(), getReviewGrades()]);
-        }),
-      );
+  //         return Promise.all([getSubmissions(), getReviewGrades()]);
+  //       }),
+  //     );
+  //     // console.log({submissionReviewGrades})
 
-      for (const [submission, reviewGrade] in submissionReviewGrades) {
-        if (submission) {
-          // if submission grade exists
-          submissions = [...submissions, ...submission];
-        }
-        if (reviewGrade) {
-          // if review grade exists
-          reviewGrades = [...reviewGrades, ...reviewGrade];
-        }
-      }
+  //     for (const index in submissionReviewGrades) {
+  //       let submission = submissionReviewGrades[index][0];
+  //       let reviewGrade = submissionReviewGrades[index][1];
+  //       // console.log({submission})
+  //       // console.log({reviewGrade})
+  //       if (submission) {
+  //         // if submission grade exists
+  //         submissions = [...submissions, ...submission];
+  //       }
+  //       if (reviewGrade) {
+  //         // if review grade exists
+  //         reviewGrades = [...reviewGrades, ...reviewGrade];
+  //       }
+  //     }
+  //     console.log({submissions})
+  //     console.log({reviewGrades})
+  //     submissions = submissions.map((submission, i) => ({
+  //       name: assignments[i].name,
+  //       info: submission.grade,
+  //       data: submission,
+  //     }));
 
-      submissions = submissions.map((submission, i) => ({
-        name: assignments[i].name,
-        info: submission.grade,
-        data: submission,
-      }));
-
-      reviewGrades = reviewGrades.map((reviewGrade, i) => ({
-        name: assignments[i].name,
-        info: reviewGrade.grade,
-        data: reviewGrade,
-      }));
-
-      setSubmissionGrades(submissions);
-      setReviewGrades(reviewGrades);
-    })();
-  }, []);
+  //     reviewGrades = reviewGrades.map((reviewGrade, i) => ({
+  //       name: assignments[i].name,
+  //       info: reviewGrade.grade,
+  //       data: reviewGrade,
+  //     }));
+  //     // console.log({submissions})
+  //     // console.log({reviewGrades})
+  //     setSubmissionGrades(submissions);
+  //     setReviewGrades(reviewGrades);
+  //   })();
+  // }, []);
 
   return (
     <div class="Content">
-      <ListContainer
+      {/* <ListContainer
         name="Graded Peer Reviews"
         data={reviewGrades}
         link="/grades/viewprgrade"
-      />
+      /> */}
       <ListContainer
         name="Graded Assignments"
-        data={submissionGrades}
-        link="/grades/viewassignmentgrade"
+        data={gradedAssignments}
+        link="/grades/viewgrades"
       />
       <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
     </div>

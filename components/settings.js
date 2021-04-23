@@ -68,7 +68,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         let tempSubmissions = []; // set submissions for peerMatch alg
         for (let sub in tempSubmissionData) {
           let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"])
-          student = student[0]["firstName"] + student[0]["lastName"];
+          student = student[0]["firstName"] + " " + student[0]["lastName"];
           if (subStudents[tempSubmissionData[sub]["canvasId"]]) {
             subStudents[tempSubmissionData[sub]["canvasId"]].push(student);
           } else {

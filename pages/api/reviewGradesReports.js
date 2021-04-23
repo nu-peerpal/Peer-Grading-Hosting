@@ -1,5 +1,10 @@
 const db = require("../../models/index.js");
 const responseHandler = require("./utils/responseHandler");
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 
 export default async (req, res) => {
   try {
