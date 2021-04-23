@@ -136,7 +136,7 @@ const ReviewReports = () => {
         let j = dbSubs.findIndex(x => x.canvasId == subId);
         newSubReport[subRep] = [String(subStudents[subId])];
         newSubReport[subRep].push(reports[0][1][subRep][1]);
-        newSubReport[subRep].push(dbSubmissions[j].s3Link)
+        newSubReport[subRep].push(dbSubs[j].s3Link)
       }
       console.log({newSubReport})
       setSubReports(newSubReport);
@@ -144,11 +144,11 @@ const ReviewReports = () => {
       let newReviewReport = [];
       for (let revRep in reports[1][1]) {
         let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
-        let j = dbSubmissions.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
+        let j = dbSubs.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
         newReviewReport[revRep] = [users[i]["firstName"] + " "+ users[i]["lastName"]];
         newReviewReport[revRep].push(String(subStudents[reports[1][1][revRep][1]]));
         newReviewReport[revRep].push(reports[1][1][revRep][2]);
-        newReviewReport[revRep].push(dbSubmissions[j].s3Link);
+        newReviewReport[revRep].push(dbSubs[j].s3Link);
       }
       console.log({newReviewReport})
       setRevReports(newReviewReport);
@@ -176,6 +176,15 @@ const ReviewReports = () => {
       console.log({TAs})
       console.log({peerReviews})
       console.log({rubric})
+      peerReviews.forEach(pr => { // identify TA for reviewreview
+        for (let ta in TAs) {
+          // console.log('ta id',TAs[ta].canvasId)
+          if (TAs[ta].canvasId == pr.userId) {
+            // grader = true;
+            if (!graders.includes(pr.userId)) graders.push(pr.userId); 
+          }
+        }
+      })
       peerReviews.forEach(pr => {
         let adjustedReview;
         let score;
@@ -185,54 +194,56 @@ const ReviewReports = () => {
         let grade;
         let grader = false;
         
-        for (let ta in TAs) {
-          // console.log('ta id',TAs[ta].canvasId)
-          if (TAs[ta].canvasId == pr.userId) {
-            grader = true;
-            if (pr.reviewReview) { // only add if this grader actually graded
-              if (!graders.includes(pr.userId)) graders.push(pr.userId);
-              adjustedReview = pr.reviewReview.instructorGrades.map(row => {
-                return [Math.round((row.points/row.maxPoints)*100)/100, row.comment];
-              });
-              console.log({pr})
-              reviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]); // for submission reports
-              // now, review reports
-              pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
-                score = Math.round((row.points/row.maxPoints)*100)/100;
-                scores.push([score, row.comment]);
-                // comments.push()
-              })
-              // console.log({adjustedRevScores})
-              let sumGrade = 0;
-              let totalGrade = 0;
-              pr.reviewReview.reviewBody.forEach(row => { // grade for peer review
-                score = Math.round((row.points/row.maxPoints)*100)/100;
-                sumGrade += row.points;
-                totalGrade += row.maxPoints;
-                assessments.push([score, row.comment]);
-              });
-              grade = Math.round((sumGrade/totalGrade)*100)/100
-              // console.log({adjustedRevReview})
-              let reviewReview = {
-                scores: scores,
-                // comments: comments,
-                assessments: assessments,
-                grade: grade
-              }
-              // console.log({reviewReview})
-              revReviews.push([pr.userId, pr.submissionId, reviewReview])
-            }
-            break;
-          }
-        }
+        // for (let ta in TAs) {
+        //   // console.log('ta id',TAs[ta].canvasId)
+        //   if (TAs[ta].canvasId == pr.userId) {
+        //     grader = true;
+        //     if (!graders.includes(pr.userId)) graders.push(pr.userId); 
+        //     if (pr.reviewReview) { // only add if this grader actually graded (we never reach this case...)
+        //       // if (!graders.includes(pr.userId)) graders.push(pr.userId);
+        //       adjustedReview = pr.reviewReview.instructorGrades.map(row => {
+        //         return [Math.round((row.points/row.maxPoints)*100)/100, row.comment];
+        //       });
+        //       console.log({pr})
+        //       reviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]); // for submission reports
+        //       // now, review reports
+        //       pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
+        //         score = Math.round((row.points/row.maxPoints)*100)/100;
+        //         scores.push([score, row.comment]);
+        //         // comments.push()
+        //       })
+        //       // console.log({adjustedRevScores})
+        //       let sumGrade = 0;
+        //       let totalGrade = 0;
+        //       pr.reviewReview.reviewBody.forEach(row => { // grade for peer review
+        //         score = Math.round((row.points/row.maxPoints)*100)/100;
+        //         sumGrade += row.points;
+        //         totalGrade += row.maxPoints;
+        //         assessments.push([score, row.comment]);
+        //       });
+        //       grade = Math.round((sumGrade/totalGrade)*100)/100
+        //       // console.log({adjustedRevReview})
+        //       let reviewReview = {
+        //         scores: scores,
+        //         // comments: comments,
+        //         assessments: assessments,
+        //         grade: grade
+        //       }
+        //       // console.log({reviewReview})
+        //       revReviews.push([pr.userId, pr.submissionId, reviewReview])
+        //     }
+        //     break;
+        //   }
+        // }
         if (!grader) {
           if (pr.review) { // only if the user submitted a review
             adjustedReview = pr.review.reviewBody.scores.map((row,i) => {
               return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]]
             })
             reviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]);
+            revReviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]);
           }
-          if (pr.reviewReview) {
+          if (pr.reviewReview) { // ta must have submitted
             pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
               score = Math.round((row.points/row.maxPoints)*100)/100;
               scores.push([score, row.comment]);
@@ -256,7 +267,8 @@ const ReviewReports = () => {
               grade: grade
             }
             // console.log({reviewReview})
-            revReviews.push([pr.userId, pr.submissionId, reviewReview])
+            reviews.push([graders[0], pr.submissionId, {scores: scores, comments: []}])
+            revReviews.push([graders[0], pr.submissionId, reviewReview])
           }
         }
       });
