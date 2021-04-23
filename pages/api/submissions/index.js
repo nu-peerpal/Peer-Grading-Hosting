@@ -1,6 +1,10 @@
 const db = require("../../../models/index.js");
 const responseHandler = require("../utils/responseHandler");
-
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
 const submissionsHandler = async (req, res) => {
   try {
     switch (req.method) {
@@ -50,6 +54,7 @@ const submissionsHandler = async (req, res) => {
 
       case "PATCH":
         if (req.query.type === "multiple") {
+          console.log(req.body);
           await Promise.all(
             req.body.map(submission =>
               db.assignment_submissions.update(submission, {

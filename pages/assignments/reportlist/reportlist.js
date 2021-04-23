@@ -19,7 +19,7 @@ const axios = require("axios");
 
 const ReviewReports = () => {
   const router = useRouter()
-  const { userId, courseId, courseName, assignment, key, setKey } = useUserData();
+  const { userId, courseId, courseName } = useUserData();
   const [needsLoading, setNeedsLoading] = useState(true);
   const [subData, setSubData] = useState({});
   const [revData, setRevData] = useState({});
@@ -27,6 +27,7 @@ const ReviewReports = () => {
   const [uploadSubReports, setUploadSubReports] = useState();
   const [revReports, setRevReports] = useState([]);
   const [uploadRevReports, setUploadRevReports] = useState();
+  const [dbSubmissions, setDbSubmissions] = useState([])
   const [users, setUsers] = useState([]);
   const [peerMatchings, setPeerMatchings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,16 +36,71 @@ const ReviewReports = () => {
   if (!rubricId) rubricId = 1;
 
   async function handleSubmit() {
-    console.log({uploadRevReports})
-    console.log({uploadSubReports})
+    // axios.get(`/api/submissions?assignmentId=${assignmentId}`).then(async subData => {
+      
+      console.log({uploadSubReports})
+      let assignment_submissions = dbSubmissions.map(submission => {
+        let v = uploadSubReports[0].findIndex(x => x[0] == submission.canvasId);
+        let w = uploadSubReports[1].findIndex(x => x[0] == submission.canvasId);
+        let grade = uploadSubReports[0][v][1];
+        let report = uploadSubReports[1][w][1]
+        return {
+          id: submission.id,
+          assignmentId: submission.assignmentId,
+          canvasId: submission.canvasId,
+          submissionType: submission.submissionType,
+          grade: grade,
+          report: report,
+          s3Link: submission.s3Link,
+          groupId: submission.groupId,
+        }
+      });
+      let errs = [];
+      console.log('uploading submission grades to db:',assignment_submissions);
+      await axios.patch(`/api/submissions?type=multiple`, assignment_submissions).then(res => {
+        console.log({res})
+      }).catch(err => {
+        errs.push(err);
+        console.log({err})});
+      let review_grades_reports = uploadRevReports[1].map(report => {
+        return {
+          grade: report[1],
+          report: report[2],
+          assignmentId: assignmentId,
+          userId: report[0]
+        }
+      })
+      console.log('uploading review reports:', review_grades_reports);
+      await axios.post(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+        console.log({res})
+      }).catch(err => {
+        errs.push(err);
+        console.log({err})});
+
+      console.log('updating assignment to graded');
+      await axios.patch(`/api/assignments/${assignmentId}`, {graded: true}).then(res => {
+        console.log({res})
+      }).catch(err => {
+        errs.push(err);
+        console.log({err})});
+
+        if (errs.length == 0) {
+          setErrors("Submitted Successfully.")
+        }
+    // });
+
+    // console.log({uploadRevReports})
+    // console.log({uploadSubReports})
   }
 
   async function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`)])
+    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/submissions?assignmentId=${assignmentId}`)])
     .then(reports => {
       console.log('reports',reports);
       setUploadSubReports(reports[0]);
       setUploadRevReports(reports[1]);
+      let dbSubs = reports[3].data.data;
+      setDbSubmissions(dbSubs);
       let submissions = reports[2].data.data;
       // Change Submissions to Names for Submission Reports
       // organize submissions by group
@@ -74,18 +130,28 @@ const ReviewReports = () => {
           subStudents[submissions[sub]["canvasId"]] = [student];
         }
       }
+      let newSubReport = [];
       for (let subRep in reports[0][1]) { // get users per submission
         let subId = reports[0][1][subRep][0];
-        reports[0][1][subRep][0] = String(subStudents[subId]);
+        let j = dbSubs.findIndex(x => x.canvasId == subId);
+        newSubReport[subRep] = [String(subStudents[subId])];
+        newSubReport[subRep].push(reports[0][1][subRep][1]);
+        newSubReport[subRep].push(dbSubmissions[j].s3Link)
       }
-      setSubReports(reports[0][1]);
+      console.log({newSubReport})
+      setSubReports(newSubReport);
       // Change User ID to User Name for Review Reports
+      let newReviewReport = [];
       for (let revRep in reports[1][1]) {
-        let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0])
-        reports[1][1][revRep][0] = users[i]["firstName"] + " "+ users[i]["lastName"];
-        reports[1][1][revRep][1] = String(subStudents[reports[1][1][revRep][1]]);
+        let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
+        let j = dbSubmissions.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
+        newReviewReport[revRep] = [users[i]["firstName"] + " "+ users[i]["lastName"]];
+        newReviewReport[revRep].push(String(subStudents[reports[1][1][revRep][1]]));
+        newReviewReport[revRep].push(reports[1][1][revRep][2]);
+        newReviewReport[revRep].push(dbSubmissions[j].s3Link);
       }
-      setRevReports(reports[1][1]);
+      console.log({newReviewReport})
+      setRevReports(newReviewReport);
       setNeedsLoading(false);
 
     }).catch(err => {
@@ -236,6 +302,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
+                    {sub[2].includes('http') && <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub[2]}></iframe>}
                       <ReactMarkdown plugins={[gfm]} children={sub[1]} />
                     </div>
                 </AccordionDetails>
@@ -256,6 +323,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
+                    {rev[3].includes('http') && <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev[3]}></iframe>}
                       <ReactMarkdown plugins={[gfm]} children={rev[2]} />
                     </div>
                 </AccordionDetails>
