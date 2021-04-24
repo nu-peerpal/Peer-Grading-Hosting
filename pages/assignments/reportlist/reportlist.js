@@ -193,7 +193,7 @@ const ReviewReports = () => {
         let score;
         let scores = [];
         // let comments = [];
-        let assessments =[];
+        let assessment =[];
         let grade;
 
         if (pr.review) { // ignore blank reviews
@@ -203,6 +203,7 @@ const ReviewReports = () => {
           if (pr.reviewReview) { 
             if (reviewRubric.length === 0) { // construct reviewRubric for alg
               reviewRubric = pr.reviewReview.reviewBody.map(row => [row.maxPoints, row.element])
+              console.log({reviewRubric})
             }
             pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
               score = Math.round((row.points/row.maxPoints)*100)/100;
@@ -214,14 +215,14 @@ const ReviewReports = () => {
               score = Math.round((row.points/row.maxPoints)*100)/100;
               sumGrade += row.points;
               totalGrade += row.maxPoints;
-              assessments.push([score, row.comment]);
+              assessment.push([score, row.comment]);
             });
             grade = Math.round((sumGrade/totalGrade)*100)/100
             // console.log({adjustedRevReview})
             adjustedReview = {
               scores: reviewScores,
               comments: [],
-              assessments: assessments,
+              assessment: assessment,
               grade: grade
             }
             let graderReview = {
