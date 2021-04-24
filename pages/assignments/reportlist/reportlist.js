@@ -32,6 +32,8 @@ const ReviewReports = () => {
   const [peerMatchings, setPeerMatchings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState();
+  const [loadSRSubmission, setLoadSRSubmission] = useState();
+  const [loadRRSubmission, setLoadRRSubmission] = useState();
   let { assignmentId, assignmentName, rubricId } = router.query;
   if (!rubricId) rubricId = 1;
 
@@ -94,7 +96,7 @@ const ReviewReports = () => {
   }
 
   async function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/submissions?assignmentId=${assignmentId}`)])
+    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/submissions?assignmentId=${assignmentId}`)])
     .then(reports => {
       console.log('reports',reports);
       setUploadSubReports(reports[0]);
@@ -166,7 +168,8 @@ const ReviewReports = () => {
       let rubric = dbData[2].data.data.rubric;
       rubric = rubric.map(section => {
         return [section.points, section.title];
-      })
+      });
+      let reviewRubric = [];
       // console.log({peerReviews})
       let TAs = users.filter(user => user.enrollment == "TaEnrollment");
       let subReportData, revReportData;
@@ -186,70 +189,25 @@ const ReviewReports = () => {
         }
       })
       peerReviews.forEach(pr => {
-        let adjustedReview;
+        let adjustedReview, reviewScores;
         let score;
         let scores = [];
-        let comments = [];
+        // let comments = [];
         let assessments =[];
         let grade;
-        let grader = false;
-        
-        // for (let ta in TAs) {
-        //   // console.log('ta id',TAs[ta].canvasId)
-        //   if (TAs[ta].canvasId == pr.userId) {
-        //     grader = true;
-        //     if (!graders.includes(pr.userId)) graders.push(pr.userId); 
-        //     if (pr.reviewReview) { // only add if this grader actually graded (we never reach this case...)
-        //       // if (!graders.includes(pr.userId)) graders.push(pr.userId);
-        //       adjustedReview = pr.reviewReview.instructorGrades.map(row => {
-        //         return [Math.round((row.points/row.maxPoints)*100)/100, row.comment];
-        //       });
-        //       console.log({pr})
-        //       reviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]); // for submission reports
-        //       // now, review reports
-        //       pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
-        //         score = Math.round((row.points/row.maxPoints)*100)/100;
-        //         scores.push([score, row.comment]);
-        //         // comments.push()
-        //       })
-        //       // console.log({adjustedRevScores})
-        //       let sumGrade = 0;
-        //       let totalGrade = 0;
-        //       pr.reviewReview.reviewBody.forEach(row => { // grade for peer review
-        //         score = Math.round((row.points/row.maxPoints)*100)/100;
-        //         sumGrade += row.points;
-        //         totalGrade += row.maxPoints;
-        //         assessments.push([score, row.comment]);
-        //       });
-        //       grade = Math.round((sumGrade/totalGrade)*100)/100
-        //       // console.log({adjustedRevReview})
-        //       let reviewReview = {
-        //         scores: scores,
-        //         // comments: comments,
-        //         assessments: assessments,
-        //         grade: grade
-        //       }
-        //       // console.log({reviewReview})
-        //       revReviews.push([pr.userId, pr.submissionId, reviewReview])
-        //     }
-        //     break;
-        //   }
-        // }
-        if (!grader) {
-          if (pr.review) { // only if the user submitted a review
-            adjustedReview = pr.review.reviewBody.scores.map((row,i) => {
-              return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]]
-            })
-            reviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]);
-            revReviews.push([pr.userId, pr.submissionId, {scores: adjustedReview, comments: []}]);
-          }
-          if (pr.reviewReview) { // ta must have submitted
+
+        if (pr.review) { // ignore blank reviews
+          reviewScores = pr.review.reviewBody.scores.map((row,i) => {
+            return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]] // convert scores to {0 - 1} scale
+          });
+          if (pr.reviewReview) { 
+            if (reviewRubric.length === 0) { // construct reviewRubric for alg
+              reviewRubric = pr.reviewReview.reviewBody.map(row => [row.maxPoints, row.element])
+            }
             pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
               score = Math.round((row.points/row.maxPoints)*100)/100;
               scores.push([score, row.comment]);
-              // comments.push()
             })
-            // console.log({adjustedRevScores})
             let sumGrade = 0;
             let totalGrade = 0;
             pr.reviewReview.reviewBody.forEach(row => { // grade for peer review
@@ -260,18 +218,37 @@ const ReviewReports = () => {
             });
             grade = Math.round((sumGrade/totalGrade)*100)/100
             // console.log({adjustedRevReview})
-            let reviewReview = {
-              scores: scores,
-              // comments: comments,
+            adjustedReview = {
+              scores: reviewScores,
+              comments: [],
               assessments: assessments,
               grade: grade
             }
-            // console.log({reviewReview})
-            reviews.push([graders[0], pr.submissionId, {scores: scores, comments: []}])
-            revReviews.push([graders[0], pr.submissionId, reviewReview])
+            let graderReview = {
+              scores: scores,
+              comments: []
+            }
+            reviews.push([pr.userId, pr.submissionId, adjustedReview]) // push review + reviewreview
+            revReviews.push([pr.userId, pr.submissionId, adjustedReview])
+            // check to see if we already pushed the grader's manual review
+            let foundReview = false;
+            for (let rev in reviews) {
+              if (reviews[rev][1] == pr.submissionId && reviews[rev][0] == graders[0]) foundReview = true;
+            }
+            if (!foundReview) { // if grader review of this submission doesn't exist yet, push it
+              reviews.push([graders[0], pr.submissionId, graderReview]) // grader review
+              revReviews.push([graders[0], pr.submissionId, graderReview])
+            }
+          } else {
+            adjustedReview = {
+              scores: reviewScores,
+              comments: []
+            }
+            reviews.push([pr.userId, pr.submissionId, adjustedReview])
+            revReviews.push([pr.userId, pr.submissionId, adjustedReview])
           }
-        }
-      });
+        }});
+
       subReportData = {
         graders: graders,
         reviews: reviews,
@@ -280,7 +257,8 @@ const ReviewReports = () => {
       revReportData = {
         graders: graders,
         reviews: revReviews,
-        rubric: rubric
+        rubric: rubric,
+        reviewRubric: reviewRubric
       }
       console.log({subReportData})
       console.log({revReportData})
@@ -303,7 +281,7 @@ const ReviewReports = () => {
         <div>
         <Container name={"Submission Reports for " + assignmentName} >
           {
-            subReports.map(sub =>
+            subReports.map((sub,i) =>
               <Accordion key={sub[0]}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -314,7 +292,11 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {sub[2].includes('http') && <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub[2]}></iframe>}
+                      {i === loadSRSubmission ? 
+                      <SubmissionView s3Link={sub[2]}/>
+                      :
+                        <Button onClick={() => setLoadSRSubmission(i)}>Load Submission</Button>
+                      }
                       <ReactMarkdown plugins={[gfm]} children={sub[1]} />
                     </div>
                 </AccordionDetails>
@@ -324,7 +306,7 @@ const ReviewReports = () => {
         </Container>
         <Container name={"Review Reports for " + assignmentName}>
         {
-            revReports.map(rev =>
+            revReports.map((rev,i) =>
               <Accordion key={rev[0]+rev[1]}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -335,7 +317,11 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {rev[3].includes('http') && <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev[3]}></iframe>}
+                    {i === loadRRSubmission ? 
+                      <SubmissionView s3Link={rev[3]}/>
+                      :
+                        <Button onClick={() => setLoadRRSubmission(i)}>Load Submission</Button>
+                      }
                       <ReactMarkdown plugins={[gfm]} children={rev[2]} />
                     </div>
                 </AccordionDetails>
@@ -355,4 +341,11 @@ const ReviewReports = () => {
   );
 };
 
+function SubmissionView(props) {
+  if (props.s3Link.includes('http')) {
+    return <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={props.s3Link}></iframe>
+  } else {
+    return <div>{props.s3Link}</div>
+  }
+}
 export default ReviewReports;

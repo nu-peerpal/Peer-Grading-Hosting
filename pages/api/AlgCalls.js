@@ -147,11 +147,12 @@ function submissionReports(
     );
 }
 
-async function reviewReports(graders, reviews, rubric) {
+async function reviewReports(graders, reviews, rubric, reviewRubric) {
   const json = formJson([
     ["graders", graders],
     ["reviews", reviews],
-    ["rubric", rubric]
+    ["rubric", rubric],
+    ["review_rubric", reviewRubric]
   ]);
   const res = await axios.post(
     "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/reviewReports",

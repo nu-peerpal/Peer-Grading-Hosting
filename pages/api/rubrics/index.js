@@ -9,9 +9,12 @@ export const config = {
 export default async (req, res) => {
   try {
     switch (req.method) {
+      case "GET":
+          let rubrics = await db.rubrics.findAll();
+          responseHandler.response200(res, rubrics);
       case "POST":
         if (req.query.type === "multiple") {
-          console.log('made it to post')
+          // console.log('made it to post')
           await Promise.all(
             req.body.map((rubric) => db.rubrics.create(rubric))
           );
