@@ -48,17 +48,27 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         // organize submissions by group
         let subGroups = {};
+        let bucket;
         tempSubmissionData.forEach(submission => { // sort submissions by {groupId: [...userIds]}
-          if (subGroups[submission.groupId]) {
-            subGroups[submission.groupId].push(submission.submitterId);
-            subGroups[submission.groupId].sort(function(a, b){return a-b})
+          if (!submission.groupId) {
+            bucket = submission.submitterId;
           } else {
-            subGroups[submission.groupId] = [submission.submitterId];
+            bucket = submission.groupId;
+          }
+          if (subGroups[bucket]) {
+            subGroups[bucket].push(submission.submitterId);
+            subGroups[bucket].sort(function(a, b){return a-b})
+          } else {
+            subGroups[bucket] = [submission.submitterId];
           }
         });
         let tempGroup, tempSub, tempAid;
         for (let sub in tempSubmissionData) { // grab group, find lowest group member, get aid
-          tempGroup = tempSubmissionData[sub]["groupId"];
+          if (!tempSubmissionData[sub]["groupId"]) {
+            tempGroup = tempSubmissionData[sub].submitterId;
+          } else {
+            tempGroup = tempSubmissionData[sub]["groupId"];
+          }
           tempSub = tempSubmissionData.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
           tempAid = tempSub[0].canvasId;
           tempSubmissionData[sub]["canvasId"] = tempAid;
