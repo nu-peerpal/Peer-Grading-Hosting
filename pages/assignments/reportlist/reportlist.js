@@ -217,7 +217,7 @@ const ReviewReports = () => {
               totalGrade += row.maxPoints;
               assessment.push([score, row.comment]);
             });
-            grade = Math.round((sumGrade/totalGrade)*100)/100
+            grade = sumGrade;
             // console.log({adjustedRevReview})
             adjustedReview = {
               scores: reviewScores,
