@@ -108,7 +108,7 @@ function submissionReports(
   reviews,
   rubric,
   num_rounds = 20,
-  bonus = 0.05
+  bonus = 1.5
 ) {
   var json = formJson([
     ["graders", graders],
