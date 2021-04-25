@@ -17,19 +17,24 @@ const SelectTaGrading = (props) => {
   if (!assignmentId) assignmentId = id;
   // console.log({assignmentId})
   useEffect(() => {
-    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}&userId=${userId}`)]).then(data => {
+    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}`)]).then(data => {
       console.log({data})
       const submissions = data[0].data.data;
-      const taMatchings = data[1].data.data;
+      const allMatchings = data[1].data.data;
+      console.log({allMatchings})
+      console.log({submissions})
+
+      const taMatchings = data[1].data.data.filter(match => match.userId == userId);
       console.log({taMatchings});
       let reviewReviews = [];
       let subMatch;
       taMatchings.forEach(match => {
-        subMatch = submissions.filter(submission => submission.canvasId == match.submissionId);
-        subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
+        subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
+        // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
         console.log({match})
         reviewReviews.push({
           type: match.matchingType,
+          done: [match.review!=null, match.reviewReview!=null],
           matchingId: match.id,
           submission: subMatch[0]
         });
@@ -41,17 +46,24 @@ const SelectTaGrading = (props) => {
       console.log({reviewReviews})
       // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
       for (const sub of reviewReviews) {
+        let finished = "";
         if (sub.type == 'additional') {
+          if (sub.done[0]) {
+            finished = " (submitted)";
+          }
           toDoGrades.push({
-            name: "Grade group " + sub.submission.groupId + "'s submission",
+            name: "Grade group " + sub.submission.groupId + "'s submission" + finished,
             canvasId: assignmentId,
             rubricId: rubricId,
             // matchingId: sub.matchingId,
             data: {submissionId: sub.submission.canvasId, id: sub.matchingId},
-        });
+          });
         } else {
+          if (sub.done[1]) {
+            finished = " (submitted)";
+          }
           toDoReviews.push({
-              name: "Grade group " + sub.submission.groupId + "'s reviews",
+              name: "Grade group " + sub.submission.groupId + "'s reviews" + finished,
               canvasId: assignmentId,
               data: {submissionId: sub.submission.canvasId},
           });

@@ -32,6 +32,7 @@ class ListContainer extends React.Component {
     var list = "";
     var assignname = "";
     var link = "";
+    // var styleDone = "";
     var student = information.student;
     // console.log({information});
     if (information.data) {
@@ -40,7 +41,10 @@ class ListContainer extends React.Component {
           if (!x.data) x.data={};
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
-          if (information.link) link = information.link
+          if (information.link) link = information.link;
+          // if (x.data.done) {
+          //  styleDone = " (Submitted)"
+          // }
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
