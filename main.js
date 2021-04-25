@@ -30,7 +30,7 @@ app
     // EXPRESS SERVER
     const server = express();
     server.use(bodyParser.urlencoded({ extended: false }))
-    server.use(bodyParser.json());
+    server.use(bodyParser.json({limit: '300kb'}));
     server.use(cookieParser());
     server.enable('trust proxy');
     
