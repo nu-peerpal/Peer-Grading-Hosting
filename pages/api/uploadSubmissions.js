@@ -48,10 +48,34 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "POST":
-        let uploadRes;
         if (req.query.type === "multiple") {
+          // if groupId = null, groupId = submitterId
+          let submitSubmissions = req.body.map(sub => {
+            let group;
+            if (!sub.groupId) {
+              group = sub.submitterId;
+              return {
+                assignmentId: sub.assignmentId,
+                canvasId: sub.submitterId,
+                groupId: group,
+                submission: sub.submission,
+                submissionType: sub.submissionType,
+                submitterId: sub.submitterId
+              }
+            } else {
+              group = sub.groupId;
+              return {
+                assignmentId: sub.assignmentId,
+                canvasId: sub.canvasId,
+                groupId: group,
+                submission: sub.submission,
+                submissionType: sub.submissionType,
+                submitterId: sub.submitterId
+              }
+            }
+          });
           await Promise.all(
-            req.body.map(submission => 
+            submitSubmissions.map(submission => 
               submissionUpload(submission.submission).then(key => {
                 db.assignment_submissions.create({
                   canvasId: submission.canvasId,

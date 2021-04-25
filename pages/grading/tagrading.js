@@ -91,6 +91,7 @@ const TAGrading = (props) => {
         const peerMatchings = matchingsRes.data.filter(
           matching => matching.submissionId == submissionId
         );
+        console.log({peerMatchings})
         // console.log({peerMatchings})
         let tempPeerMatchings = transformMatchings(peerMatchings, rawRubric, usersRes.data);
         // console.log({tempPeerMatchings})
