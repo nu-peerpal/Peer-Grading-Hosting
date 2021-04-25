@@ -14,7 +14,11 @@ const submissionsHandler = async (req, res) => {
           if (!req.query.submissionId) {
             throw new Error("Query parameter submissionId required");
           }
-          params = {canvasId: req.query.submissionId};
+          params = {};
+          if (req.query.assignmentId) {
+            params.assignmentId = req.query.assignmentId
+          }
+          params.canvasId = req.query.submissionId;
           submissions = await db.assignment_submissions.findOne({
             where: params,
           });

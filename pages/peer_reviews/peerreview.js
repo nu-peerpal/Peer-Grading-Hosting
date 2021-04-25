@@ -18,12 +18,12 @@ const PeerReview = (props) => {
   const [isDocument, setIsDocument] = useState(false);
   const [review, setReview] = useState();
   const router = useRouter()
-  let { submissionId, rubricId, matchingId, subId } = router.query;
+  let { submissionId, id, rubricId, matchingId, subId } = router.query;
 
   useEffect(() => {
     (async () => {
       const [submission, matchingData, rubricData] = await Promise.all([
-        getData(`/api/submissions?type=peerreview&submissionId=${submissionId}`),
+        getData(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`),
         getData(`/api/peerReviews/${matchingId}`),
         getData(`/api/rubrics/${rubricId}`)
       ]);

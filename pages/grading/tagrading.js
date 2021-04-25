@@ -61,7 +61,7 @@ const TAGrading = (props) => {
 
   useEffect(() => {
     var assignmentRes, matchingsRes, usersRes;
-    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}`)]).then(async (data) => {
+    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`)]).then(async (data) => {
       console.log({data})
       assignmentRes = data[0].data;
       matchingsRes = data[2].data;
