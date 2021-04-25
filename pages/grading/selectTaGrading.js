@@ -22,19 +22,25 @@ const SelectTaGrading = (props) => {
       const submissions = data[0].data.data;
       const allMatchings = data[1].data.data;
       console.log({allMatchings})
-      console.log({submissions})
 
       const taMatchings = data[1].data.data.filter(match => match.userId == userId);
-      console.log({taMatchings});
+      // console.log({taMatchings});
       let reviewReviews = [];
-      let subMatch;
+      let subMatch, revMatches;
       taMatchings.forEach(match => {
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
+        revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
+        let graded = false;
+        revMatches.forEach(match => {
+          if (match.reviewReview) {
+            graded = true;
+          }
+        });
         // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
-        console.log({match})
+        // console.log({match})
         reviewReviews.push({
           type: match.matchingType,
-          done: [match.review!=null, match.reviewReview!=null],
+          done: [match.review!=null, graded],
           matchingId: match.id,
           submission: subMatch[0]
         });
