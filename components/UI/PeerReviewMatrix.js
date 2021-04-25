@@ -30,34 +30,63 @@ export const createGradeValidator = maxPoints => {
 const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
   const values = {};
   // console.log({reviewRubric})
-  if (peerMatchings[0].reviewReview) {
-    for (let i in peerMatchings) {
-      const key = peerMatchings[i].userId;
-      values[key] = peerMatchings[i].reviewReview.reviewBody;
-    }
-    let iGrades = peerMatchings[0].reviewReview.instructorGrades;
-    values.instructorGrades = assignmentRubric.map((section, i) => ({
-      ...section,
-      points: iGrades[i].points,
-      comment: iGrades[i].comment
-    }))
-  } else {
-    for (const { userId } of peerMatchings) {
-      const key = userId;
+  console.log({peerMatchings})
+  let instructorGrades;
+  peerMatchings.forEach(matching => {
+    let key = matching.userId
+    if (matching.reviewReview) {
+      values[key] = matching.reviewReview.reviewBody;
+      if (!instructorGrades) { // set instructor grades the first time we find a reviewreview
+        instructorGrades = matching.reviewReview.instructorGrades;
+        values.instructorGrades = assignmentRubric.map((section, i) => ({
+          ...section,
+          points: instructorGrades[i].points,
+          comment: instructorGrades[i].comment
+        }));
+      }
+    } else {
       values[key] = reviewRubric.map(section => ({
         ...section,
         points: 0,
         comment: ""
       }));
+      if (!values.instructorGrades) {
+        values.instructorGrades = assignmentRubric.map(section => ({
+          ...section,
+          points: 0,
+          comment: ""
+        }));
+      }
     }
+  })
+    // if (peerMatchings[0].reviewReview) {
+    //   for (let i in peerMatchings) {
+    //     const key = peerMatchings[i].userId;
+    //     console.log('match:',peerMatchings[i])
+    //     values[key] = peerMatchings[i].reviewReview.reviewBody;
+    //   }
+    //   let iGrades = peerMatchings[0].reviewReview.instructorGrades;
+    //   values.instructorGrades = assignmentRubric.map((section, i) => ({
+    //     ...section,
+    //     points: iGrades[i].points,
+    //     comment: iGrades[i].comment
+    //   }))
+    // } else {
+    //   for (const { userId } of peerMatchings) {
+    //     const key = userId;
+    //     values[key] = reviewRubric.map(section => ({
+    //       ...section,
+    //       points: 0,
+    //       comment: ""
+    //     }));
+    //   }
 
-    values.instructorGrades = assignmentRubric.map(section => ({
-      ...section,
-      points: 0,
-      comment: ""
-    }));
-  }
-
+    //   values.instructorGrades = assignmentRubric.map(section => ({
+    //     ...section,
+    //     points: 0,
+    //     comment: ""
+    //   }));
+    // }
   return values;
 };
 

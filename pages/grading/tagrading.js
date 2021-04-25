@@ -17,24 +17,35 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
       user => user.canvasId === matching.userId
     );
     console.log({matching})
-    const reviewScoreComments = matching.review.reviewBody.scores;
-    const transformedReview = reviewScoreComments.map(
-      ([points, comment], i) => ({
-        points,
-        comment,
-        maxPoints: assignmentRubric[i]["points"],
-        element: assignmentRubric[i]["title"]
-      })
-    );
-    // console.log(firstName,lastName,reviewScoreComments,transformedReview)
-    return {
-      userId: matching.userId,
-      review: transformedReview,
-      reviewReview: matching.reviewReview,
-      firstName,
-      lastName,
-      matchingId: matching.id
-    };
+    if (matching.review) {
+      const reviewScoreComments = matching.review.reviewBody.scores;
+      const transformedReview = reviewScoreComments.map(
+        ([points, comment], i) => ({
+          points,
+          comment,
+          maxPoints: assignmentRubric[i]["points"],
+          element: assignmentRubric[i]["title"]
+        })
+      );
+      // console.log(firstName,lastName,reviewScoreComments,transformedReview)
+      return {
+        userId: matching.userId,
+        review: transformedReview,
+        reviewReview: matching.reviewReview,
+        firstName,
+        lastName,
+        matchingId: matching.id
+      };
+    } else {
+      return {
+        userId: matching.userId,
+        review: matching.review,
+        reviewReview: matching.reviewReview,
+        firstName,
+        lastName,
+        matchingId: matching.id
+      };
+    }
   });
 
 
@@ -47,20 +58,6 @@ const TAGrading = (props) => {
   const [submission, setSubmission] = useState();
   const [isDocument, setIsDocument] = useState(false);
   let { id, submissionId } = router.query;
-
-  // NOTE: need to change when using real matchings in database
-  // const submissionId = 324;
-
-  // const { data: assignmentRes } = useSWR(
-  //   `/api/assignments/${assignmentId}`,
-  //   fetcher
-  // );
-  
-  // const { data: matchingsRes } = useSWR(
-  //   `/api/peerReviews?assignmentId=${assignmentId}&done=true`,
-  //   fetcher
-  // );
-  // const { data: usersRes } = useSWR(`/api/users?courseId=${courseId}`, fetcher);
 
   useEffect(() => {
     var assignmentRes, matchingsRes, usersRes;
