@@ -24,12 +24,14 @@ function ViewAssignmentGrade(props) {
   console.log({userId})
 
   useEffect(() => {
-      Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/submissions?assignmentId=${id}`),axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`)]).then(data => {
-        let assignmentRes = data[0].data.data;
+      Promise.all([axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${id}`),axios.get(`/api/submissions?assignmentId=${id}`),axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`)]).then(data => {
+        let canvasSubmissionsRes = data[0].data.data;
         let submissionsRes = data[1].data.data;
         let reviewReportsRes = data[2].data.data;
-        let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
-        let userSubmissions = submissionsRes.filter(x => x.canvasId == subId);
+        // let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
+        // find which group users are in
+        let groupSub = canvasSubmissionsRes.filter(x => x.submitterId == userId);
+        let userSubmissions = submissionsRes.filter(x => x.groupId == groupSub[0].groupId);
         reviewReportsRes.sort(function(a, b){return a.id-b.id});
         reviewReportsRes.forEach((report,i) => {
             let reportSubmission = submissionsRes.filter(x => x.canvasId == report.grade)
@@ -41,30 +43,11 @@ function ViewAssignmentGrade(props) {
         setSubReports(userSubmissions);
         setRevReports(reviewReportsRes)
       })
-    // (async () => {
-    //   const [assignmentRes, submissionsRes] = await Promise.all([
-    //     fetcher(`/api/assignments/${assignmentId}`),
-    //     fetcher(`/api/submissions?assignmentId=${assignmentId}`),
-    //   ]);
-    //   setAssignment(assignmentRes.data);
-    //   setSubmissions(submissionsRes.data);
-    // })();
+
   }, []);
 
-  // Needs work: minor improvements to V0
   return (
     <div className="Content">
-      {/* <Container name={`Grade for Assignment ${name}`}>
-        <div>Assignment: {name}</div>
-        <br />
-        {submissions.map(submission => (
-          <>
-            <div>Grade: {submission.grade}</div>
-            <div>Report: {submission.report}</div>
-            <br />
-          </>
-        ))}
-      </Container> */}
       <Container name={"Submission Reports for " + name} >
           {
             subReports.map((sub,index) =>
@@ -80,7 +63,6 @@ function ViewAssignmentGrade(props) {
                 
                     <div className={styles.details}>
                     <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}/>
-                        {/* <div dangerouslySetInnerHTML={{__html: sub.report}}></div> */}
                       <ReactMarkdown plugins={[gfm]} children={sub.report} />
                     </div>
                 </AccordionDetails>

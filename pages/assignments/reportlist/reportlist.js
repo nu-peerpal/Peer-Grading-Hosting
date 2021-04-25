@@ -107,17 +107,28 @@ const ReviewReports = () => {
       // Change Submissions to Names for Submission Reports
       // organize submissions by group
       let subGroups = {};
+      let bucket;
       submissions.forEach(submission => { // sort submissions by {groupId: [...userIds]}
-        if (subGroups[submission.groupId]) {
-          subGroups[submission.groupId].push(submission.submitterId);
-          subGroups[submission.groupId].sort(function(a, b){return a-b})
+        if (!submission.groupId) {
+          bucket = submission.submitterId;
         } else {
-          subGroups[submission.groupId] = [submission.submitterId];
+          bucket = submission.groupId;
+        }
+        if (subGroups[bucket]) {
+          subGroups[bucket].push(submission.submitterId);
+          subGroups[bucket].sort(function(a, b){return a-b})
+        } else {
+          subGroups[bucket] = [submission.submitterId];
         }
       });
       let tempGroup, tempSub, tempAid;
       for (let sub in submissions) { // grab group, find lowest group member, get aid
-        tempGroup = submissions[sub]["groupId"];
+        if (!submissions[sub]["groupId"]) {
+          tempGroup = submissions[sub].submitterId;
+        } else {
+          tempGroup = submissions[sub]["groupId"];
+        }
+        // tempGroup = submissions[sub]["groupId"];
         tempSub = submissions.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
         tempAid = tempSub[0].canvasId;
         submissions[sub]["canvasId"] = tempAid;

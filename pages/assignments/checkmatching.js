@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import Tree from "../../components/tree";
+import Button from "@material-ui/core/Button";
 import sampleData from "../../sample_data/ensureSufficientReviews";
 import { ensureSufficientReviews } from "../api/AlgCalls.js";
 import { useRouter } from 'next/router';
 import { useUserData } from "../../components/storeAPI";
 import StudentViewOutline from '../../components/studentViewOutline';
+import canvasSubs from "../../sample_data/submissions";
 const axios = require("axios");
 
 function CheckMatching(props) {
@@ -16,6 +18,31 @@ function CheckMatching(props) {
   const router = useRouter();
   const { assignmentId, rubricId } = router.query;
 
+  async function postSubmissionsFromData() {
+    let nullGroups = canvasSubs.filter(x => x.groupId == null);
+    console.log({nullGroups})
+    await axios.post(`/api/uploadSubmissions?type=multiple`, nullGroups).catch(error => {
+      console.log(error);
+    });
+    // post peer matchings
+    const peerMatchings = nullGroups.map(sub => {
+      return {
+        matchingType: "initial",
+        review: {"reviewBody":{"scores":[[10,"Arbitrary grade."],[10,"Arbitrary grade."],[10,"Arbitrary grade."]],"comments":""}},
+        reviewReview: null,
+        assignmentId: sub.assignmentId,
+        submissionId: sub.submitterId,
+        userId: 124720
+      }
+    })
+    console.log("POST peer matchings", peerMatchings);
+    await axios.post(`/api/peerReviews?type=multiple`, peerMatchings)
+    .then(res => console.log("res", res))
+    .catch(err => {
+      console.log(err);
+      // errs.push('Peer Matchings not posted');
+    });
+  }
 
   useEffect(() => {
     Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(data => {
@@ -83,6 +110,7 @@ function CheckMatching(props) {
   return (
     <div className="Content">
       <Container name="Additional Matches">
+        <Button onClick={() => postSubmissionsFromData()}>manually post submissions from data</Button>
         <Tree response={additionalMatchings} />
       </Container>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />

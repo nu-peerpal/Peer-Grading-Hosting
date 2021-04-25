@@ -77,7 +77,7 @@ function Grades(props) {
   // }, []);
 
   return (
-    <div class="Content">
+    <div className="Content">
       {/* <ListContainer
         name="Graded Peer Reviews"
         data={reviewGrades}
