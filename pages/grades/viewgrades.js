@@ -13,7 +13,7 @@ const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm')
 const axios = require("axios");
 
-function ViewAssignmentGrade() {
+function ViewAssignmentGrade(props) {
     const router = useRouter();
     const { userId, courseId } = useUserData();
     const [subReports, setSubReports] = useState([]);
@@ -109,7 +109,7 @@ function ViewAssignmentGrade() {
             )
           }
         </Container>
-      <StudentViewOutline/>
+      <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
     </div>
   );
 }
