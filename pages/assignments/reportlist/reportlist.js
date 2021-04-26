@@ -123,7 +123,7 @@ const ReviewReports = () => {
       });
       let tempGroup, tempSub, tempAid;
       for (let sub in submissions) { // grab group, find lowest group member, get aid
-        if (!submissions[sub]["groupId"]) {
+        if (!submissions[sub]["groupId"]) { // if null group, change to userId
           tempGroup = submissions[sub].submitterId;
         } else {
           tempGroup = submissions[sub]["groupId"];
@@ -134,7 +134,7 @@ const ReviewReports = () => {
         submissions[sub]["canvasId"] = tempAid;
       }
       let subStudents = {};
-      for (let sub in submissions) {
+      for (let sub in submissions) { // map submissionId: ...userIds
         let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
         student = student[0]["firstName"] + " " + student[0]["lastName"];
         if (subStudents[submissions[sub]["canvasId"]]) {
@@ -143,6 +143,7 @@ const ReviewReports = () => {
           subStudents[submissions[sub]["canvasId"]] = [student];
         }
       }
+      // console.log({subStudents})
       let newSubReport = [];
       for (let subRep in reports[0][1]) { // get users per submission
         let subId = reports[0][1][subRep][0];
@@ -172,11 +173,12 @@ const ReviewReports = () => {
     });
   }
   useEffect(() => {
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(dbData => {
+    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
       let peerReviews = dbData[0].data.data;
       setPeerMatchings(peerReviews);
       let users = dbData[1].data.data;
       let rubric = dbData[2].data.data.rubric;
+      let dbUsers = dbData[3].data.data;
       rubric = rubric.map(section => {
         return [section.points, section.title];
       });
@@ -276,7 +278,7 @@ const ReviewReports = () => {
       console.log({revReportData})
       setSubData(subReportData);
       setRevData(revReportData);
-      setUsers(users);
+      setUsers(dbUsers);
       setIsLoading(false);
     })
     // console.log(reports);

@@ -43,6 +43,9 @@ function StudentViewOutline(props) {
             }
             setCanvasUsers(dataMap);
         });
+        return () => {
+            setCanvasUsers(new Map())
+          };
     }, [])
 
     return (
