@@ -30,8 +30,8 @@ const SelectTaGrading = (props) => {
       taMatchings.forEach(match => {
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
-        console.log({revMatches})
-        console.log({subMatch})
+        // console.log({revMatches})
+        // console.log({subMatch})
         let graded = false;
         let allGraded = [];
         revMatches.forEach(match => {

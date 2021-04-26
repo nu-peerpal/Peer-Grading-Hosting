@@ -172,13 +172,13 @@ const ReviewReports = () => {
           subStudents[bucket] = [student];
         }
       }
-      // console.log({subStudents})
+      console.log({subStudents})
       let newSubReport = [];
       for (let subRep in reports[0][1]) { // get users per submission
         let subId = reports[0][1][subRep][0];
         let j = dbSubs.findIndex(x => x.canvasId == subId);
         let subGrade;
-        if (reports[0][1][subRep][1].includes("Ungraded")) {
+        if (reports[0][1][subRep][1].includes("(Ungraded)")) {
           subGrade = ["Ungraded"];
         } else {
           subGrade = reports[0][1][subRep][1].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;}); // grab every float from string
@@ -196,7 +196,7 @@ const ReviewReports = () => {
         let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
         let j = dbSubs.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
         let revGrade;
-        if (reports[1][1][revRep][2].includes("Ungraded")) {
+        if (reports[1][1][revRep][2].includes("(Ungraded)")) {
           revGrade = ["Ungraded"];
         } else {
           revGrade = reports[1][1][revRep][2].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
@@ -234,7 +234,7 @@ const ReviewReports = () => {
       let revReviews = [];
       console.log({TAs})
       console.log({peerReviews})
-      console.log({rubric})
+      // console.log({rubric})
       peerReviews.forEach(pr => { // identify TA for reviewreview
         for (let ta in TAs) {
           // console.log('ta id',TAs[ta].canvasId)
@@ -259,7 +259,7 @@ const ReviewReports = () => {
           if (pr.reviewReview) { 
             if (reviewRubric.length === 0) { // construct reviewRubric for alg
               reviewRubric = pr.reviewReview.reviewBody.map(row => [row.maxPoints, row.element])
-              console.log({reviewRubric})
+              // console.log({reviewRubric})
             }
             pr.reviewReview.instructorGrades.forEach(row => { // grade for actual submission
               score = Math.round((row.points/row.maxPoints)*100)/100;
