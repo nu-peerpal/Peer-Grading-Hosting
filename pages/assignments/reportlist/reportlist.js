@@ -164,7 +164,7 @@ const ReviewReports = () => {
         if (submissions[sub]["groupId"]) {
           bucket = submissions[sub]["canvasId"];
         } else {
-          bucket = submissions[sub]["userId"]; // if null group, subId = userId in database
+          bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
         }
         if (subStudents[bucket]) {
           subStudents[bucket].push(student);
