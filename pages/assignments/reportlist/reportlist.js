@@ -137,10 +137,15 @@ const ReviewReports = () => {
       for (let sub in submissions) { // map submissionId: ...userIds
         let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
         student = student[0]["firstName"] + " " + student[0]["lastName"];
-        if (subStudents[submissions[sub]["canvasId"]]) {
-          subStudents[submissions[sub]["canvasId"]].push(student);
+        if (submissions[sub]["groupId"]) {
+          bucket = submissions[sub]["canvasId"];
         } else {
-          subStudents[submissions[sub]["canvasId"]] = [student];
+          bucket = submissions[sub]["userId"]; // if null group, subId = userId in database
+        }
+        if (subStudents[bucket]) {
+          subStudents[bucket].push(student);
+        } else {
+          subStudents[bucket] = [student];
         }
       }
       // console.log({subStudents})
@@ -148,9 +153,16 @@ const ReviewReports = () => {
       for (let subRep in reports[0][1]) { // get users per submission
         let subId = reports[0][1][subRep][0];
         let j = dbSubs.findIndex(x => x.canvasId == subId);
+        let subGrade;
+        if (reports[0][1][subRep][1].includes("Ungraded")) {
+          subGrade = ["Ungraded"];
+        } else {
+          subGrade = reports[0][1][subRep][1].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;}); // grab every float from string
+        }// console.log('grade:',subGrade[0])
         newSubReport[subRep] = [String(subStudents[subId])];
         newSubReport[subRep].push(reports[0][1][subRep][1]);
-        newSubReport[subRep].push(dbSubs[j].s3Link)
+        newSubReport[subRep].push(dbSubs[j].s3Link);
+        newSubReport[subRep].push(subGrade[0]);
       }
       console.log({newSubReport})
       setSubReports(newSubReport);
@@ -159,10 +171,17 @@ const ReviewReports = () => {
       for (let revRep in reports[1][1]) {
         let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
         let j = dbSubs.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
+        let revGrade;
+        if (reports[1][1][revRep][2].includes("Ungraded")) {
+          revGrade = ["Ungraded"];
+        } else {
+          revGrade = reports[1][1][revRep][2].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
+        }
         newReviewReport[revRep] = [users[i]["firstName"] + " "+ users[i]["lastName"]];
         newReviewReport[revRep].push(String(subStudents[reports[1][1][revRep][1]]));
         newReviewReport[revRep].push(reports[1][1][revRep][2]);
         newReviewReport[revRep].push(dbSubs[j].s3Link);
+        newReviewReport[revRep].push(revGrade[0]);
       }
       console.log({newReviewReport})
       setRevReports(newReviewReport);
@@ -302,7 +321,7 @@ const ReviewReports = () => {
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                 >
-                <Typography >Submission from: {sub[0]}</Typography>
+                  <Typography style={{textAlign: "left"}}>Submission: {sub[0]}. Grade: {sub[3]}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
@@ -327,7 +346,7 @@ const ReviewReports = () => {
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                 >
-                <Typography >{rev[0]}: submission from {rev[1]}</Typography>
+                <Typography >Reviewer: {rev[0]}. Submission: {rev[1]}. Grade: {rev[4]}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
