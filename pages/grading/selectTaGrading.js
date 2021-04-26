@@ -30,17 +30,32 @@ const SelectTaGrading = (props) => {
       taMatchings.forEach(match => {
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
+        console.log({revMatches})
+        console.log({subMatch})
         let graded = false;
+        let allGraded = [];
         revMatches.forEach(match => {
-          if (match.reviewReview) {
+          if (match.reviewReview && match.userId != userId) {
             graded = true;
+            console.log(match.reviewReview.reviewBody[0])
+            if (match.reviewReview.reviewBody[0].points === ""){
+              allGraded.push(false); // if empty review (not even 0) then it must not be graded
+            } else {
+              allGraded.push(true);
+            }
           }
         });
+        // console.log({allGraded})
+        if (allGraded.includes(false)) {
+          allGraded = false;
+        } else {
+          allGraded = true;
+        }
         // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
         // console.log({match})
         reviewReviews.push({
           type: match.matchingType,
-          done: [match.review!=null, graded],
+          done: [match.review!=null, graded, allGraded],
           matchingId: match.id,
           submission: subMatch[0]
         });
@@ -55,7 +70,7 @@ const SelectTaGrading = (props) => {
         let finished = "";
         if (sub.type == 'additional') {
           if (sub.done[0]) {
-            finished = " (submitted)";
+            finished = " (completed)"; // if anything was submitted, algo has data to run
           }
           toDoGrades.push({
             name: "Grade group " + sub.submission.groupId + "'s submission" + finished,
@@ -66,7 +81,11 @@ const SelectTaGrading = (props) => {
           });
         } else {
           if (sub.done[1]) {
-            finished = " (submitted)";
+            if (sub.done[2]) { // if all done
+              finished = " (completed)";
+            } else { // just submitted
+              finished = " (submitted)";
+            }
           }
           toDoReviews.push({
               name: "Grade group " + sub.submission.groupId + "'s reviews" + finished,
