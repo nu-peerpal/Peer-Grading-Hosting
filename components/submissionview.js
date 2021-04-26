@@ -164,7 +164,7 @@ function Grading(rubric, matching, review) {
                         }}
                         id='outlined-basic'
                         variant='outlined'
-                        required={true}
+                        required={false}
                         as={TextField}
                         className={styles.pms}
                       />
