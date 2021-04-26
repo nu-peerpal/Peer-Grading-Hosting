@@ -28,10 +28,13 @@ function ViewAssignmentGrade(props) {
         let canvasSubmissionsRes = data[0].data.data;
         let submissionsRes = data[1].data.data;
         let reviewReportsRes = data[2].data.data;
+        console.log({data})
         // let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
         // find which group users are in
         let groupSub = canvasSubmissionsRes.filter(x => x.submitterId == userId);
-        let userSubmissions = submissionsRes.filter(x => x.groupId == groupSub[0].groupId);
+        let group = groupSub[0].groupId;
+        if (group == null) group = groupSub[0].submitterId; // if null group, use userId 
+        let userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
         reviewReportsRes.sort(function(a, b){return a.id-b.id});
         reviewReportsRes.forEach((report,i) => {
             let reportSubmission = submissionsRes.filter(x => x.canvasId == report.grade)
