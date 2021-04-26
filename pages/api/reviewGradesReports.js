@@ -10,10 +10,13 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
-        if (!req.query.userId) {
-          throw new Error("Query parameter userId required");
+        let params = {};
+        if (!req.query.userId && !req.query.assignmentId) {
+          throw new Error("Query parameter userId and/or assignmentId required");
         }
-        const params = { userId: req.query.userId };
+        if (req.query.userId) {
+          params.userId = req.query.userId;
+        }
         if (req.query.assignmentId) {
           params.assignmentId = req.query.assignmentId;
         }
@@ -38,6 +41,25 @@ export default async (req, res) => {
           "Successfully created database entries.",
         );
         break;
+
+        case "PATCH":
+            if (req.query.type === "multiple") {
+              // console.log(req.body);
+              await Promise.all(
+                req.body.map(report =>
+                  db.review_grades_reports.update(report, {
+                    where: { id: report.id },
+                  }),
+                ),
+              );
+              responseHandler.msgResponse200(
+                res,
+                "Successfully updated database entries.",
+              );
+            } else {
+              throw new Error("PATCH /reviewGradesReports must be of type='multiple'");
+            }
+            break;
 
       default:
         throw new Error("Invalid HTTP method");

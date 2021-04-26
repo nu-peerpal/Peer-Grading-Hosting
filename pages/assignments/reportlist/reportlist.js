@@ -39,7 +39,7 @@ const ReviewReports = () => {
 
   async function handleSubmit() {
     // axios.get(`/api/submissions?assignmentId=${assignmentId}`).then(async subData => {
-      
+      console.log({dbSubmissions})
       console.log({uploadSubReports})
       let assignment_submissions = dbSubmissions.map(submission => {
         let v = uploadSubReports[0].findIndex(x => x[0] == submission.canvasId);
@@ -64,20 +64,44 @@ const ReviewReports = () => {
       }).catch(err => {
         errs.push(err);
         console.log({err})});
-      let review_grades_reports = uploadRevReports[1].map(report => {
-        return {
-          grade: report[1],
-          report: report[2],
-          assignmentId: assignmentId,
-          userId: report[0]
-        }
-      })
-      console.log('uploading review reports:', review_grades_reports);
-      await axios.post(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
-        console.log({res})
-      }).catch(err => {
-        errs.push(err);
-        console.log({err})});
+
+      // check for review_reports
+      let dbRevReports = await axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`);
+      dbRevReports = dbRevReports.data.data;
+      let review_grades_reports;
+      if (dbRevReports.length > 0) {
+        review_grades_reports = uploadRevReports[1].map(report => {
+          let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId));
+          return {
+            id: dbReport[0].id,
+            grade: report[1],
+            report: report[2],
+            assignmentId: assignmentId,
+            userId: report[0]
+          }
+        });
+        console.log('updating review reports:', review_grades_reports);
+        await axios.patch(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+          console.log({res})
+        }).catch(err => {
+          errs.push(err);
+          console.log({err})});
+      } else {
+        review_grades_reports = uploadRevReports[1].map(report => {
+          return {
+            grade: report[1],
+            report: report[2],
+            assignmentId: assignmentId,
+            userId: report[0]
+          }
+        })
+        console.log('uploading review reports:', review_grades_reports);
+        await axios.post(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+          console.log({res})
+        }).catch(err => {
+          errs.push(err);
+          console.log({err})});
+      }
 
       console.log('updating assignment to graded');
       await axios.patch(`/api/assignments/${assignmentId}`, {graded: true}).then(res => {
