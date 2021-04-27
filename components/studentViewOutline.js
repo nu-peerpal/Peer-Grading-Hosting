@@ -18,6 +18,7 @@ function StudentViewOutline(props) {
     }
 
     useEffect(() => {
+        if (courseId){
         axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
             let users = res.data.data;
             let peers = users.filter(user => user.enrollment == "StudentEnrollment");
@@ -43,6 +44,7 @@ function StudentViewOutline(props) {
             }
             setCanvasUsers(dataMap);
         });
+    }
         return () => {
             setCanvasUsers(new Map())
           };

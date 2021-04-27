@@ -29,21 +29,22 @@ function Dashboard(props) {
       if (props.ISstudent) {
         console.log('this is a student')
       }
-      axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
-        setCanvasAssignments(response.data.data);
-        console.log({response});
-      });
-      let res, resData;
-      const today = new Date().toISOString().split("T")[0];
-      if (props.ISstudent) {
-        res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
-      } else {
-        res = await axios.get(`/api/assignments?courseId=${courseId}`);
-      }
-      resData = res.data;
-      // console.log({resData});
-      const assignments = resData.data;
-      let statusUpdates = [];
+      if (courseId!="") { // don't load anything until userData is available
+        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+          setCanvasAssignments(response.data.data);
+          console.log({response});
+        });
+        let res, resData;
+        const today = new Date().toISOString().split("T")[0];
+        if (props.ISstudent) {
+          res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
+        } else {
+          res = await axios.get(`/api/assignments?courseId=${courseId}`);
+        }
+        resData = res.data;
+        // console.log({resData});
+        const assignments = resData.data;
+        let statusUpdates = [];
       // if (!props.ISstudent) {
       //   statusUpdates = assignments.map(assignment => ({
       //     name: "Status: " + assignment.reviewStatus,
@@ -59,8 +60,9 @@ function Dashboard(props) {
 
       setToDoReviews(toDoReviews);
       setTaToDos([...toDoReviews, ...statusUpdates]);
+    }
     })().catch( e => { console.error(e) });
-  }, [props.ISstudent, savedStudentId]);
+  }, [props.ISstudent, savedStudentId, userCreated]);
 
   if (props.ISstudent) {
     return (
