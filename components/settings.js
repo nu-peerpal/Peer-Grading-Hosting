@@ -79,10 +79,15 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         for (let sub in tempSubmissionData) {
           let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"])
           student = student[0]["firstName"] + " " + student[0]["lastName"];
-          if (subStudents[tempSubmissionData[sub]["canvasId"]]) {
-            subStudents[tempSubmissionData[sub]["canvasId"]].push(student);
+          if (submissions[sub]["groupId"]) {
+            bucket = submissions[sub]["canvasId"];
           } else {
-            subStudents[tempSubmissionData[sub]["canvasId"]] = [student];
+            bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
+          }
+          if (subStudents[bucket]) {
+            subStudents[bucket].push(student);
+          } else {
+            subStudents[bucket] = [student];
           }
           tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
         }
