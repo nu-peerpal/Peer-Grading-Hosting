@@ -38,7 +38,7 @@ function Matching(props) {
   }, [])
 
   async function handleSubmit() {
-    matchingExists = true;
+    setMatchingExists(true);
     let usersData = userList.map(user => {
       return {
         id: user.canvasId,
