@@ -28,7 +28,7 @@ function CheckMatching(props) {
     const peerMatchings = nullGroups.map(sub => {
       return {
         matchingType: "initial",
-        review: {"reviewBody":{"scores":[[10,"Arbitrary grade."],[10,"Arbitrary grade."],[10,"Arbitrary grade."]],"comments":""}},
+        review: null,
         reviewReview: null,
         assignmentId: sub.assignmentId,
         submissionId: sub.submitterId,

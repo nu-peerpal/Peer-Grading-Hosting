@@ -77,19 +77,16 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         let subStudents = {};
         let tempSubmissions = []; // set submissions for peerMatch alg
         for (let sub in tempSubmissionData) {
-          let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"])
+          let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"]);
+          let subId = tempSubmissionData[sub]["canvasId"];
           student = student[0]["firstName"] + " " + student[0]["lastName"];
-          if (submissions[sub]["groupId"]) {
-            bucket = submissions[sub]["canvasId"];
-          } else {
-            bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
-          }
+          bucket = tempSubmissionData[sub]["canvasId"];
           if (subStudents[bucket]) {
             subStudents[bucket].push(student);
           } else {
             subStudents[bucket] = [student];
           }
-          tempSubmissions.push([tempSubmissionData[sub]["submitterId"],tempSubmissionData[sub]["canvasId"]]);
+          tempSubmissions.push([tempSubmissionData[sub]["submitterId"],subId]);
         }
         // console.log({subStudents})
         setSubmissionGroups(subStudents);
