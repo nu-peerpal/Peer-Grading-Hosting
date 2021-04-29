@@ -24,6 +24,7 @@ const ReviewReports = () => {
   const [subData, setSubData] = useState({});
   const [revData, setRevData] = useState({});
   const [submissionMap, setSubmissionMap] = useState();
+  const [canvasUploaded, setCanvasUploaded] = useState();
   const [subReports, setSubReports] = useState([]);
   const [uploadSubReports, setUploadSubReports] = useState();
   const [revReports, setRevReports] = useState([]);
@@ -67,6 +68,7 @@ const ReviewReports = () => {
     // console.log({revGradePost})
     // console.log({uploadSubReports})
     // console.log({uploadRevReports});
+    setCanvasUploaded('Submitted to Canvas.');
   }
   async function handleSubmit() {
     // axios.get(`/api/submissions?assignmentId=${assignmentId}`).then(async subData => {
@@ -430,10 +432,10 @@ const ReviewReports = () => {
             {errors}
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-            <Button onClick={handleUpload}>
+            <Button disabled={true} onClick={handleUpload}>
               Submit to Canvas
             </Button>
-            {errors}
+            {canvasUploaded}
           </div>
         </div>
       }
