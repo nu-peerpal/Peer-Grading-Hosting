@@ -23,6 +23,7 @@ const ReviewReports = () => {
   const [needsLoading, setNeedsLoading] = useState(true);
   const [subData, setSubData] = useState({});
   const [revData, setRevData] = useState({});
+  const [submissionMap, setSubmissionMap] = useState();
   const [subReports, setSubReports] = useState([]);
   const [uploadSubReports, setUploadSubReports] = useState();
   const [revReports, setRevReports] = useState([]);
@@ -37,6 +38,36 @@ const ReviewReports = () => {
   let { assignmentId, assignmentName, rubricId } = router.query;
   if (!rubricId) rubricId = 1;
 
+  async function handleUpload() {
+    let subGrades = uploadSubReports[0]; // [subId, grade]
+    let revGrades = uploadRevReports[0] // [userId, grade]
+    // step 1 post submission data
+    let userSubGrades = [];
+    subGrades.forEach(subGrade => {
+      submissionMap[subGrade[0]].forEach(studentId => {
+        userSubGrades.push([parseInt(studentId), subGrade[1]])
+      })
+    });
+    console.log({userSubGrades})
+    let subGradePost = {
+      courseId: courseId,
+      assignmentId: assignmentId,
+      grades: userSubGrades
+    }
+    // let res1 = await axios.post(`/api/canvas/grades`,subGradePost).catch(err => console.log({err}))
+    
+    let assignmentData = await axios.get(`/api/assignments/${assignmentId}`);
+    let assignment = assignmentData.data.data;
+    let revGradePost = {
+      courseId: courseId,
+      assignmentId: assignment.reviewCanvasId,
+      grades: revGrades
+    }
+    let res2 = await axios.post(`/api/canvas/grades`,revGradePost).catch(err => console.log({err}))
+    // console.log({revGradePost})
+    // console.log({uploadSubReports})
+    // console.log({uploadRevReports});
+  }
   async function handleSubmit() {
     // axios.get(`/api/submissions?assignmentId=${assignmentId}`).then(async subData => {
       console.log({dbSubmissions})
@@ -158,8 +189,10 @@ const ReviewReports = () => {
         submissions[sub]["canvasId"] = tempAid;
       }
       let subStudents = {};
+      let submissionMap = {};
       for (let sub in submissions) { // map submissionId: ...userIds
         let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
+        let studentId = student[0].canvasId;
         student = student[0]["firstName"] + " " + student[0]["lastName"];
         if (submissions[sub]["groupId"]) {
           bucket = submissions[sub]["canvasId"];
@@ -168,11 +201,15 @@ const ReviewReports = () => {
         }
         if (subStudents[bucket]) {
           subStudents[bucket].push(student);
+          submissionMap[bucket].push(studentId);
         } else {
           subStudents[bucket] = [student];
+          submissionMap[bucket] = [studentId];
         }
       }
       console.log({subStudents})
+      console.log({submissionMap})
+      setSubmissionMap(submissionMap);
       let newSubReport = [];
       for (let subRep in reports[0][1]) { // get users per submission
         let subId = reports[0][1][subRep][0];
@@ -389,6 +426,12 @@ const ReviewReports = () => {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
             <Button onClick={handleSubmit}>
               Confirm Reports
+            </Button>
+            {errors}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+            <Button onClick={handleUpload}>
+              Submit to Canvas
             </Button>
             {errors}
           </div>

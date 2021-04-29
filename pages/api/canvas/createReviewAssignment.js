@@ -24,7 +24,7 @@ export default async (req, res) => {
             description: "Peer Review Assignment for " + assignmentName,
             published: true,
             assignment_group_id: prGroup,
-            points: rubric.points_possible,
+            points_possible: rubric.points_possible,
             submission_types: [ "external_tool" ],
             external_tool_tag_attributes: {
               url: launch_url,
