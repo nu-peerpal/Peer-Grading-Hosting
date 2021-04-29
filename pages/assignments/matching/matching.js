@@ -105,7 +105,7 @@ function Matching(props) {
   return (
     <div className="Content">
       <Container name={"Peer Matching: " + router.query.assignmentName}>
-      {matchingExists ? <Accordion className={styles.matching}>
+      {matchingExists ? <Accordion defaultExpanded={true} className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Existing Matching
           </AccordionSummary>
@@ -114,7 +114,7 @@ function Matching(props) {
           </AccordionDetails>
         </Accordion>
         :
-        <Accordion className={styles.matching}>
+        <Accordion defaultExpanded={true} className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Settings
           </AccordionSummary>

@@ -54,7 +54,7 @@ const ReviewReports = () => {
       assignmentId: assignmentId,
       grades: userSubGrades
     }
-    // let res1 = await axios.post(`/api/canvas/grades`,subGradePost).catch(err => console.log({err}))
+    let res1 = await axios.post(`/api/canvas/grades`,subGradePost).catch(err => console.log({err}))
     
     let assignmentData = await axios.get(`/api/assignments/${assignmentId}`);
     let assignment = assignmentData.data.data;
