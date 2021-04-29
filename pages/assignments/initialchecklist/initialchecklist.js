@@ -27,6 +27,7 @@ const InitialChecklist = (props) => {
   const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   const [fieldsReady, setFieldsReady] = React.useState(false);
+  let localDate = new Date(dueDate);
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
@@ -128,7 +129,7 @@ const InitialChecklist = (props) => {
             <div className={styles.column__content}>
               Due date for the original assignment:
               <div>
-                <p>{dueDate}</p>
+                <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p>
               </div>
               <div style={{marginTop: '25px'}}>
               Due date for the peer review assignment:
@@ -137,7 +138,7 @@ const InitialChecklist = (props) => {
                   id="datetime-local"
                   type="datetime-local"
                   defaultValue={"2021-05-24T11:59:50Z"}
-                  onChange={e => setPrDueDate(e.target.value+":59Z")}
+                  onChange={e => setPrDueDate(e.target.value+":59-05:00")} // hardcode CT, might have to change with time shift
                   InputLabelProps={{
                     shrink: true,
                   }}
