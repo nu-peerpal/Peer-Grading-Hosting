@@ -104,7 +104,8 @@ const ReviewReports = () => {
       let review_grades_reports;
       if (dbRevReports.length > 0) {
         review_grades_reports = uploadRevReports[1].map(report => {
-          let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId));
+          let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId && r.grade == report[1]));
+          if (dbReport.length > 1) console.log('too many matches')
           return {
             id: dbReport[0].id,
             grade: report[1],
