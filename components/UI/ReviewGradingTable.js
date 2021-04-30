@@ -7,10 +7,11 @@ import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import { Field } from "formik";
 import { createGradeValidator } from "./PeerReviewMatrix";
 
-const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
+const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen, setDoneGrading, doneGrading }) => (
   <TableContainer style={{ backgroundColor: "rgb(248,248,248)" }}>
     <Table>
       <TableHead>
@@ -54,6 +55,17 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId }) => (
             </TableCell>
           </TableRow>
         ))}
+        <TableCell>
+          <Button 
+            onClick={()=>{
+              setIsRowOpen(false);
+              setDoneGrading(!doneGrading);
+            }} 
+            style={{ backgroundColor: (doneGrading) ? 'lightGray' : 'rgba(146, 25, 188, 0.34)'}}
+          >
+            {(doneGrading) ? 'MARK AS UNFINISHED' : 'MARK AS FINISHED'}
+          </Button>
+        </TableCell>
       </TableBody>
     </Table>
   </TableContainer>

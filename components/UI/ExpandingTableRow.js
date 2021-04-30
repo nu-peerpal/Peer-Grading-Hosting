@@ -3,16 +3,15 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Collapse from "@material-ui/core/Collapse";
 
-const ExpandingTableRow = ({ details, children, numCols, disabled }) => {
-  const [open, setOpen] = useState(false);
+const ExpandingTableRow = ({ details, children, numCols, disabled, doneGrading, isRowOpen, setIsRowOpen }) => {
 
   return (
     <>
-      <TableRow
+      <TableRow style={{background: doneGrading ? 'lightgray' : 'white'}}
         hover
         onClick={() => {
           if (!disabled) {
-            setOpen(!open);
+            setIsRowOpen(!isRowOpen);
           }
         }}
       >
@@ -20,8 +19,8 @@ const ExpandingTableRow = ({ details, children, numCols, disabled }) => {
       </TableRow>
 
       <TableRow>
-        <TableCell colSpan={numCols} style={{ padding: 0 }}>
-          <Collapse in={open}>{details}</Collapse>
+        <TableCell colSpan={numCols} style={{ padding: 0}}>
+          <Collapse in={isRowOpen}>{details}</Collapse>
         </TableCell>
       </TableRow>
     </>

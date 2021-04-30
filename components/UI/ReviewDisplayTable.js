@@ -53,6 +53,8 @@ const ReviewDisplayTable = ({
     <>
       {peerMatchings.map(({ firstName, lastName, review, userId }) => {
         const [expandDisabled, setExpandDisabled] = useState(false);
+        const [isRowOpen, setIsRowOpen] = useState(false);
+        const [doneGrading, setDoneGrading] = useState(false);
         return (
           <ExpandingTableRow
             key={userId}
@@ -63,9 +65,15 @@ const ReviewDisplayTable = ({
                 values={values}
                 errors={errors}
                 userId={userId}
+                setIsRowOpen={setIsRowOpen}
+                setDoneGrading={setDoneGrading}
+                doneGrading={doneGrading}
               />
             }
             disabled={expandDisabled}
+            isRowOpen={isRowOpen}
+            setIsRowOpen={setIsRowOpen}
+            doneGrading={doneGrading}
           >
             <TableCell>
               {firstName} {lastName}
@@ -129,6 +137,7 @@ const ReviewDisplayTable = ({
 
             {/* display total grade */}
             <TableCell>{getReviewTotalPoints(review)}</TableCell>
+            {/* mark this section as done grading */}
           </ExpandingTableRow>
         );
       })}
