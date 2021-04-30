@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import ReviewGradingTable from "./ReviewGradingTable";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const useStyles = makeStyles({
   tooltip: {
@@ -48,6 +49,7 @@ const ReviewDisplayTable = ({
       ) / peerMatchings.length
     ).toFixed(1)
   );
+  const [textCopied, setTextCopied] = useState(false);
 
   return (
     <>
@@ -55,6 +57,7 @@ const ReviewDisplayTable = ({
         const [expandDisabled, setExpandDisabled] = useState(false);
         const [isRowOpen, setIsRowOpen] = useState(false);
         const [doneGrading, setDoneGrading] = useState(false);
+
         return (
           <ExpandingTableRow
             key={userId}
@@ -108,7 +111,12 @@ const ReviewDisplayTable = ({
                   });
                 }
               };
-
+              const onCopyText = () => {
+                setTextCopied(true);
+                setTimeout(() => {
+                  setTextCopied(false);
+                }, 1000);
+              };
               return (
                 <TableCell>
                   {section.points}
@@ -117,7 +125,9 @@ const ReviewDisplayTable = ({
                     title={section.comment}
                     arrow
                   >
-                    <Button style={{ padding: 0 }}>[?]</Button>
+                    <CopyToClipboard text={section.comment} onCopy={onCopyText}>
+                    <Button style={{ padding: 0}}>[?]</Button>
+                      </CopyToClipboard>
                   </Tooltip>
                   <IconButton
                     size="small"
@@ -137,7 +147,7 @@ const ReviewDisplayTable = ({
 
             {/* display total grade */}
             <TableCell>{getReviewTotalPoints(review)}</TableCell>
-            {/* mark this section as done grading */}
+
           </ExpandingTableRow>
         );
       })}
@@ -149,6 +159,7 @@ const ReviewDisplayTable = ({
         ))}
         <TableCell style={{ fontWeight: 500 }}>{totalPointsAvg}</TableCell>
       </TableRow>
+      <div style={{position: 'fixed', bottom: '5px', right: '5px', backgroundColor: 'green', color: 'white', padding: '5px', display: textCopied ? 'block' : 'none'}}>Text Copied</div>
     </>
   );
 };
