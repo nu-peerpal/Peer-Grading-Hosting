@@ -76,6 +76,7 @@ const InitialChecklist = (props) => {
       assignment["canvasId"] = parseInt(assignmentId);
       assignment["id"] = parseInt(assignmentId);
       assignment["rubricId"] = parseInt(router.query.rubricId);
+      assignment["reviewStatus"] = 1;
       axios.post(`/api/assignments`, assignment)
     })
   }

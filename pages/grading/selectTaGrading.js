@@ -4,6 +4,7 @@ import ListContainer from "../../components/listcontainer";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
+import Button from "@material-ui/core/Button";
 
 const axios = require("axios");
 
@@ -12,6 +13,8 @@ const SelectTaGrading = (props) => {
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
   const [toDoGrades, setToDoGrades] = useState([]);
+  const [reviewsCompleted, setReviewsCompleted] = useState(false);
+  const [reviewStatusSet, setReviewStatusSet] = useState();
   var { assignmentName, assignmentId, name, id, rubricId } = router.query;
   if (!assignmentName) assignmentName = name;
   if (!assignmentId) assignmentId = id;
@@ -94,9 +97,15 @@ const SelectTaGrading = (props) => {
           });
         }
       }
+    
+    console.log(reviewReviews.filter(review => review.done[2] == true));
+    if (reviewReviews.filter(review => review.done[2] == true).length != 0) {
+      setReviewsCompleted(true);
+    }
 
     setToDoReviews(toDoReviews)
     setToDoGrades(toDoGrades)
+
   });
   }, []);
 
@@ -123,11 +132,25 @@ const SelectTaGrading = (props) => {
     }
   }
 
+  function handleCompleted() {
+    console.log("completed")
+    axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
+    setReviewStatusSet("Confirmed")
+  }
+
   return (
     <div className="Content">
         <TaToDoList toDoReviews={toDoReviews} />
         <TaToDoGrades toDoGrades={toDoGrades} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+          <Button disabled={!reviewsCompleted || reviewStatusSet} onClick={handleCompleted}>
+            Confirm Grading is Completed
+          </Button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+          {reviewStatusSet}
+        </div>
     </div>
   );
 };
