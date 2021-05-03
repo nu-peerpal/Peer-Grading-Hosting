@@ -21,6 +21,7 @@ function CheckMatching(props) {
   const [peerReviews, setPeerReviews] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [response, setResponse] = useState();
+  const [students, setStudents] = useState();
   const router = useRouter();
   const { assignmentId, rubricId } = router.query;
 
@@ -73,6 +74,21 @@ function CheckMatching(props) {
       const allMatchingsRes = data[2].data;
       setAllMatchings(allMatchingsRes.data);
       const rubricRes = data[3].data.data;
+
+      // find who didn't complete their PRs
+      let studentList = [];
+      allMatchingsRes.data.forEach(match => {
+        if (!match.review) { // if match doesn't exist, find the user and add to list
+          let foundUser = usersRes.data.find(user => user.canvasId == match.userId);
+          if (foundUser.enrollment == "StudentEnrollment") {
+            let name = foundUser.firstName + " " + foundUser.lastName;
+            if (!studentList.includes(name)) {
+              studentList.push(name);
+            }
+          }
+        }
+      })
+      setStudents(studentList);
 
       let tempGraders, tempReviews, tempMatching;
       tempGraders = tempReviews = tempMatching = [];
@@ -159,17 +175,23 @@ function CheckMatching(props) {
   return (
     <div className="Content">
       <Container name="Additional Matches">
-        <Button disabled={additionalMatchings.length == 0} onClick={() => handleSubmit()}>Create Additional Reviews</Button>
-        {response}
-        <br/>
-        <br/>
         {/* <Tree response={additionalMatchings} /> */}
-        <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>
-        Additional Matching[s]:
-        {/* <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>
-        Assigned Reviews (may or may not be completed): */}
-        <div className={styles.matchingGrid}>
-          {matchingGrid}
+        <div className={styles.matching}>
+          Students that haven't submitted Peer Reviews: 
+          <div>{String(students)}</div>
+          <br />
+          <br />
+          <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>
+          Additional Matching[s]:
+          {/* <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>
+          Assigned Reviews (may or may not be completed): */}
+          <div className={styles.matchingGrid}>
+            {matchingGrid}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+          <Button disabled={additionalMatchings.length == 0} onClick={() => handleSubmit()}>Create Additional Reviews</Button>
+          {response}
         </div>
       </Container>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
