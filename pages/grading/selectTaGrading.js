@@ -4,18 +4,28 @@ import ListContainer from "../../components/listcontainer";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 const axios = require("axios");
 
 const SelectTaGrading = (props) => {
   const router = useRouter();
-  const { userId, courseId, courseName, assignment } = useUserData();
+  const { userId, courseId, courseName, assignment, createUser, savedStudentId } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
   const [toDoGrades, setToDoGrades] = useState([]);
   var { assignmentName, assignmentId, name, id, rubricId } = router.query;
   if (!assignmentName) assignmentName = name;
   if (!assignmentId) assignmentId = id;
   // console.log({assignmentId})
+  useEffect(() => {
+    if (!userId) { // check if state isn't active
+      if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
+        console.log('recreating user data');
+        const userData = JSON.parse(Cookies.get('userData'));
+        createUser(userData);
+      }
+    }
+  }, []);
   useEffect(() => {
     Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}`)]).then(data => {
       console.log({data})
@@ -37,7 +47,7 @@ const SelectTaGrading = (props) => {
         revMatches.forEach(match => {
           if (match.reviewReview && match.userId != userId) {
             graded = true;
-            console.log(match.reviewReview.reviewBody[0])
+            // console.log(match.reviewReview.reviewBody[0])
             if (match.reviewReview.reviewBody[0].points === ""){
               allGraded.push(false); // if empty review (not even 0) then it must not be graded
             } else {
