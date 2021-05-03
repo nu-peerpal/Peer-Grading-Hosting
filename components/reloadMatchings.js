@@ -79,11 +79,6 @@ function ReloadMatchings(props) {
                         submissions: [sub]
                       };
                 }
-                // if (subBuckets[review.submissionId]) {
-                //   subBuckets[sub].push(userBuckets[tempUser.canvasId]);
-                // } else {
-                //   subBuckets[sub] = [userBuckets[tempUser.canvasId]]
-                // }
                 if (subBuckets[sub]) {
                     subBuckets[sub].push({
                         name: tempUser.firstName + " " + tempUser.lastName,

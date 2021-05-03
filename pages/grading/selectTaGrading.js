@@ -156,7 +156,7 @@ const SelectTaGrading = (props) => {
         <TaToDoGrades toDoGrades={toDoGrades} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-          <Button disabled={!reviewsCompleted || reviewStatusSet} onClick={handleCompleted}>
+          <Button disabled={!reviewsCompleted || reviewStatusSet=="Confirmed"} onClick={handleCompleted}>
             Confirm Grading is Completed
           </Button>
         </div>
