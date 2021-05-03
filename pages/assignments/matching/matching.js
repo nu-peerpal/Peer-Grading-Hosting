@@ -97,9 +97,10 @@ function Matching(props) {
     });
     if (errs.length == 0) {
       setErrors("Submitted Successfully.")
+      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 3});
     } else {
       setErrors(String(errs));
-      }
+    }
   }
 
   return (

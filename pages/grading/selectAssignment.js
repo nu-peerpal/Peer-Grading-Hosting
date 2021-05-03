@@ -8,6 +8,7 @@ const axios = require("axios");
 const SelectAssignment = props => {
   const { userId, courseId, createUser, savedStudentId } = useUserData();
   const [assignments, setAssignments] = useState([]);
+  const [userDataUpdated, setUserDataUpdated] = useState(false);
 
   useEffect(() => {
     if (!userId) { // check if user state is active
@@ -15,6 +16,7 @@ const SelectAssignment = props => {
         console.log('recreating user data');
         const userData = JSON.parse(Cookies.get('userData'));
         createUser(userData);
+        setUserDataUpdated(!userDataUpdated);
       }
     }
   }, []);
@@ -23,7 +25,7 @@ const SelectAssignment = props => {
       console.log({assignmentData});
       setAssignments(assignmentData.data.data);
     });
-  }, []);
+  }, [userDataUpdated]);
 
   return (
     <div className="Content">

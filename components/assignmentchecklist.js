@@ -7,6 +7,7 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -61,16 +62,51 @@ function assignmentchecklist(props) {
   const [rubric, setRubric] = React.useState(''); // state for the rubric
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [prDueDate, setPrDueDate] = React.useState(); // PR assignment due date
+  const [dueDate, setDueDate] = React.useState();
   let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
-  let dueDate = props.dueDate;
   let rubricId = props.rubricId;
   const steps = getSteps();
 
 
-  // useEffect(() => {
-    
-  // }, []);
+  useEffect(() => {
+    axios.get(`/api/assignments/${assignmentId}`).then(res => {
+      const assignmentData = res.data.data;
+      console.log(assignmentData);
+      if (!assignmentData) {
+        return;
+      }
+
+      setDueDate(assignmentData.assignmentDueDate);
+      setPrDueDate(assignmentData.reviewDueDate);
+
+      let reviewStatus = assignmentData.reviewStatus;
+      let today = new Date();
+      switch(reviewStatus) {
+        case 1:
+          let dueDate = new Date(assignmentData.assignmentDueDate);
+          if (today < dueDate) {  // dueDate not yet passed
+            setActiveStep(1);
+          } else {                // dueDate passed
+            setActiveStep(2);
+            axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 2})
+          }
+          break;
+        case 3:
+          let reviewDueDate = new Date(assignmentData.reviewDueDate);
+          if (today < reviewDueDate) {  // reviewDueDate not yet passed
+            setActiveStep(3);
+            console.log("not yet passed")
+          } else {                // reviewDueDate passed
+            setActiveStep(4);
+            axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 4})
+          }
+        default:
+          setActiveStep(reviewStatus);
+          break;
+      }
+    })
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -121,9 +157,9 @@ function assignmentchecklist(props) {
           }
         })}
       </Stepper>
-      <Button variant="contained" color="primary" style={{marginLeft: '20px'}} onClick={()=>setActiveStep(incActiveStep(activeStep))}>
+      {/* <Button variant="contained" color="primary" style={{marginLeft: '20px'}} onClick={()=>setActiveStep(incActiveStep(activeStep))}>
         Next Step
-      </Button>
+      </Button> */}
     </div>
   );
 }
