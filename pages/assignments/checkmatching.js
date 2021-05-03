@@ -80,7 +80,7 @@ function CheckMatching(props) {
       allMatchingsRes.data.forEach(match => {
         if (!match.review) { // if match doesn't exist, find the user and add to list
           let foundUser = usersRes.data.find(user => user.canvasId == match.userId);
-          if (foundUser.enrollment == "StudentEnrollment") {
+          if (foundUser && foundUser.enrollment == "StudentEnrollment") {
             let name = foundUser.firstName + " " + foundUser.lastName;
             if (!studentList.includes(name)) {
               studentList.push(name);
