@@ -18,7 +18,7 @@ function StudentViewOutline(props) {
     }
 
     useEffect(() => {
-        if (courseId){
+        if (courseId && savedStudentId){
         axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
             let users = res.data.data;
             let peers = users.filter(user => user.enrollment == "StudentEnrollment");

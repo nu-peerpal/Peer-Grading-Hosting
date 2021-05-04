@@ -34,6 +34,8 @@ const ReviewReports = () => {
   const [peerMatchings, setPeerMatchings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState();
+  const [subReportsLog, setSubReportsLog] = useState("");
+  const [revReportsLog, setRevReportsLog] = useState("");
   const [loadSRSubmission, setLoadSRSubmission] = useState();
   const [loadRRSubmission, setLoadRRSubmission] = useState();
   let { assignmentId, assignmentName, rubricId } = router.query;
@@ -163,6 +165,8 @@ const ReviewReports = () => {
       console.log('reports',reports);
       setUploadSubReports(reports[0]);
       setUploadRevReports(reports[1]);
+      setRevReportsLog(reports[1][3]);
+      setSubReportsLog(reports[0][2])
       let dbSubs = reports[3].data.data;
       setDbSubmissions(dbSubs);
       let submissions = reports[2].data.data;
@@ -381,6 +385,7 @@ const ReviewReports = () => {
       :
         <div>
         <Container name={"Submission Reports for " + assignmentName} >
+        {subReportsLog && <div className={styles.logs}>Algorithm log: {subReportsLog}</div>}
           {
             subReports.map((sub,i) =>
               <Accordion key={sub[0]}>
@@ -406,6 +411,7 @@ const ReviewReports = () => {
           }
         </Container>
         <Container name={"Review Reports for " + assignmentName}>
+          {revReportsLog && <div className={styles.logs}>Algorithm log: {revReportsLog}</div>}
         {
             revReports.map((rev,i) =>
               <Accordion key={rev[0]+rev[1]}>

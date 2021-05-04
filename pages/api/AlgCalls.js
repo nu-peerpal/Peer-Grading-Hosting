@@ -134,7 +134,8 @@ function submissionReports(
           //        console.log("response", [response.response.submission_grades, response.response.submission_reports])
           return [
             response.response.submission_grades,
-            response.response.submission_reports
+            response.response.submission_reports,
+            response.log
           ];
         } else {
           console.log("failed alg");
@@ -157,8 +158,8 @@ async function reviewReports(graders, reviews, rubric, reviewRubric) {
   const res = await axios.post(
     "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/reviewReports",
     json
-  );
-
+  ).catch(err => console.log('failed reports alg:', err));
+  console.log(res);
   if (res.status !== 200) {
     console.log("Failed call");
     return res.status;
@@ -166,7 +167,7 @@ async function reviewReports(graders, reviews, rubric, reviewRubric) {
 
   const resData = res.data;
   if (resData.response.success) {
-    return [resData.response.review_grades, resData.response.review_reports, resData.response.grade_matrices];
+    return [resData.response.review_grades, resData.response.review_reports, resData.response.grade_matrices, resData.log];
   } else {
     return resData.log;
   }
