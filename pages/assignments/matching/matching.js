@@ -7,7 +7,6 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Button from "@material-ui/core/Button";
 import Settings from "../../../components/settings";
-import reloadMatchings from "../../../components/reloadMatchings";
 import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");

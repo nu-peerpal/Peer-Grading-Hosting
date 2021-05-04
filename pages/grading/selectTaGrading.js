@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import ListContainer from "../../components/listcontainer";
+import Switch from '@material-ui/core/Switch';
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
@@ -15,6 +16,7 @@ const SelectTaGrading = (props) => {
   const [toDoReviews, setToDoReviews] = useState([]);
   const [toDoGrades, setToDoGrades] = useState([]);
   const [reviewsCompleted, setReviewsCompleted] = useState(false);
+  const [completedConfirmed, setCompletedConfirmed] = useState(false);
   const [reviewStatusSet, setReviewStatusSet] = useState();
   const [userDataUpdated, setUserDataUpdated] = useState(false);
   var { assignmentName, assignmentId, name, id, rubricId } = router.query;
@@ -32,11 +34,12 @@ const SelectTaGrading = (props) => {
     }
   }, []);
   useEffect(() => {
-    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}`)]).then(data => {
+    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}`), axios.get(`/api/assignments/${assignmentId}`)]).then(data => {
       console.log({data})
       const submissions = data[0].data.data;
       const allMatchings = data[1].data.data;
-      console.log({allMatchings})
+      const assignmentData = data[2].data.data;
+      // console.log({allMatchings})
 
       const taMatchings = data[1].data.data.filter(match => match.userId == userId);
       // console.log({taMatchings});
@@ -110,9 +113,21 @@ const SelectTaGrading = (props) => {
         }
       }
     
-    console.log(reviewReviews.filter(review => review.done[2] == true));
-    if (reviewReviews.filter(review => review.done[2] == true).length != 0) {
-      setReviewsCompleted(true);
+    // console.log(reviewReviews.filter(review => review.done[2] == true));
+    // console.log(reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional')))
+    // console.log(reviewReviews.filter(review => review.done[2] == false))
+    let tempFlag = false;
+    if ((reviewReviews.filter(review => review.done[2] == false).length == 0) && (reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional').length == 0))) {
+      setReviewsCompleted(true)
+      tempFlag = true;
+    }
+    if (assignmentData.reviewStatus >= 6) {
+      if (tempFlag) {
+        setCompletedConfirmed(true);
+      } else {
+        console.log('New reviews found: reverting review status.')
+        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+      }
     }
 
     setToDoReviews(toDoReviews)
@@ -145,9 +160,15 @@ const SelectTaGrading = (props) => {
   }
 
   function handleCompleted() {
-    console.log("completed")
-    axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
-    setReviewStatusSet("Confirmed")
+    if (!completedConfirmed) { // finished grading
+      setCompletedConfirmed(true);
+      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
+      setReviewStatusSet("Confirmed")
+    } else { // no longer finished grading
+      setCompletedConfirmed(false);
+      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+      setReviewStatusSet("No longer confirmed")
+    }
   }
 
   return (
@@ -156,9 +177,19 @@ const SelectTaGrading = (props) => {
         <TaToDoGrades toDoGrades={toDoGrades} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-          <Button disabled={!reviewsCompleted || reviewStatusSet=="Confirmed"} onClick={handleCompleted}>
+          {/* <Button disabled={!reviewsCompleted || reviewStatusSet=="Confirmed"} onClick={handleCompleted}>
             Confirm Grading is Completed
-          </Button>
+          </Button> */}
+          {reviewsCompleted ? <div>Grading completed?
+              <Switch
+                checked={completedConfirmed}
+                onChange={handleCompleted}
+                color="primary"
+                name="confirmGrading"
+                inputProps={{ 'aria-label': 'primary checkbox' }}
+              />
+            </div> : <div>Grading not yet completed.</div>
+          }
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
           {reviewStatusSet}
