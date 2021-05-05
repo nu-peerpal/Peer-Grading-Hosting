@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Collapse from "@material-ui/core/Collapse";
+import DoneIcon from '@material-ui/icons/Done';
 
 const ExpandingTableRow = ({ details, children, numCols, disabled, doneGrading, isRowOpen, setIsRowOpen }) => {
 
   return (
     <>
-      <TableRow style={{background: doneGrading ? 'lightgray' : 'white'}}
+      <TableRow 
         hover
         onClick={() => {
           if (!disabled) {

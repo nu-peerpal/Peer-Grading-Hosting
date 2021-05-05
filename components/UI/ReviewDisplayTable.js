@@ -10,6 +10,7 @@ import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import ReviewGradingTable from "./ReviewGradingTable";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined';
 
 const useStyles = makeStyles({
   tooltip: {
@@ -79,7 +80,7 @@ const ReviewDisplayTable = ({
             doneGrading={doneGrading}
           >
             <TableCell>
-              {firstName} {lastName}
+              {firstName} {lastName} {doneGrading && <CheckCircleOutlinedIcon style={{fill: "green"}}/>}
             </TableCell>
 
             {/* show points per section */}
@@ -115,7 +116,7 @@ const ReviewDisplayTable = ({
                 setTextCopied(true);
                 setTimeout(() => {
                   setTextCopied(false);
-                }, 1000);
+                }, 1500);
               };
               return (
                 <TableCell>
@@ -126,7 +127,7 @@ const ReviewDisplayTable = ({
                     arrow
                   >
                     <CopyToClipboard text={section.comment} onCopy={onCopyText}>
-                    <Button style={{ padding: 0}}>[?]</Button>
+                    <Button style={{ padding: 0}} onClick={(e) => e.stopPropagation()} >[?]</Button>
                       </CopyToClipboard>
                   </Tooltip>
                   <IconButton
