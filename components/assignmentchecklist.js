@@ -43,7 +43,7 @@ function getSteps() {
     ["TA Grading: ", { 'link': "/grading/selectTaGrading" }],
     ["Review and Submission Reports: ", { 'link': "/assignments/reportlist/reportlist" }],
     // ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
-    ["Appeal Period: ", { 'status': "Either Not started, Ongoing or Passed" }]
+    ["Appeals: ", { 'link': "/assignments/appeals/appeals" }] // "Either Not started, Ongoing or Passed"
   ];
 }
 
