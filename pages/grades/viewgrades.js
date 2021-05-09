@@ -36,7 +36,7 @@ function ViewAssignmentGrade(props) {
         // find which group users are in
         let groupSub = canvasSubmissionsRes.filter(x => x.submitterId == userId);
         let userSubmissions;
-        if (groupSub) { // only if user actually submitted the original assignment
+        if (groupSub[0]) { // only if user actually submitted the original assignment
           let group = groupSub[0].groupId;
           if (group == null) group = groupSub[0].submitterId; // if null group, use userId 
           userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
