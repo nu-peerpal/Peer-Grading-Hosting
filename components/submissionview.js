@@ -80,7 +80,7 @@ function getTotalScore(grades) {
   var len = grades.length;
   var score = 0;
   for (var i = 0; i < len; i++) {
-    score = score + grades[i];
+    score = score + (grades[i] ? grades[i] : 0);
   }
   return score;
 }
@@ -132,13 +132,14 @@ function Grading(rubric, matching, review) {
               <TableBody>
                 {rubric.map((row, index) => (
                   <TableRow key={row["description"]}>
+                    {/* cells for criteria */}
                     <TableCell>
-                    <Tooltip title={row["long_description"]} placement="bottom">
-                      <p>{row["description"]}</p>
-                      
-                    </Tooltip>
-                      
+                      <Tooltip title={row["long_description"]} placement="bottom">
+                        <p>{row["description"]}</p>
+                      </Tooltip>
                     </TableCell>
+
+                    {/* row for comments */}
                     <TableCell align='center' style={{ width: 600 }}>
                       <Field
                         name={"Comments[" + index + "]"}
@@ -153,11 +154,13 @@ function Grading(rubric, matching, review) {
                         className={styles.pms}
                       />
                     </TableCell>
+
+                    {/* cells for grades */}
                     <TableCell style={{ width: 100 }} align='center'>
                       <Field
                         name={"Grades[" + index + "]"}
                         type='number'
-                        value={values.Grades[index] || ""}
+                        value={values.Grades[index] || 0}
                         onKeyUp={handleChange}
                         InputProps={{
                           inputProps: { min: 0, max: row["points"], step: 1 },
@@ -198,7 +201,7 @@ function Grading(rubric, matching, review) {
                   <TableCell>
                     <Button
                       className={styles.save}
-                      disabled={!dirty}
+                      // disabled={!dirty}
                       type='submit'
                     >
                       Save
@@ -207,7 +210,7 @@ function Grading(rubric, matching, review) {
                   <TableCell
                     id='submitted'
                     className={styles.save}
-                    style={{ color: "black", display: "none" }}
+                    style={{ color: "green", display: "none" }}
                   >
                     Submitted
                   </TableCell>
