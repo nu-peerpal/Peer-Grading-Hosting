@@ -62,7 +62,7 @@ function assignmentchecklist(props) {
   const [rubric, setRubric] = React.useState(''); // state for the rubric
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [prDueDate, setPrDueDate] = React.useState(); // PR assignment due date
-  const [dueDate, setDueDate] = React.useState();
+  const [dueDate, setDueDate] = React.useState(props.dueDate);
   let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
   let rubricId = props.rubricId;

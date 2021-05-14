@@ -24,6 +24,10 @@ export default async (req, res) => {
           "Successfully updated database entry.",
         );
         break;
+      case "DELETE":
+        await peerMatching.destroy();
+        responseHandler.msgResponse200(res, "Successfully removed database entry.");
+        break;
       default:
         throw new Error("Invalid HTTP method");
     }

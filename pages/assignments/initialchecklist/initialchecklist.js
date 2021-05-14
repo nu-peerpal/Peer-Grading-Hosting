@@ -43,7 +43,7 @@ const InitialChecklist = (props) => {
         rubric: rubricObj.data}
     });
     console.log({rubrics});
-    const res = await axios.post(`/api/rubrics?type=multiple`, rubrics);
+    const res = await axios.post(`/api/rubrics?type=multiple`, rubrics).catch(err => console.log('no new rubrics posted.'));
     console.log(res);
   }
 
