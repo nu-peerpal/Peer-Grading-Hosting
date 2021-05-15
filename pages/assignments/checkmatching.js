@@ -51,6 +51,11 @@ function CheckMatching(props) {
   //   });
   // }
 
+  function incrementStep() {
+    axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5}).then(res => {
+      setResponse('Successfully moved on to next step');
+    })
+  }
   async function handleSubmit() {
     // post peer matchings
     console.log("POST peer matchings", additionalMatchings);
@@ -190,8 +195,11 @@ function CheckMatching(props) {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-          <Button disabled={additionalMatchings.length == 0} onClick={() => handleSubmit()}>Create Additional Reviews</Button>
-          {response}
+          {additionalMatchings.length == 0 ? 
+            <Button onClick={incrementStep}>confirm no new matchings needed</Button>
+            : <Button disabled={additionalMatchings.length == 0} onClick={() => handleSubmit()}>Create Additional Reviews</Button>
+          }
+            {response}
         </div>
       </Container>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
