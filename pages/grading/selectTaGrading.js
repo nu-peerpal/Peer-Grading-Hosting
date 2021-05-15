@@ -48,6 +48,7 @@ const SelectTaGrading = (props) => {
       let reviewReviews = [];
       let subMatch, revMatches;
       taMatchings.forEach(match => {
+        console.log({match})
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
         // console.log({revMatches})

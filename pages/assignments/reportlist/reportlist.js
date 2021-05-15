@@ -205,11 +205,12 @@ const ReviewReports = () => {
         let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
         let studentId = student[0].canvasId;
         student = student[0]["firstName"] + " " + student[0]["lastName"];
-        if (submissions[sub]["groupId"]) {
-          bucket = submissions[sub]["canvasId"];
-        } else {
-          bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
-        }
+        bucket = submissions[sub]["canvasId"];
+        // if (submissions[sub]["groupId"]) {
+        //   bucket = submissions[sub]["canvasId"];
+        // } else {
+        //   bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
+        // }
         if (subStudents[bucket]) {
           subStudents[bucket].push(student);
           submissionMap[bucket].push(studentId);
@@ -388,7 +389,7 @@ const ReviewReports = () => {
         {subReportsLog && <div className={styles.logs}>Algorithm log: {subReportsLog}</div>}
           {
             subReports.map((sub,i) =>
-              <Accordion key={sub[0]}>
+              <Accordion key={sub[0]+i}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1a-content"
@@ -414,7 +415,7 @@ const ReviewReports = () => {
           {revReportsLog && <div className={styles.logs}>Algorithm log: {revReportsLog}</div>}
         {
             revReports.map((rev,i) =>
-              <Accordion key={rev[0]+rev[1]}>
+              <Accordion key={rev[0]+rev[1]+i}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1a-content"
@@ -442,12 +443,12 @@ const ReviewReports = () => {
             </Button>
             {errors}
           </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
+          {/* <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
             <Button disabled={true} onClick={handleUpload}>
               Submit to Canvas
             </Button>
             {canvasUploaded}
-          </div>
+          </div> */}
         </div>
       }
     </div>
