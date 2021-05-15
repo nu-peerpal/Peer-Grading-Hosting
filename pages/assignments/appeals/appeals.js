@@ -54,7 +54,7 @@ function Appeals(props) {
     <div className="Content">
       <Container name={"Appeals for: " + assignmentName}>
         <div className={styles.desc}>
-        <Accordion defaultExpanded={!existingDueDate} className={styles.matching}>
+        <Accordion defaultExpanded={true} className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             {existingDueDate ? "Current Appeal Deadline: " + loadedDeadline : "Set Appeal Deadline for Students:"}
           </AccordionSummary>
