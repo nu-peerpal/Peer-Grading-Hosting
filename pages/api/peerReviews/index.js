@@ -21,7 +21,9 @@ export default async (req, res) => {
         if (req.query.userId || req.query.userId === 0) {
           params.userId = req.query.userId;
         }
-
+        if (req.query.matchingType) {
+          params.matchingType = req.query.matchingType;
+        }
         let peerMatchings = await db.peer_matchings.findAll({ where: params });
         responseHandler.response200(res, peerMatchings);
         break;

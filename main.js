@@ -119,7 +119,19 @@ app
       } 
       var data  = await req.userData;
       return handle(req, res);
-    })
+    });
+
+    server.delete("*", async (req, res) => {
+      if (req.cookies && req.cookies.authToken){
+        var nonce = req.cookies.authToken;
+        userData = await keyv.get(nonce);
+        if (userData){
+          req.userData = userData;
+        } 
+      } 
+      var data  = await req.userData;
+      return handle(req, res);
+    });
    
     server.listen(port, (err) => {
       if (err) throw err;
