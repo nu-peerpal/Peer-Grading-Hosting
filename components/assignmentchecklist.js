@@ -43,12 +43,13 @@ function getSteps() {
     ["TA Grading: ", { 'link': "/grading/selectTaGrading" }],
     ["Review and Submission Reports: ", { 'link': "/assignments/reportlist/reportlist" }],
     // ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
-    ["Appeals: ", { 'link': "/assignments/appeals/appeals" }] // "Either Not started, Ongoing or Passed"
+    ["Appeals: ", { 'link': "/assignments/appeals/appeals" }], // "Either Not started, Ongoing or Passed"
+    ["Send Grades: ", { 'link': "/assignments/sendgrades/sendgrades"}]
   ];
 }
 
 function incActiveStep(activeStep){
-  if (activeStep == 7){
+  if (activeStep == 8){
     return 0
   }
   else{
@@ -62,7 +63,7 @@ function assignmentchecklist(props) {
   const [rubric, setRubric] = React.useState(''); // state for the rubric
   // const [dueDate, setDueDate] = React.useState(Date.now()); // original assignment due date
   const [prDueDate, setPrDueDate] = React.useState(); // PR assignment due date
-  const [dueDate, setDueDate] = React.useState();
+  const [dueDate, setDueDate] = React.useState(props.dueDate);
   let assignmentId = props.assignmentId; // id of currently selected assignment
   let assignmentName = props.assignmentName;
   let rubricId = props.rubricId;

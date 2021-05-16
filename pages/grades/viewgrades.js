@@ -21,26 +21,69 @@ function ViewAssignmentGrade(props) {
     const [revReports, setRevReports] = useState([]);
     const [loadSRSubmission, setLoadSRSubmission] = useState();
     const [loadRRSubmission, setLoadRRSubmission] = useState();
+    const [eligibleAppeal, setEligibleAppeal] = useState();
+    const [appealReview, setAppealReview] = useState({});
+    const [appealAvailable, setAppealAvailable] = useState(false);
+    const [appealButtonText, setAppealButtonText] = useState("Appeal Not Loaded");
+    const [appealFormat, setAppealFormat] = useState({});
   const [assignment, setAssignment] = useState({});
   const [submissions, setSubmissions] = useState([]);
   let { id, name } = router.query;
-  console.log({userId})
 
   useEffect(() => {
-      Promise.all([axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${id}`),axios.get(`/api/submissions?assignmentId=${id}`),axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`)]).then(data => {
+      Promise.all([axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${id}`),axios.get(`/api/submissions?assignmentId=${id}`),axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`),axios.get(`/api/assignments/${id}`),axios.get(`/api/peerReviews?assignmentId=${id}`)]).then(data => {
         let canvasSubmissionsRes = data[0].data.data;
         let submissionsRes = data[1].data.data;
         let reviewReportsRes = data[2].data.data;
+        let assignmentRes = data[3].data.data;
+        let peerReviews = data[4].data.data;
         console.log({data})
         // let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
         // find which group users are in
         let groupSub = canvasSubmissionsRes.filter(x => x.submitterId == userId);
         let userSubmissions;
-        if (groupSub[0]) { // only if user actually submitted the original assignment
+        if (groupSub[0]) { // only if student actually submitted assignment
           let group = groupSub[0].groupId;
           if (group == null) group = groupSub[0].submitterId; // if null group, use userId 
           userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
-        } else {
+          if (userSubmissions.length > 1) console.log('student has more than one submission for assignment.')
+          if (!userSubmissions[0].report.includes('TA Review 1')) setEligibleAppeal(true); // if no TA review, eligible for appeal
+          // check for existing appeal or if appeal deadline has passed
+          if (assignmentRes.appealsDueDate) {
+            let today = new Date();
+            let dueDate = new Date(assignmentRes.appealsDueDate);
+            if (today < dueDate) {
+              let appealReviews = peerReviews.filter(pr => (pr.submissionId == userSubmissions[0].canvasId && pr.matchingType == "appeal"));
+              if (appealReviews.length > 0) { // if appeal already exists
+                setAppealAvailable(false);
+                setAppealButtonText('Appeal Submitted');
+                setAppealReview(appealReviews[0]); // assuming one appeal
+              } else {
+                let TAreviews = peerReviews.filter(pr => pr.matchingType == "TA");
+                let TAId = TAreviews[0].userId;
+                let appeal = {
+                  review: null,
+                  reviewReview: null,
+                  matchingType: 'appeal',
+                  assignmentId: id,
+                  assignmentSubmissionId: null,
+                  userId: TAId,
+                  submissionId: userSubmissions[0].canvasId
+                }
+                console.log({appeal})
+                setAppealFormat(appeal);
+                setAppealAvailable(true);
+                setAppealButtonText("Submit Appeal")
+              }
+            } else {
+              setAppealAvailable(false);
+              setAppealButtonText("Appeals Deadline passed")
+            }
+          } else {
+            setAppealAvailable(false);
+            setAppealButtonText("Appeals not set for assignment yet")
+          }
+        } else { // no submission available, skip steps
           userSubmissions = [];
         }
         reviewReportsRes.sort(function(a, b){return a.id-b.id});
@@ -66,6 +109,31 @@ function ViewAssignmentGrade(props) {
     }
   }
 
+  async function handleAppeal() {
+    console.log('handling appeal');
+    let res = await axios.post(`/api/peerReviews?type=multiple`,[appealFormat]).catch(err => console.log(err))
+    console.log({res})
+    if (res.status == 201) {
+      setAppealAvailable(false);
+      setAppealButtonText('Appeal Submitted');
+    } else {
+      setAppealButtonText('Something Went Wrong. Try again');
+    }
+    
+  }
+  async function removeAppeal() {
+    console.log('removing appeal');
+    // console.log({appealReview})
+    let res = await axios.delete(`/api/peerReviews/${appealReview.id}`);
+    if (res.status == 200) {
+      setAppealAvailable(true);
+      setAppealButtonText("Submit Appeal");
+    } else {
+      setAppealButtonText('Something Went Wrong. Try again');
+    }
+    console.log({res})
+  }
+
   return (
     <div className="Content">
       <Container name={"Submission Reports for " + name} >
@@ -88,6 +156,24 @@ function ViewAssignmentGrade(props) {
                       }
                     
                       <ReactMarkdown plugins={[gfm]} children={sub.report} />
+                      <br />
+                      <br />
+                      {eligibleAppeal ? <div className={styles.disclaimer}>
+                        <div>This submission is eligible for appeal. If you submit an appeal,
+                        you will lose the 5% bonus added to your current score and receive a TA grade instead.</div>
+                      <br />
+                      <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
+                      <div>
+                        <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
+                        {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
+                      </div>
+                      </div> : <div>
+                        <span className={styles.disclaimer}>This submission is not eligible for appeal
+                        because you have already received a TA grade. If you would like to submit a regrade request,
+                        see Canvas for more information on how to do that.
+                        </span>
+                      </div>}
+                      
                     </div>
                 </AccordionDetails>
               </Accordion>
