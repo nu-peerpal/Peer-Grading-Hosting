@@ -53,6 +53,7 @@ db.review_grades_reports = require("../server/models/Review_Grades_Reports.js")(
 );
 db.rubrics = require("../server/models/Rubrics.js")(sequelize, Sequelize);
 db.users = require("../server/models/Users.js")(sequelize, Sequelize);
+db.user_submissions = require("../server/models/User_Submissions")(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   console.log("look", db[modelName]);
