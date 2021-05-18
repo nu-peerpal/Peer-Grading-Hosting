@@ -25,28 +25,25 @@ const userSubmissionsHandler = async (req, res) => {
         break;
 
       case "POST":
-        const separateUserIds = groupObj => {
-          const userIds = groupObj.userIds;
-          delete groupObj.userIds;
-          return [groupObj, userIds];
+        const separateUserIds = userSubmissionObj => {
+          const userIds = userSubmissionObj.userIds;
+          delete userSubmissionObj.userIds;
+          return [userSubmissionObj, userIds];
         };
 
         if (req.query.type === "multiple") {
           await Promise.all(
-            req.body.map(groupObj => {
-              const [group, userIds] = separateUserIds(groupObj);
-              return db.groups.create(group).then(dbGroup =>
-                Promise.all(
-                  userIds.map(userId =>
-                    db.group_enrollments.create({
-                      groupId: dbGroup.id,
-                      userId,
-                    }),
-                  ),
+            req.body.map(userSubmissionObj => {
+              const [userSubmission, userIds] = separateUserIds(userSubmissionObj);
+              return Promise.all(
+                userIds.map(userId =>
+                  db.user_submissions.create({
+                    userId,
+                    submissionId: userSubmission.submissionId
+                  }),
                 ),
-              );
-            }),
-          );
+              )
+            }))
         } else {
           const [group, userIds] = separateUserIds(req.body);
           const dbGroup = await db.groups.create(group);
