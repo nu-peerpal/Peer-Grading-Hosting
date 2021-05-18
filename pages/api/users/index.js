@@ -10,7 +10,20 @@ const userHandler = async (req, res) => {
   try {
     switch (req.method) {
       case "GET":
-          let users = await db.users.findAll()
+        // if (!req.query.courseId) {
+        //   throw new Error("Query parameter courseId required");
+        // }
+        let params = {};
+        if (req.query.courseId) {
+          params.courseId = req.query.courseId;
+        }
+        if (req.query.enrollment) {
+          params.enrollment = req.query.enrollment;
+        }
+        let users = await db.users.findAll({
+          where: params,
+        });
+          // let users = await db.users.findAll()
         // if (!req.query.courseId) {
         //   throw new Error("Query parameter courseId required");
         // }

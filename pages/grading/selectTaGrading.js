@@ -15,6 +15,7 @@ const SelectTaGrading = (props) => {
   const { userId, courseId, courseName, assignment, createUser, savedStudentId } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
   const [toDoGrades, setToDoGrades] = useState([]);
+  const [assignmentDetails, setAssignmentDetails] = useState();
   const [reviewsCompleted, setReviewsCompleted] = useState(false);
   const [completedConfirmed, setCompletedConfirmed] = useState(false);
   const [reviewStatusSet, setReviewStatusSet] = useState();
@@ -39,6 +40,7 @@ const SelectTaGrading = (props) => {
       const submissions = data[0].data.data;
       const allMatchings = data[1].data.data;
       const assignmentData = data[2].data.data;
+      setAssignmentDetails(assignmentData);
       // console.log({allMatchings})
 
       const taMatchings = data[1].data.data.filter(match => match.userId == userId);
@@ -46,6 +48,7 @@ const SelectTaGrading = (props) => {
       let reviewReviews = [];
       let subMatch, revMatches;
       taMatchings.forEach(match => {
+        console.log({match})
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
         // console.log({revMatches})
@@ -86,7 +89,7 @@ const SelectTaGrading = (props) => {
       // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
       for (const sub of reviewReviews) {
         let finished = "";
-        if (sub.type == 'additional') {
+        if (sub.type == 'additional' || sub.type == 'appeal') {
           if (sub.done[0]) {
             finished = " (completed)"; // if anything was submitted, algo has data to run
           }
@@ -117,16 +120,31 @@ const SelectTaGrading = (props) => {
     // console.log(reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional')))
     // console.log(reviewReviews.filter(review => review.done[2] == false))
     let tempFlag = false;
-    if ((reviewReviews.filter(review => review.done[2] == false).length == 0) && (reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional').length == 0))) {
+    console.log((reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0));
+    if ((reviewReviews.filter(review => review.done[2] == false).length == 0) && (reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0)) {
       setReviewsCompleted(true)
       tempFlag = true;
     }
+    console.log({tempFlag})
     if (assignmentData.reviewStatus >= 6) {
       if (tempFlag) {
-        setCompletedConfirmed(true);
+        if (assignmentData.reviewStatus == 6) {
+          setCompletedConfirmed(true);
+        }
+        if (assignmentData.reviewStatus == 8) {
+          setCompletedConfirmed(true);
+        }
       } else {
-        console.log('New reviews found: reverting review status.')
-        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+        setCompletedConfirmed(false);
+        if (assignmentData.reviewStatus == 6) { // on reports, go back to TA grading
+          console.log('New reviews found: reverting review status to TA Grading.')
+          axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+        } else { // should be on appeals
+          if (assignmentData.reviewStatus > 7) {
+            console.log('New reviews found: reverting review status to appeals.')
+            axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 7});
+          }
+        }
       }
     }
 
@@ -162,12 +180,23 @@ const SelectTaGrading = (props) => {
   function handleCompleted() {
     if (!completedConfirmed) { // finished grading
       setCompletedConfirmed(true);
-      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
-      setReviewStatusSet("Confirmed")
+      if (assignmentDetails.reviewStatus == 5) {
+        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
+      }
+      if (assignmentDetails.reviewStatus == 7) {
+        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 8});
+      }
+      setReviewStatusSet("Confirmed");
     } else { // no longer finished grading
       setCompletedConfirmed(false);
-      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
-      setReviewStatusSet("No longer confirmed")
+      if (assignmentDetails.reviewStatus == 6) {
+        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+      }
+      if (assignmentDetails.reviewStatus == 8) {
+        axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 7});
+      }
+      // axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+      setReviewStatusSet("No longer confirmed");
     }
   }
 

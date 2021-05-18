@@ -56,7 +56,7 @@ export default async (req, res) => {
               group = sub.submitterId;
               return {
                 assignmentId: sub.assignmentId,
-                canvasId: sub.submitterId,
+                canvasId: sub.canvasId,
                 groupId: group,
                 submission: sub.submission,
                 submissionType: sub.submissionType,
