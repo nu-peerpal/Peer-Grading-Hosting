@@ -23,10 +23,9 @@ export default async (req, res) => {
           const filteredSubmissions = response.data.filter(submission => {
             return (submission.workflow_state == 'submitted' || submission.workflow_state == 'graded');
           })
-          console.log({filteredSubmissions})
+          console.log('filtered submissions: ',filteredSubmissions);
           
           const submissions = filteredSubmissions.map(submission => {
-            console.log({submission})
             var submissionBody = submission.body
             if (submission.submission_type == 'online_upload') {
               submissionBody = submission.attachments[0].url
