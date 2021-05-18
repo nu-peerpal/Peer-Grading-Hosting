@@ -23,7 +23,7 @@ export default async (req, res) => {
           const filteredSubmissions = response.data.filter(submission => {
             return (submission.workflow_state == 'submitted' || submission.workflow_state == 'graded');
           })
-          console.log('filtered submissions: ',filteredSubmissions);
+          // console.log('filtered submissions: ',filteredSubmissions);
           
           const submissions = filteredSubmissions.map(submission => {
             var submissionBody = submission.body
