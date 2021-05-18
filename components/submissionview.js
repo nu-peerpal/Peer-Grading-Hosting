@@ -28,6 +28,7 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
+    
     return (
       <div className={styles.sub}>
         <Accordion defaultExpanded={true} className={styles.acc}>
@@ -39,7 +40,7 @@ class Submission extends React.Component {
           </AccordionDetails>
         </Accordion>
         <br />
-        {Grading(gradingrubric, this.props.matchingId, this.props.review)}
+        {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled)}
       </div>
     );
   }
@@ -47,7 +48,7 @@ class Submission extends React.Component {
 
 export default Submission;
 
-  function getInitialValues(rubric, review) {
+function getInitialValues(rubric, review) {
   var len = rubric.length;
   var comments = [];
   var grades = [];
@@ -96,7 +97,7 @@ function getFinalScore(data, rubric) {
 }
 
 // console.log('what reviews should look like', js.reviews[0])
-function Grading(rubric, matching, review) {
+function Grading(rubric, matching, review, disabled) {
   var maxScore = getMaxScore(rubric);
   return (
     <Formik
@@ -151,6 +152,7 @@ function Grading(rubric, matching, review) {
                         required={true}
                         as={TextareaAutosize}
                         className={styles.pms}
+                        disabled={disabled}
                       />
                     </TableCell>
                     <TableCell style={{ width: 100 }} align='center'>
@@ -167,6 +169,7 @@ function Grading(rubric, matching, review) {
                         required={false}
                         as={TextField}
                         className={styles.pms}
+                        disabled={disabled}
                       />
                       <br></br>/{row["points"]}
                     </TableCell>
