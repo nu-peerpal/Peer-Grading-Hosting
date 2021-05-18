@@ -16,6 +16,7 @@ import Paper from "@material-ui/core/Paper";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ReviewDisplayTable from "./ReviewDisplayTable";
 const axios = require("axios");
+import SubmitButton from '../submitButton';
 
 export const createGradeValidator = maxPoints => {
   return value => {
