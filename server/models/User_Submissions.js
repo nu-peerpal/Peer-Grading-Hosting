@@ -8,9 +8,6 @@ module.exports = (sequelize, Sequelize) => {
       User_Submissions.belongsTo(db.assignment_submissions, {
         foreignKey: "submissionId",
       });
-      User_Submissions.belongsTo(db.assignments, {
-        foreignKey: "assignmentId",
-      });
     };
   
     return User_Submissions;
