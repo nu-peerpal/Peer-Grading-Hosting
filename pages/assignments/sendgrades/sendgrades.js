@@ -85,7 +85,11 @@ function SendGrades(props) {
                 }
                 let submission = submissionsData.filter(sub => sub.groupId == subGroupId);
                 console.log({submission})
-                student.grade = submission[0].grade;
+                if (submission.length == 0) { // empty assignment, didn't turn it in
+                    student.grade = 'not submitted';
+                } else {
+                    student.grade = submission[0].grade;
+                }
             } else { // user did not submit assignment
                 student.grade = 'not submitted';
             }
