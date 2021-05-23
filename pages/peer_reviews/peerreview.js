@@ -44,10 +44,10 @@ const PeerReview = (props) => {
     if (roles.includes("ta") || roles.includes("instructor")) {
       return false;
     }
-
-    const dueDateObj = new Date(dueDate);
-    const ONE_HOUR = 60 * 60 * 1000;
-    return ((new Date) - dueDateObj) > ONE_HOUR;
+    return false;
+    // const dueDateObj = new Date(dueDate);
+    // const ONE_HOUR = 60 * 60 * 1000;
+    // return ((new Date) - dueDateObj) > ONE_HOUR;
   }
 
   return (

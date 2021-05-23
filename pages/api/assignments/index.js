@@ -16,8 +16,10 @@ const assignmentsHandler = async (req, res) => {
         }
         const params = { courseId: req.query.courseId };
         if (req.query.minReviewDueDate) {
+          let today = new Date();
+          today.setHours(today.getHours() - 1); // add 1 hour offset
           params.reviewDueDate = {
-            [Op.gte]: new Date(req.query.minReviewDueDate),
+            [Op.gte]: today,
           };
         }
         if (req.query.graded === "true") {
