@@ -165,4 +165,4 @@ function assignmentchecklist(props) {
   );
 }
 
-export default assignmentchecklist;
+export default { assignmentchecklist };

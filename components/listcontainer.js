@@ -10,10 +10,12 @@ import Link from 'next/link'
 function Info(props) {
   const dueDate = props.dueDate;
   const info = props.info;
+  console.log('props:',props)
   if (dueDate) {
     let newDate = new Date(dueDate);
+    let nextActionItem = props.actionItem
     let dateText = "Due " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    return <TableCell className={styles.info}>{dateText}</TableCell>
+    return <TableCell className={styles.info} > {nextActionItem} {dateText} </TableCell> 
   }
   else {
     return <TableCell className={styles.info}>{info}</TableCell>;
@@ -49,7 +51,7 @@ class ListContainer extends React.Component {
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name}</TableCell>
-                <Info dueDate={x.assignmentDueDate} info={x.info}/>
+                <Info dueDate={x.assignmentDueDate} info={x.info} actionItem = {x.}/>
               </TableRow>
             </Link>
           )

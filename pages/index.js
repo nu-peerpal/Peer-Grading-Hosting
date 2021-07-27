@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import {getSteps} from '../components/assignmentchecklist';
 import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
 import StudentViewOutline from '../components/studentViewOutline';
+
 const axios = require("axios");
 
 function Dashboard(props) {
@@ -55,8 +57,48 @@ function Dashboard(props) {
       // }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate, rubricId } of assignments) { // push OG assignments
-        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, link:"/assignments/fullassignmentview/fullassignmentview"});
+      // extract review status from each assignment
+      console.log(assignments)
+      for (const { id, name, reviewDueDate, rubricId, reviewStatus } of assignments) { // push OG assignments
+        // switch statement based on review status
+        // reviewStatus = getSteps
+        let actionItem = ''
+
+        switch(reviewStatus) {
+          case 0:
+            actionItem = 'Waiting for assignment due date'
+            break;
+          case 1:
+            actionItem = 'Run Peer Matching'
+            break;
+          case 2:
+            actionItem = 'Waiting for review due date'
+            break;
+          case 3:
+            actionItem = 'Run Additional matches algorithm'
+            break;
+          case 4:
+            actionItem = 'Complete TA grading'
+            break;
+          case 5:
+            actionItem = 'Run the Reports algorithm'
+            break;
+          case 6:
+            actionItem = 'Set appeals due date'
+            break;
+          case 7:
+            actionItem = 'Check for appeals'
+            break;
+          case 8:
+            actionItem = 'Appeals complete. Send grades to Canvas.'
+            break;
+          default:
+            actionItem = 'Assignment Completed'
+            
+        }
+        // based on where you are in action item list show the next action item
+        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, actionItem: actionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+        console.log(toDoReviews)
       }
 
       setToDoReviews(toDoReviews);
