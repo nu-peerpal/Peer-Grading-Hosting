@@ -113,7 +113,7 @@ function Matching(props) {
              <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid} />
           </AccordionDetails>
         </Accordion>
-        :
+        : // PUT PROGRESS BAR HERE
         <Accordion defaultExpanded={true} className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Settings
