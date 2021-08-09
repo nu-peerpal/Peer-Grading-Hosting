@@ -7,7 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
 
-function Info(props) {
+function Info(props) { // Display list item description
   const dueDate = props.dueDate;
   const info = props.info;
   if (dueDate) {
@@ -20,20 +20,12 @@ function Info(props) {
   }
 }
 
-class ListContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    // console.log(props)
-    this.getData = this.getData.bind(this);
-  }
+function ListContainer(props) {
 
-  getData = function () {
-    var information = this.props;
-    var list = "";
-    var assignname = "";
+  function getData() {
+    // console.log('list props:', props);
+    var information = props;
     var link = "";
-    // var styleDone = "";
-    var student = information.student;
     // console.log({information});
     if (information.data) {
       return (
@@ -42,9 +34,7 @@ class ListContainer extends React.Component {
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
           if (information.link) link = information.link;
-          // if (x.data.done) {
-          //  styleDone = " (Submitted)"
-          // }
+
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
@@ -61,22 +51,22 @@ class ListContainer extends React.Component {
     }
   }
 
-  render() {
-    return (
-      <Table className={styles.tables}>
-        <TableHead className={styles.header}>
-          <TableRow>
-            <TableCell className={styles.hcell}>{this.props.name}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
 
-        <TableBody>
-          {this.getData()}
-        </TableBody>
-      </Table>
-    )
-  }
+
+  return (
+    <Table className={styles.tables}>
+      <TableHead className={styles.header}>
+        <TableRow>
+          <TableCell className={styles.hcell}>{props.name}</TableCell>
+          <TableCell></TableCell>
+        </TableRow>
+      </TableHead>
+
+      <TableBody>
+        {getData()}
+      </TableBody>
+    </Table>
+  )
 }
 
 

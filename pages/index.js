@@ -35,9 +35,10 @@ function Dashboard(props) {
           console.log({response});
         });
         let res, resData;
-        const today = new Date().toISOString().split("T")[0];
+        // let today = new Date();
+        // today.setHours(today.getHours() - 1); // add 1 hour offset
         if (props.ISstudent) {
-          res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=${today}`);
+          res = await axios.get(`/api/assignments?courseId=${courseId}&minReviewDueDate=true`);
         } else {
           res = await axios.get(`/api/assignments?courseId=${courseId}`);
         }

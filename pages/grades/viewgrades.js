@@ -96,7 +96,7 @@ function ViewAssignmentGrade(props) {
         setSubmissions(submissionsRes);
         setSubReports(userSubmissions);
         setRevReports(reviewReportsRes);
-      })
+      }).catch(err => console.log({err}));
 
   }, []);
 

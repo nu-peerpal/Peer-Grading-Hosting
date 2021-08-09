@@ -12,13 +12,13 @@ const getData = async url => {
 };
 
 const PeerReview = (props) => {
-  const { userId, courseId, courseName, assignment } = useUserData();
+  const { userId, courseId, courseName, assignment, roles } = useUserData();
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
   const [isDocument, setIsDocument] = useState(false);
   const [review, setReview] = useState();
   const router = useRouter()
-  let { submissionId, id, rubricId, matchingId, subId } = router.query;
+  let { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
 
   useEffect(() => {
     (async () => {
@@ -40,10 +40,20 @@ const PeerReview = (props) => {
     })();
   }, []);
 
+  function isDisabled() {
+    if (roles.includes("ta") || roles.includes("instructor")) {
+      return false;
+    }
+    return false;
+    // const dueDateObj = new Date(dueDate);
+    // const ONE_HOUR = 60 * 60 * 1000;
+    // return ((new Date) - dueDateObj) > ONE_HOUR;
+  }
+
   return (
     <div className="Content">
       <Container name={"Grade Submission " + subId}>
-      <Submission matchingId={matchingId} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} />
+        <Submission matchingId={matchingId} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>

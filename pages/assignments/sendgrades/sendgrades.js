@@ -85,7 +85,21 @@ function SendGrades(props) {
                 }
                 let submission = submissionsData.filter(sub => sub.groupId == subGroupId);
                 console.log({submission})
-                student.grade = submission[0].grade;
+                if (submission.length == 0) { // empty assignment, didn't turn it in
+                    student.grade = 'not submitted';
+                } else {
+                    let appealsFound = appealData.filter(app => app.submissionId == submission[0].canvasId);
+                    if (appealsFound.length == 0) {
+                        student.grade = submission[0].grade;
+                    } else {
+                        let appealGrade = 0
+                        for (var i = 0; i < appealsFound[0].review.reviewBody.scores.length; i++) {
+                            appealGrade = appealGrade + appealsFound[0].review.reviewBody.scores[i][0];
+                        }
+                        student.grade = appealGrade;
+                    }
+                    
+                }
             } else { // user did not submit assignment
                 student.grade = 'not submitted';
             }
