@@ -11,26 +11,13 @@ import Box from '@material-ui/core/Box';
 function MatchingCell(props) {
   const [prProgress, setPrProgress] = useState({});
   const [numPeers, setNumPeers] = useState();
+  const [numSubs, setNumSubs] = useState();
   const [formattedTAs, setFormattedTAs] = useState('');
   const [formattedTAsNotCompleted, setFormattedTAsNotCompleted] = useState('');
   const [formattedPeersCompleted, setFormattedPeersCompleted] = useState('');
   const [formattedPeersNotCompleted, setFormattedPeersNotCompleted] = useState('');
   const [formattedSubs, setFormattedSubs] = useState('');
   console.log('props:',props)
-
-  // for (var j = 0; j < notCompletedSubmissionIds.length; j++)
-            //  if subMap[notCompletedSubmissionIds[j]].includes(props.submission) {
-            //      if (props.peers[i]["id"] == notCompletedUserIds[j])
-            //          formattedPeersNotCompleted += props.peers[i]["name"]
-            // }
-
-  // for (var j = 0; j < notCompletedSubmissionIds.length; j++) {
-  //   if (subMap[notCompletedSubmissionIds[j]].includes(props.submission)) {
-  //     if (props.peers[i]["id"] == notCompletedUserIds[j]) {
-  //       formattedPeersNotCompleted += props.peers[i]["name"]
-  //     }
-  //   }
-  // }
 
   useEffect(() => {
     var formattedPeers = "";
@@ -44,37 +31,32 @@ function MatchingCell(props) {
 
     var prProgress = props.prProgress
     var subMap = props.submissionMap
+    var userProgress = props.userProgress
+    var progressCaseTwo = props.progressCaseTwo
+    var completedSubmissionIds = props.completedSubmissionIds
+
+    console.log('userProgress:',userProgress);
 
     console.log('subMap:',subMap);
   
+    console.log('completedSubmissionIds:',completedSubmissionIds);
 
     let numPeers;
     // console.log(props);
+
+    var formattedSubs = "";
+    let numSubs;
+    if (props.submissions){
+      numSubs = props.submissions.length;
+      for (var i = 0; i < numSubs; i++) {
+        formattedSubs += (JSON.stringify(props.submissions[i]));
+        formattedSubs += (", ")
+      }
+    }
+
     if (props.peers){
       numPeers = props.peers.length;
-      // for (var i = 0; i < numPeers; i++) {
-      //   formattedPeers += (props.peers[i]["name"]);
-      //   formattedPeers += (", ")
-      // }
-
-      // var indexArray = [];
-
-      // for (var j = 0; j < completedSubmissionIds.length; j++) {
-      //   if (subMap[completedSubmissionIds[j]].includes(props.submission)) {
-      //     indexArray.push(String(j));
-      //   }
-      // }
-      // console.log('indexArray:',indexArray);
-
-      // for (var i = 0; i < numPeers; i++) {
-      //   for (var element in indexArray) {
-      //     if (props.peers[i]["id"].includes(completedUserIds[element])) {
-      //       console.log('completedUserIds[element]:',completedUserIds[element])
-      //       formattedPeersCompleted += (props.peers[i]["name"]);
-      //       formattedPeersCompleted += (", ");
-      //     }
-      //   }
-      // }
+    
 
 
       props.peers.forEach(peer => {
@@ -93,77 +75,29 @@ function MatchingCell(props) {
         }
       })
 
-      // color coding TAs and completed/not completed
+    } else {
+        // do logic for listing out completed submissions
+          props.submissions.forEach(submission => {
+            if (userProgress[props.reviewerId] && userProgress[props.reviewerId].completedSubmissions.includes(submission.id)) {
+                  formattedPeersCompleted += (JSON.stringify(submission.submission));
+                  formattedPeersCompleted += (", ");
+                } else {
+                  formattedPeersNotCompleted += (JSON.stringify(submission.submission));
+                  formattedPeersNotCompleted += (", ");
+                }
+              })
+            }
 
-      // for (var i = 0; i < numPeers; i++) {
-      //   if (newCompletedArray.includes(props.peers[i]["id"]) && props.peers[i]["name"].includes("TA")) {
-      //     formattedTAs += (props.peers[i]["name"])
-      //     formattedTAs += (", ")
-      //   } else if (!newCompletedArray.includes(props.peers[i]["id"]) && props.peers[i]["name"].includes("TA")) {
-      //       formattedTAsNotCompleted += (props.peers[i]["name"]);
-      //       formattedTAsNotCompleted += (", ")
-      //   } else if (newCompletedArray.includes(props.peers[i]["id"]) && !props.peers[i]["name"].includes("TA")) {
-      //       formattedPeersCompleted += (props.peers[i]["name"]);
-      //       formattedPeersCompleted += (", "); 
-      //   } else if (!newCompletedArray.includes(props.peers[i]["id"]) && !props.peers[i]["name"].includes("TA")) {
-      //       formattedPeersNotCompleted += (props.peers[i]["name"]);
-      //       formattedPeersNotCompleted += (", "); 
-      //   }
-      // }
-
-      // for (var i = 0; i < numPeers; i++) {
-      //   for (var j = 0; j < completedSubmissionIds.length; j++) {
-      //     if (subMap[completedSubmissionIds[j]].includes(props.submission)) {
-      //       if (props.peers[i]["id"] == completedUserIds[j]) {
-      //         formattedPeersCompleted += props.peers[i]["name"]
-      //       }
-      //     }
-      //   }
-      // }
-
-    }
-
-    var formattedSubs = "";
-    let numSubs;
-    if (props.submissions){
-      numSubs = props.submissions.length;
-      for (var i = 0; i < numSubs; i++) {
-        formattedSubs += (JSON.stringify(props.submissions[i]));
-        formattedSubs += (", ")
-      }
-    }
+            
+  
     setNumPeers(numPeers);
+    setNumSubs(numSubs);
     setFormattedTAs(formattedTAs);
     setFormattedTAsNotCompleted(formattedTAsNotCompleted);
     setFormattedPeersCompleted(formattedPeersCompleted);
     setFormattedPeersNotCompleted(formattedPeersNotCompleted);
     setFormattedSubs(formattedSubs);
   }, [])
-
-    // console.log(props);
-      
-      // color coding TAs only
-
-      // for (var i = 0; i < numPeers; i++) {
-      //   if (props.peers[i]["name"].includes("TA")) {
-      //     formattedTAs += (props.peers[i]["name"])
-      //     formattedTAs += (", ")
-      //   } else {
-      //     formattedPeers += (props.peers[i]["name"]);
-      //     formattedPeers += (", ")
-      //   }
-      // }
-
-  
-    // var formattedSubs = "";
-    // let numSubs;
-    // if (props.submissions){
-    //   numSubs = props.submissions.length;
-    //   for (var i = 0; i < numSubs; i++) {
-    //     formattedSubs += (JSON.stringify(props.submissions[i]));
-    //     formattedSubs += (", ")
-    //   }
-    // }
   
      if (!props.reviewer){
       return (
@@ -186,7 +120,7 @@ function MatchingCell(props) {
         </div>
       );
     }
-    else{
+    else if (props.reviewer) {
       return (
         <div className={styles.matchingCell}>
           <div>
@@ -195,7 +129,12 @@ function MatchingCell(props) {
           </div>
           <div>
             <p className={styles.matchingCell__title}><b>({numSubs}) Submissions:</b></p>
-            <p className={styles.matchingCell__value}>{formattedSubs.slice(0,-2)}</p>
+            {/* <p className={styles.matchingCell__value}>{formattedSubs.slice(0,-2)}</p> */}
+            <p className={styles.matchingCell__completedValue}>{formattedPeersCompleted.slice(0, -2)}</p>
+            <p className={styles.matchingCell__notCompletedValue}>{formattedPeersNotCompleted.slice(0, -2)}</p>
+          </div>
+          <div className={styles.matchingCell__progress}>
+            <LinearWithValueLabelCaseTwo progressCaseTwo={props.progressCaseTwo} />
           </div>
         </div>
       );
@@ -260,5 +199,61 @@ function LinearWithValueLabel(props) {
 // LinearWithValueLabel();
 
 // End of progress bar
+
+
+  // Progress bar case 2
+
+    let caseTwoMIN = 0
+    let caseTwoMAX = 4
+    // Function to normalise the values (MIN / MAX could be integrated)
+    const normaliseCaseTwo = value => (value - caseTwoMIN) * 100 / (caseTwoMAX - caseTwoMIN);
+
+    function LinearProgressWithLabelCaseTwo(props) {
+      return (
+        <Box display="flex" alignItems="center" flexDirection="column">
+          <Box minWidth={35}>
+            <Typography variant="body2" color="textSecondary">{`${Math.round(
+              props.value,
+            )}`}</Typography>
+          </Box>
+          <Box width="100%" mr={1}>
+            {/* <LinearProgress variant="determinate" {...props} /> */}
+            <LinearProgress variant="determinate" value={normaliseCaseTwo(props.value)} />
+          </Box>
+        </Box>
+      );
+    }
+
+    // LinearProgressWithLabel.propTypes = {
+    //   /**
+    //    * The value of the progress indicator for the determinate and buffer variants.
+    //    * Value between 0 and 100.
+    //    */
+    //   // value: PropTypes.number.isRequired,
+    //   value: prProgress[review.submissionId].completed
+    // };
+
+    const useStylesCaseTwo = makeStyles({
+      root: {
+        width: '100%',
+      },
+    });
+
+    function LinearWithValueLabelCaseTwo(props) {
+      const classes = useStylesCaseTwo();
+      const [progressTwo, setProgressTwo] = React.useState(0);
+
+      React.useEffect(() => {
+          setProgressTwo(props.progressCaseTwo[0])
+      }, []);
+
+      return (
+        <div className={classes.root}>
+          <LinearProgressWithLabelCaseTwo value={progressTwo} />
+        </div>
+      );
+    }
+
+
 
 export default MatchingCell;

@@ -19,6 +19,10 @@ function ReloadMatchings(props) {
     const [completedReviewers, setCompletedReviewers] = useState([]);
     const [userCompletions, setUserCompletions] = useState({});
     const [submissionMap, setSubmissionMap] = useState([]);
+    const [userProgress, setUserProgress] = useState({});
+    const [reviewerId, setReviewerId] = useState();
+    const [completedSubmissionIds, setCompletedSubmissionIds] = useState([]);
+    const [prProgress, setPrProgress] = useState({});
     const PRs = props.matchings;
     const router = useRouter()
     let {assignmentId, assignmentName} = router.query;
@@ -77,8 +81,26 @@ function ReloadMatchings(props) {
             let notCompletedArray = [];
             let completedSubmissionIds = [];
             let completedUserIds = [];
+            let userProgress = {};
             // console.log('subBuckets:',subBuckets);
             PRs.forEach(review => {
+
+              if (userProgress[review.userId]) {
+                userProgress[review.userId].total += 1;
+                if (review.review) {
+                  userProgress[review.userId].completed += 1
+                  userProgress[review.userId].completedSubmissions.push(review.submissionId)
+                } // case for TA possibly
+              } else {
+                if (review.review) {
+                  userProgress[review.userId] = { completed: 1, total: 1, completedSubmissions: [review.submissionId] }
+                } else {
+                  userProgress[review.userId] = { completed: 0, total: 1, completedSubmissions: [] }
+                } // case for TA possibly
+              }
+
+
+
               if (prProgress[review.submissionId]) {
                 prProgress[review.submissionId].total += 1;
                 if (review.review) {
@@ -94,7 +116,7 @@ function ReloadMatchings(props) {
                 } else if (review.reviewReview) {
                   prProgress[review.submissionId] = { completed: 1, total: 1, completedReviewers: [review.userId] }
                 } else {
-                  prProgress[review.submissionId] = { completed: 1, total: 1, completedReviewers: [] }
+                  prProgress[review.submissionId] = { completed: 0, total: 1, completedReviewers: [] }
                 }
               };
                 tempUser = users.filter(user => user.canvasId == review.userId);
@@ -105,15 +127,35 @@ function ReloadMatchings(props) {
                   subGroupString += subMap[review.submissionId][k]+", "
                 }
                 let sub = subGroupString.slice(0,-2);
+                // add progress to user buckets
+                // do another count for how many submissions a single reviewer did
+
                 if (userBuckets[tempUser.canvasId]) {
-                    userBuckets[tempUser.canvasId]["submissions"].push(sub);
+                  let progressCaseTwo = 0;
+                  if (review.review) progressCaseTwo = 1
+                  userBuckets[tempUser.canvasId].progressCaseTwo[0] += progressCaseTwo
+                  userBuckets[tempUser.canvasId].progressCaseTwo[1] += 1
+                    // userBuckets[tempUser.canvasId].submissions.push(sub)
+                    userBuckets[tempUser.canvasId].submissions.push({
+                      submission: [sub],
+                      id: review.submissionId
+                    })
+                    userBuckets[tempUser.canvasId].userId = review.userId
                 } else {
+                  let progressArrayCaseTwo = [];
+                  if (review.review) progressArrayCaseTwo = [1,1]
+                  else progressArrayCaseTwo = [0,1]
                     userBuckets[tempUser.canvasId] = {
-                        name: tempUser["firstName"] + " " + tempUser["lastName"],
-                        enrollment: tempUser["enrollment"],
-                        submissions: [sub]
-                      };
+                      progressCaseTwo: progressArrayCaseTwo,
+                      name: tempUser["firstName"] + " " + tempUser["lastName"],
+                      enrollment: tempUser["enrollment"],
+                      submissions: [{
+                        submission: [sub],
+                        id: review.submissionId}]
+                      
+                    }
                 }
+
                 if (subBuckets[sub]) {
                   let progress = 0;
                   if (review.review) progress = 1
@@ -141,6 +183,7 @@ function ReloadMatchings(props) {
                 // if user has not completed any peer reviews, they will not exist in dictionary
                 if (review.review && review.matchingType == 'initial') {
                   completedArray.push(String(review.userId))
+                  completedSubmissionIds.push(String(review.submissionId))
                   if (userCompletions[review.userId]) {
                     userCompletions[review.userId].push(review.submissionId);
                   } else {
@@ -159,17 +202,22 @@ function ReloadMatchings(props) {
 
             })
 
+            console.log('userProgress:',userProgress);
+
+            console.log('userBuckets:',userBuckets);
+
             console.log('userCompletions:',userCompletions);
 
             setUserCompletions(userCompletions);
             setSubmissionMap(subMap);
 
-            // for (var j = 0; j < notCompletedSubmissionIds.length; j++)
-            //  if subMap[notCompletedSubmissionIds[j]].includes(props.submission) {
-            //      if (props.peers[i]["id"] == notCompletedUserIds[j])
-            //          formattedPeersNotCompleted += props.peers[i]["name"]
-            // }
+            setPrProgress(prProgress)
 
+            setUserProgress(userProgress);
+
+            setReviewerId(reviewerId);
+
+            setCompletedSubmissionIds(completedSubmissionIds);
 
             console.log('completedArray:',completedArray);
             console.log('completedSubmissionIds:',completedSubmissionIds);
@@ -180,46 +228,27 @@ function ReloadMatchings(props) {
             setCompletedReviewers(newCompletedArray);
             console.log('newCompletedArray:',newCompletedArray);
 
-            // Trying to iterate through subBuckets object
-
-            // for (const [progress, reviewers] of Object.entries(subBuckets)) {
-            //   for (var i = 0; i < reviewers.length; i++) {
-            //     if (!newCompletedArray.includes(reviewers[i]["id"]) && progress[0] != progress[1]) {
-            //       notCompletedArray.push(reviewers[i]["name"])
-            //     }
-            //   }
-            // }
-
-            // for (const subKey of Object.keys(subBuckets)) {
-            //   for (var i = 0; i < subKey.reviewers.length; i++) {
-            //     if (!newCompletedArray.includes(subKey.reviewers[i]["id"]) && subKey.progress[0] != subKey.progress[1]) {
-            //       notCompletedArray.push(subKey.reviewers[i]["name"])
-            //     }
-            //   }
-            // }
-
-            // console.log('notCompletedArray:',notCompletedArray)
+            // remove duplicates for completedSubmissionIds
+            let newCompletedSubmissionIds = [...new Set(completedSubmissionIds)];
+            setCompletedSubmissionIds(newCompletedSubmissionIds);
             
             console.log('prProgress:',prProgress);
             setMatchedUsers(userBuckets);
             setMatchedSubs(subBuckets);
             console.log('subBuckets:',subBuckets);
 
-
-            // console.log({subBuckets});
-            // console.log({userBuckets});
             // create the grid that will show the matchings
             var mg = []
             // if they want to see submissions first
             if (subFirstView) {
                 for (var obj in subBuckets) {
                 mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={subBuckets[obj].reviewers} progress={subBuckets[obj].progress} completedReviewers={newCompletedArray} prProgress={prProgress} submissionMap={subMap} submissionId={subBuckets[obj].submissionId} />)
-                // mg.push(<LinearWithValueLabel />)
                 }
             }
             else{
                 for (var obj in userBuckets) {
-                mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={userBuckets[obj]["name"]} submissions={userBuckets[obj]["submissions"]} />)
+                  // add all the props to send to matchingCell, need userId, userProgress array, pass info to matchingCell 
+                mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={userBuckets[obj]["name"]} submissions={userBuckets[obj]["submissions"]} progressCaseTwo={userBuckets[obj]["progressCaseTwo"]} userProgress={userProgress} reviewerId={userBuckets[obj].userId} completedSubmissionIds={newCompletedSubmissionIds} />)
                 }
             }
             console.log({mg})
@@ -236,12 +265,12 @@ function ReloadMatchings(props) {
           // if they want to see submissions first
           if (subFirstView) {
             for (var obj in matchedSubs) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj].reviewers} progress={matchedSubs[obj].progress} completedReviewers={completedReviewers} prProgress={prProgress} submissionMap={submissionMap} submissionId={matchedSubs[obj].submissionId} />)
             }
           }
           else{
             for (var obj in matchedUsers) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} progressCaseTwo={matchedUsers[obj]["progressCaseTwo"]} userProgress={userProgress} reviewerId={matchedUsers[obj].userId} completedSubmissionIds={completedSubmissionIds} />)
             }
           }
           console.log({mg})
@@ -316,9 +345,6 @@ function LinearWithValueLabel() {
     </div>
   );
 }
-
-// LinearProgressWithLabel(LinearProgressWithLabel.propTypes);
-// LinearWithValueLabel();
 
 // End of progress bar
 
