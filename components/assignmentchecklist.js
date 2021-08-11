@@ -73,7 +73,7 @@ function assignmentchecklist(props) {
   useEffect(() => {
     axios.get(`/api/assignments/${assignmentId}`).then(res => {
       const assignmentData = res.data.data;
-      console.log(assignmentData);
+      console.log('checklist assignment data:',assignmentData);
       if (!assignmentData) {
         return;
       }
@@ -165,4 +165,4 @@ function assignmentchecklist(props) {
   );
 }
 
-export default { assignmentchecklist };
+export default assignmentchecklist;
