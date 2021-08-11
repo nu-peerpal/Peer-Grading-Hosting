@@ -144,12 +144,11 @@ function MatchingCell(props) {
 
   // Progress bar 
 
-let MIN = 0
-let MAX = 6
-// Function to normalise the values (MIN / MAX could be integrated)
-const normalise = value => (value - MIN) * 100 / (MAX - MIN);
-
 function LinearProgressWithLabel(props) {
+  let MIN = 0;
+  let MAX = props.maximumValue;
+  // Function to normalise the values (MIN / MAX could be integrated)
+  const normalise = value => (value - MIN) * 100 / (MAX - MIN);
   return (
     <Box display="flex" alignItems="center" flexDirection="column">
       <Box minWidth={35}>
@@ -183,14 +182,16 @@ const useStyles = makeStyles({
 function LinearWithValueLabel(props) {
   const classes = useStyles();
   const [progress, setProgress] = React.useState(0);
+  const [progressBarMax, setProgressBarMax] = React.useState(0);
 
   React.useEffect(() => {
       setProgress(props.progress[0])
+      setProgressBarMax(props.progress[1])
   }, []);
 
   return (
     <div className={classes.root}>
-      <LinearProgressWithLabel value={progress} />
+      <LinearProgressWithLabel value={progress} maximumValue={progressBarMax} />
     </div>
   );
 }
@@ -203,12 +204,11 @@ function LinearWithValueLabel(props) {
 
   // Progress bar case 2
 
-    let caseTwoMIN = 0
-    let caseTwoMAX = 4
-    // Function to normalise the values (MIN / MAX could be integrated)
-    const normaliseCaseTwo = value => (value - caseTwoMIN) * 100 / (caseTwoMAX - caseTwoMIN);
-
     function LinearProgressWithLabelCaseTwo(props) {
+      let caseTwoMIN = 0
+      let caseTwoMAX = props.maximumValueCaseTwo
+      // Function to normalise the values (MIN / MAX could be integrated)
+      const normaliseCaseTwo = value => (value - caseTwoMIN) * 100 / (caseTwoMAX - caseTwoMIN);
       return (
         <Box display="flex" alignItems="center" flexDirection="column">
           <Box minWidth={35}>
@@ -242,14 +242,16 @@ function LinearWithValueLabel(props) {
     function LinearWithValueLabelCaseTwo(props) {
       const classes = useStylesCaseTwo();
       const [progressTwo, setProgressTwo] = React.useState(0);
+      const [progressBarTwoMaximum, setProgressBarTwoMaximum] = React.useState(0);
 
       React.useEffect(() => {
           setProgressTwo(props.progressCaseTwo[0])
+          setProgressBarTwoMaximum(props.progressCaseTwo[1])
       }, []);
 
       return (
         <div className={classes.root}>
-          <LinearProgressWithLabelCaseTwo value={progressTwo} />
+          <LinearProgressWithLabelCaseTwo value={progressTwo} maximumValueCaseTwo={progressBarTwoMaximum} />
         </div>
       );
     }
