@@ -25,7 +25,9 @@ const ReviewDisplayTable = ({
   peerMatchings,
   values,
   errors,
-  state
+  state,
+  presetComments,
+  setPresetComments
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
   const classes = useStyles();
@@ -72,6 +74,8 @@ const ReviewDisplayTable = ({
                 setIsRowOpen={setIsRowOpen}
                 setDoneGrading={setDoneGrading}
                 doneGrading={doneGrading}
+                presetComments={presetComments}
+                setPresetComments={setPresetComments}
               />
             }
             disabled={expandDisabled}
