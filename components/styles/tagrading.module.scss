@@ -27,3 +27,17 @@
   display: inline-block;
   width: calc(100% - 100px);
 }
+
+.preset{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: fit-content;
+  &__comment{
+    background: lightgray;
+    color: darkgray;
+    border-radius: 5px;
+    margin: 2.5px 5px;
+    padding: 0 5px;
+  }
+}
