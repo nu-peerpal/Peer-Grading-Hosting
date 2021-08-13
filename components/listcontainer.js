@@ -13,7 +13,7 @@ function Info(props) { // Display list item description
   if (dueDate) {
     let newDate = new Date(dueDate);
     let dateText = "Due " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    return <TableCell className={styles.info}>{dateText}</TableCell>
+    return <TableCell className={styles.info} > {dateText} </TableCell> 
   }
   else {
     return <TableCell className={styles.info}>{info}</TableCell>;
@@ -21,12 +21,9 @@ function Info(props) { // Display list item description
 }
 
 function ListContainer(props) {
-
   function getData() {
-    // console.log('list props:', props);
     var information = props;
     var link = "";
-    // console.log({information});
     if (information.data) {
       return (
         information.data.map(x => {
@@ -34,12 +31,14 @@ function ListContainer(props) {
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
           if (information.link) link = information.link;
+          if (!x.actionItem) x.actionItem='';
 
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
-                <TableCell className={styles.name}>{x.name}</TableCell>
-                <Info dueDate={x.assignmentDueDate} info={x.info}/>
+                <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
+          
+                <Info dueDate={x.assignmentDueDate} info={x.info} actionItem={x.actionItem} />
               </TableRow>
             </Link>
           )

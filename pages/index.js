@@ -12,7 +12,7 @@ function Dashboard(props) {
   const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
   const [userCreated, setUserCreated] = useState(false);
-  const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
+  const { createUser, userId, courseId, roles, savedStudentId } = useUserData();
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
       console.log('creating user data');
@@ -43,24 +43,69 @@ function Dashboard(props) {
           res = await axios.get(`/api/assignments?courseId=${courseId}`);
         }
         resData = res.data;
-        // console.log({resData});
         const assignments = resData.data;
-        let statusUpdates = [];
-      // if (!props.ISstudent) {
-      //   statusUpdates = assignments.map(assignment => ({
-      //     name: "Status: " + assignment.reviewStatus,
-      //     info: assignment.name,
-      //     data: assignment,
-      //   }));
-      // }
 
       const toDoReviews = [];
-      for (const { id, name, reviewDueDate, rubricId } of assignments) { // push OG assignments
-        toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, link:"/assignments/fullassignmentview/fullassignmentview"});
+      const taToDoReviews = [];
+      // extract review status from each assignment
+      console.log(assignments)
+      for (const { id, name, reviewDueDate, rubricId, reviewStatus } of assignments) { // push OG assignments
+        let actionItem = ''
+        let taActionItem = ''
+
+        switch(reviewStatus) {
+          case 0:
+            actionItem = 'Waiting for assignment due date'
+            taActionItem = 'No tasks yet'
+            break;
+          case 1:
+            actionItem = 'Run Peer Matching'
+            taActionItem = 'No tasks yet'
+            break;
+          case 2:
+            actionItem = 'Waiting for review due date'
+            taActionItem = 'No tasks yet'
+            break;
+          case 3:
+            actionItem = 'Run Additional matches algorithm'
+            taActionItem = 'No tasks yet'
+            break;
+          case 4:
+            actionItem = 'Complete TA grading'
+            taActionItem = 'Complete TA grading, confirm when done'
+            break;
+          case 5:
+            actionItem = 'Run the Reports algorithm'
+            taActionItem = 'No tasks yet'
+            break;
+          case 6:
+            actionItem = 'Set appeals due date'
+            taActionItem = 'No tasks yet'
+            break;
+          case 7:
+            actionItem = 'Check for appeals'
+            taActionItem = 'Complete appeals, confirm when complete'
+            break;
+          case 8:
+            actionItem = 'Appeals complete. Send grades to Canvas.'
+            taActionItem = 'No tasks yet'
+            break;
+          default:
+            actionItem = 'Assignment Completed'
+            taActionItem = 'Complete'
+            
+        }
+        // based on where you are in action item list show the next action item
+        if (reviewStatus < 9) {
+          toDoReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, actionItem: actionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+          console.log(toDoReviews)
+          taToDoReviews.push({canvasId: id, name, assignmentDueDate: reviewDueDate, rubricId: rubricId, actionItem: taActionItem, link:"/assignments/fullassignmentview/fullassignmentview"})
+        //ID where duedate and linked are defined
+        }
       }
 
-      setToDoReviews(toDoReviews);
-      setTaToDos([...toDoReviews, ...statusUpdates]);
+      setToDoReviews(taToDoReviews);
+      setTaToDos(toDoReviews);
     }
     })().catch( e => { console.error(e) });
   }, [props.ISstudent, savedStudentId, userCreated]);
