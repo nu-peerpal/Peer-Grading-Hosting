@@ -23,7 +23,6 @@ const SelectTaGrading = (props) => {
   var { assignmentName, assignmentId, name, id, rubricId } = router.query;
   if (!assignmentName) assignmentName = name;
   if (!assignmentId) assignmentId = id;
-  // console.log({assignmentId})
   useEffect(() => {
     if (!userId) { // check if state isn't active
       if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -41,24 +40,18 @@ const SelectTaGrading = (props) => {
       const allMatchings = data[1].data.data;
       const assignmentData = data[2].data.data;
       setAssignmentDetails(assignmentData);
-      // console.log({allMatchings})
 
       const taMatchings = data[1].data.data.filter(match => match.userId == userId);
-      // console.log({taMatchings});
       let reviewReviews = [];
       let subMatch, revMatches;
       taMatchings.forEach(match => {
-        console.log({match})
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
-        // console.log({revMatches})
-        // console.log({subMatch})
         let graded = false;
         let allGraded = [];
         revMatches.forEach(match => {
           if (match.reviewReview && match.userId != userId) {
             graded = true;
-            // console.log(match.reviewReview.reviewBody[0])
             if (match.reviewReview.reviewBody[0].points === ""){
               allGraded.push(false); // if empty review (not even 0) then it must not be graded
             } else {
@@ -66,14 +59,12 @@ const SelectTaGrading = (props) => {
             }
           }
         });
-        // console.log({allGraded})
         if (allGraded.includes(false)) {
           allGraded = false;
         } else {
           allGraded = true;
         }
         // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
-        // console.log({match})
         reviewReviews.push({
           type: match.matchingType,
           done: [match.review!=null, graded, allGraded],
@@ -116,17 +107,12 @@ const SelectTaGrading = (props) => {
           });
         }
       }
-    
-    // console.log(reviewReviews.filter(review => review.done[2] == true));
-    // console.log(reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional')))
-    // console.log(reviewReviews.filter(review => review.done[2] == false))
     let tempFlag = false;
-    console.log((reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0));
+    // console.log((reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0));
     if ((reviewReviews.filter(review => review.done[2] == false).length == 0) && (reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0)) {
       setReviewsCompleted(true)
       tempFlag = true;
     }
-    console.log({tempFlag})
     if (assignmentData.reviewStatus >= 6) {
       if (tempFlag) {
         if (assignmentData.reviewStatus == 6) {
