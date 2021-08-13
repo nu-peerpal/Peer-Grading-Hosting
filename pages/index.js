@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {getSteps} from '../components/assignmentchecklist';
 import ListContainer from "../components/listcontainer";
 import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
 import StudentViewOutline from '../components/studentViewOutline';
-
 const axios = require("axios");
 
 function Dashboard(props) {
@@ -14,7 +12,7 @@ function Dashboard(props) {
   const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
   const [userCreated, setUserCreated] = useState(false);
-  const { createUser, userId, courseId, courseName, assignment, roles, savedStudentId } = useUserData();
+  const { createUser, userId, courseId, roles, savedStudentId } = useUserData();
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
       console.log('creating user data');
@@ -45,16 +43,7 @@ function Dashboard(props) {
           res = await axios.get(`/api/assignments?courseId=${courseId}`);
         }
         resData = res.data;
-        // console.log({resData});
         const assignments = resData.data;
-        let statusUpdates = [];
-      // if (!props.ISstudent) {
-      //   statusUpdates = assignments.map(assignment => ({
-      //     name: "Status: " + assignment.reviewStatus,
-      //     info: assignment.name,
-      //     data: assignment,
-      //   }));
-      // }
 
       const toDoReviews = [];
       const taToDoReviews = [];
