@@ -19,8 +19,6 @@ const fetcher = url => fetch(url, { method: "GET" }).then(r => r.json());
 const FullAssignment = (props) => {
   const { userId, courseId, courseName, assignment } = useUserData();
   const router = useRouter()
-  console.log(router.query)
-  console.log('full assignment:',props)
 
   return (
     <div className="Content">

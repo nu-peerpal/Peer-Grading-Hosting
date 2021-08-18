@@ -11,7 +11,7 @@ function Dashboard(props) {
   // const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
-  const [studentCompletedReviews, setStudentCompletedReviews] = useState([]);
+  // const [studentCompletedReviews, setStudentCompletedReviews] = useState([]);
   const [studentInProgressReviews, setStudentInProgressReviews] = useState([]);
   const [userCreated, setUserCreated] = useState(false);
   const { createUser, userId, courseId, roles, savedStudentId } = useUserData();
@@ -20,7 +20,6 @@ function Dashboard(props) {
       console.log('creating user data');
       const userData = JSON.parse(Cookies.get('userData'));
       console.log({userData});
-      // console.log('user data: ', userData);
       createUser(userData);
       setUserCreated(!userCreated);
     }
@@ -39,66 +38,62 @@ function Dashboard(props) {
         let res, resData;
         // let today = new Date();
         // today.setHours(today.getHours() - 1); // add 1 hour offset
-        res = await axios.get(`/api/assignments?courseId=${courseId}&`);
+        res = await axios.get(`/api/assignments?courseId=${courseId}`);
         
         resData = res.data;
         const assignments = resData.data;
 
       const toDoReviews = [];
       const taToDoReviews = [];
-      const studentCompletedReviews = [];
+      // const studentCompletedReviews = [];
       const studentInProgressReviews = [];
-      //reviews completed and reviews in progress 
-     // reviews statuses past 2 and before 2. 2 = completed
-      // extract review status from each assignment
-      console.log(assignments)
-      for (const { id, name, assignmentDueDate, reviewDueDate, rubricId, reviewStatus, createdAt } of assignments) { // push OG assignments
+      for (const { id, name, assignmentDueDate, reviewDueDate, rubricId, reviewStatus } of assignments) { // push OG assignments
         let actionItem = ''
         let taActionItem = ''
         let studentActionItem = ''
 
         switch(reviewStatus) {
-          case 0:
+          case 1:
             actionItem = 'Waiting for assignment due date'
             taActionItem = 'No tasks yet'
             studentActionItem = 'No peer reviews to complete yet'
             break;
-          case 1:
+          case 2:
             actionItem = 'Run Peer Matching'
             taActionItem = 'No tasks yet'
             studentActionItem = 'No peer reviews to complete yet'
             break;
-          case 2:
+          case 3:
             actionItem = 'Waiting for review due date'
             taActionItem = 'No tasks yet'
             studentActionItem = 'Complete your peer reviews'
             break;
-          case 3:
+          case 4:
             actionItem = 'Run Additional matches algorithm'
             taActionItem = 'No tasks yet'
             studentActionItem = 'No tasks'
             break;
-          case 4:
+          case 5:
             actionItem = 'Complete TA grading'
             taActionItem = 'Complete TA grading, confirm when done'
             studentActionItem = 'No tasks'
             break;
-          case 5:
+          case 6:
             actionItem = 'Run the Reports algorithm'
             taActionItem = 'No tasks yet'
             studentActionItem = 'No tasks'
             break;
-          case 6:
+          case 7:
             actionItem = 'Set appeals due date'
             taActionItem = 'No tasks yet'
             studentActionItem = 'Grades available in Peerpal'
             break;
-          case 7:
+          case 8:
             actionItem = 'Check for appeals'
             taActionItem = 'Complete appeals, confirm when complete'
             studentActionItem = 'Check grades and submit appeals if necessary'
             break;
-          case 8:
+          case 9:
             actionItem = 'Appeals complete. Send grades to Canvas.'
             taActionItem = 'No tasks yet'
             studentActionItem = 'Appeals under review'
@@ -119,35 +114,32 @@ function Dashboard(props) {
         //}).reverse();
           //toDoReviews.sort((a,b) => b.reviewDueDate - a.reviewDueDate).reverse()
           //setToDoReviews(toDoReviews)
-          console.log(toDoReviews)
-          console.log(props)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
           
           studentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
-          console.log('in progress:',studentInProgressReviews)
           //ID where duedate and linked are defined
         }
-        else {
-          studentCompletedReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
-          //studentCompletedReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
-          //setStudentCompletedReviews(studentCompletedReviews)
-        }
+        // else {
+        //   studentCompletedReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+        //   //studentCompletedReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
+        //   //setStudentCompletedReviews(studentCompletedReviews)
+        // }
       }
 
-      const studentToDoReviews = toDoReviews.filter(function(e){
-        return e.reviewStatus < 2
+      const studentToDoReviews = studentInProgressReviews.filter(function(e){
+        return e.reviewStatus < 4
       })
-      const studentDoneReviews = toDoReviews.filter(function(e){
-        return e.reviewStatus >= 2
-      })
+      // const studentDoneReviews = toDoReviews.filter(function(e){
+      //   return e.reviewStatus >= 4
+      // })
       console.log('ta todos:',taToDoReviews)
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
-      setStudentInProgressReviews(studentInProgressReviews);
-      setStudentCompletedReviews(studentCompletedReviews);
+      setStudentInProgressReviews(studentToDoReviews);
+      // setStudentCompletedReviews(studentCompletedReviews);
     }
     })().catch( e => { console.error(e) });
   }, [props.ISstudent, savedStudentId, userCreated]);
