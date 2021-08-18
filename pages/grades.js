@@ -12,7 +12,9 @@ function Grades(props) {
 
   useEffect(() => {
     axios.get(`/api/assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
-      setGradedAssignments(assignmentData.data.data);
+      let unsorted_Assignments = assignmentData.data.data
+      unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
+      setGradedAssignments(unsorted_Assignments);
 
     })
   }, [])

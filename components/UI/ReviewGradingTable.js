@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../styles/tagrading.module.scss";
 import TableContainer from "@material-ui/core/TableContainer";
 import Table from "@material-ui/core/Table";
@@ -11,7 +11,10 @@ import Button from "@material-ui/core/Button";
 import { Field } from "formik";
 import { createGradeValidator } from "./PeerReviewMatrix";
 
-const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen, setDoneGrading, doneGrading }) => (
+
+const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen, setDoneGrading, doneGrading, presetComments, setPresetComments }) => {
+
+  return (
   <TableContainer style={{ backgroundColor: "rgb(248,248,248)" }}>
     <Table>
       <TableHead>
@@ -22,7 +25,14 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
         <TableCell>Comments</TableCell>
       </TableHead>
       <TableBody>
-        {reviewRubric.map(({ element, maxPoints }, i) => (
+        {reviewRubric.map(({ element, maxPoints }, i) => {
+          const [comment, setComment] = useState('');
+          const [presetter, setPresetter] = useState(false);
+          function changeComment(e) {
+            values[`${userId}`][i].comment = e.target.value;
+            setComment(e.target.value);
+          }
+          return(
           <TableRow>
             <TableCell style={{ paddingLeft: "80px" }}>{element}</TableCell>
             <TableCell style={{ position: "relative" }}>
@@ -51,10 +61,36 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
                 rows={4}
                 label="Comments"
                 variant="outlined"
+                value={comment == '' ? values[`${userId}`][i].comment : comment}
+                onChange={changeComment}
               />
+              {/* section for preset comments */}
+              <div className={styles.preset}>
+                <>
+                <Button 
+                onClick={()=>{
+                  let newPresets = presetComments;
+                  if (comment == '') {
+                    newPresets.push(values[`${userId}`][i].comment);
+                  } else {
+                    newPresets.push(comment);
+                  }
+                  setPresetter(!presetter);
+                  setPresetComments(newPresets);
+                }}
+                style={{background: "gray",
+                      color: "black",
+                      borderRadius: "5px",
+                      margin: "2.5px 5px",
+                      padding: "0 5px"}}>SAVE COMMENT AS PRESET
+                      </Button>
+                <Presets key={presetter} presetComments={presetComments} setComment={setComment}/>
+                </>
+              </div>
+
             </TableCell>
           </TableRow>
-        ))}
+        )})}
         <TableCell>
           <Button 
             onClick={()=>{
@@ -69,6 +105,26 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
       </TableBody>
     </Table>
   </TableContainer>
-);
+  )};
+
+  function Presets(props) {
+      return props.presetComments.map( comment => {
+        let commentAlias;
+        if (comment.length < 30) {
+          commentAlias = comment;
+        } else {
+          commentAlias = comment.substring(0,27) + "..."
+        }
+        
+        return (
+        <Button 
+        onClick={()=>props.setComment(comment)}
+        style={{background: "lightgray",
+          color: "darkgray",
+          borderRadius: "5px",
+          margin: "2.5px 5px",
+          padding: "0 5px"}}>{commentAlias}</Button>
+        )})
+  }
 
 export default ReviewGradingTable;

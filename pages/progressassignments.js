@@ -11,7 +11,12 @@ const InProgress = props => {
   useEffect(() => {
     axios.get(`/api/assignments?courseId=${courseId}`).then(assignmentData => {
       console.log({assignmentData});
-      setAssignments(assignmentData.data.data);
+      let progressAssignments = assignmentData.data.data.filter(function(e){
+        return e.reviewStatus < 9
+      })
+      //let unsorted_Assignments = progressAssignments
+      //unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
+      setAssignments(progressAssignments);
     });
   }, []);
   // const progress = [
