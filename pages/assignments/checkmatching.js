@@ -23,7 +23,7 @@ function CheckMatching(props) {
   const [response, setResponse] = useState();
   const [students, setStudents] = useState();
   const router = useRouter();
-  const { assignmentId, rubricId } = router.query;
+  const { assignmentId, rubricId, assignmentName } = router.query;
 
   // async function postSubmissionsFromData() {
   //   let nullGroups = canvasSubs.filter(x => x.groupId == null);
@@ -52,9 +52,20 @@ function CheckMatching(props) {
   // }
 
   function incrementStep() {
-    axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5}).then(res => {
-      setResponse('Successfully moved on to next step');
-    })
+    // axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5}).then(res => {
+    //   let message = {
+    //     recipients: [String(graders[0])],
+    //     body: `TA reviews for assignment ${assignmentName} are ready to be completed.`
+    //   }
+    //   axios.post("/api/canvas/conversation/", message);
+    //   setResponse('Successfully moved on to next step');
+    // })
+    console.log('graders[0]:',graders[0]);
+    let taId = graders[0];
+    let message = `TA reviews for assignment ${assignmentName} are ready to be completed.`
+    // axios.post(`/api/canvas/conversation?userId=${taId}&message=${message}`).then(res => {
+    //   console.log('res:',res);
+    // })
   }
   async function handleSubmit() {
     // post peer matchings
@@ -63,6 +74,11 @@ function CheckMatching(props) {
     .then(res => {
       console.log("res", res);
       axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
+      let message = {
+        recipients: String(graders[0]),
+        body: `TA reviews for assignment ${assignmentName} are ready to be completed.`
+      }
+      axios.post("/api/canvas/conversation/", message);
       setResponse('Submitted successfully.')})
     .catch(err => {
       console.log(err);
