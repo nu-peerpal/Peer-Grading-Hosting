@@ -7,7 +7,6 @@ import styles from "../pages/assignments/matching/matching.module.scss";
 const axios = require("axios");
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
@@ -26,8 +25,6 @@ function ReloadMatchings(props) {
     const PRs = props.matchings;
     const router = useRouter()
     let {assignmentId, assignmentName} = router.query;
-
-    console.log('Peer Reviews:',PRs);
 
     useEffect(() => {
       Promise.all([axios.get(`/api/users`), axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`)]).then(userData => {
@@ -74,7 +71,6 @@ function ReloadMatchings(props) {
               }
             });
             console.log({subMap})
-            console.log('subMap:',subMap)
             console.log('Peer Reviews:',PRs);
             let prProgress = {};
             let completedArray = [];
@@ -98,7 +94,6 @@ function ReloadMatchings(props) {
                   userProgress[review.userId] = { completed: 0, total: 1, completedSubmissions: [] }
                 } // case for TA possibly
               }
-
 
 
               if (prProgress[review.submissionId]) {
@@ -198,44 +193,26 @@ function ReloadMatchings(props) {
                     userCompletions[review.userId] = [review.submissionId];
                   }
                 }
-
-
             })
-
-            console.log('userProgress:',userProgress);
-
-            console.log('userBuckets:',userBuckets);
-
-            console.log('userCompletions:',userCompletions);
 
             setUserCompletions(userCompletions);
             setSubmissionMap(subMap);
-
             setPrProgress(prProgress)
-
             setUserProgress(userProgress);
-
             setReviewerId(reviewerId);
-
             setCompletedSubmissionIds(completedSubmissionIds);
-
-            console.log('completedArray:',completedArray);
-            console.log('completedSubmissionIds:',completedSubmissionIds);
-            console.log('completedUserIds:',completedUserIds);
 
             // remove duplicates
             let newCompletedArray = [...new Set(completedArray)];
             setCompletedReviewers(newCompletedArray);
-            console.log('newCompletedArray:',newCompletedArray);
+  
 
             // remove duplicates for completedSubmissionIds
             let newCompletedSubmissionIds = [...new Set(completedSubmissionIds)];
             setCompletedSubmissionIds(newCompletedSubmissionIds);
-            
-            console.log('prProgress:',prProgress);
+
             setMatchedUsers(userBuckets);
             setMatchedSubs(subBuckets);
-            console.log('subBuckets:',subBuckets);
 
             // create the grid that will show the matchings
             var mg = []
@@ -286,67 +263,5 @@ function ReloadMatchings(props) {
         </div>
     )
 };
-
-// Progress bar 
-
-let MIN = 0
-let MAX = 5
-// Function to normalise the values (MIN / MAX could be integrated)
-const normalise = value => (value - MIN) * 100 / (MAX - MIN);
-
-function LinearProgressWithLabel(props) {
-  return (
-    <Box display="flex" alignItems="center">
-      <Box width="50%" mr={1}>
-        {/* <LinearProgress variant="determinate" {...props} /> */}
-        <LinearProgress variant="determinate" value={normalise(props.value)} />
-      </Box>
-      <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">{`${Math.round(
-          props.value,
-        )}`}</Typography>
-      </Box>
-    </Box>
-  );
-}
-
-// LinearProgressWithLabel.propTypes = {
-//   /**
-//    * The value of the progress indicator for the determinate and buffer variants.
-//    * Value between 0 and 100.
-//    */
-//   // value: PropTypes.number.isRequired,
-//   value: prProgress[review.submissionId].completed
-// };
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-  },
-});
-
-function LinearWithValueLabel() {
-  const classes = useStyles();
-  const [progress, setProgress] = React.useState(0);
-
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      // setProgress((prevProgress) => (prevProgress >= prProgress[review.submissionId].total ? prProgress[review.submissionId].total : prevProgress + prProgress[review.submissionId].completed));
-      setProgress((prevProgress) => (prevProgress >= 5 ? 5 : prevProgress + 1));
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
-  return (
-    <div className={classes.root}>
-      <LinearProgressWithLabel value={progress} />
-    </div>
-  );
-}
-
-// End of progress bar
-
 
 export default ReloadMatchings;

@@ -63,9 +63,9 @@ function CheckMatching(props) {
     console.log('graders[0]:',graders[0]);
     let taId = graders[0];
     let message = `TA reviews for assignment ${assignmentName} are ready to be completed.`
-    axios.post(`/api/canvas/conversation?userId=${taId}&message=${message}`).then(res => {
-      console.log('res:',res);
-    })
+    // axios.post(`/api/canvas/conversation?userId=${taId}&message=${message}`).then(res => {
+    //   console.log('res:',res);
+    // })
   }
   async function handleSubmit() {
     // post peer matchings
