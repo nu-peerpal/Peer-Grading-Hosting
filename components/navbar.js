@@ -34,6 +34,12 @@ function StudentView(props) {
       <Link href={"/grades"}>
         <a>Grades</a>
       </Link>
+
+      <Link href={"/completedassignments"}> 
+        <a>Completed Reviews</a>
+      </Link>
+      {//HOW TO VIEW COMPLETED REVIEWS??? WHERE IS THE LINK??
+      }
       {/* <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
       </Link> */}

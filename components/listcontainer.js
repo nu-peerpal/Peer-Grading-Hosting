@@ -7,34 +7,23 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
 
-function Info(props) {
+function Info(props) { // Display list item description
   const dueDate = props.dueDate;
   const info = props.info;
   if (dueDate) {
     let newDate = new Date(dueDate);
-    let dateText = "Due " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    return <TableCell className={styles.info}>{dateText}</TableCell>
+    let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
+    return <TableCell className={styles.info} > {dateText} </TableCell> 
   }
   else {
     return <TableCell className={styles.info}>{info}</TableCell>;
   }
 }
 
-class ListContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    // console.log(props)
-    this.getData = this.getData.bind(this);
-  }
-
-  getData = function () {
-    var information = this.props;
-    var list = "";
-    var assignname = "";
+function ListContainer(props) {
+  function getData() {
+    var information = props;
     var link = "";
-    // var styleDone = "";
-    var student = information.student;
-    // console.log({information});
     if (information.data) {
       return (
         information.data.map(x => {
@@ -42,14 +31,24 @@ class ListContainer extends React.Component {
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
           if (information.link) link = information.link;
-          // if (x.data.done) {
-          //  styleDone = " (Submitted)"
-          // }
+          if (!x.actionItem) x.actionItem='';
+          let date = '';
+          let type = '';
+          if (x.reviewStatus > 1){
+            date = x.reviewDueDate;
+            type = 'Review';
+          }
+          else {
+            date = x.assignmentDueDate;
+            type = 'Assignment';
+          }
+          
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
-                <TableCell className={styles.name}>{x.name}</TableCell>
-                <Info dueDate={x.assignmentDueDate} info={x.info}/>
+                <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
+          
+                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
               </TableRow>
             </Link>
           )
@@ -61,22 +60,22 @@ class ListContainer extends React.Component {
     }
   }
 
-  render() {
-    return (
-      <Table className={styles.tables}>
-        <TableHead className={styles.header}>
-          <TableRow>
-            <TableCell className={styles.hcell}>{this.props.name}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
 
-        <TableBody>
-          {this.getData()}
-        </TableBody>
-      </Table>
-    )
-  }
+
+  return (
+    <Table className={styles.tables}>
+      <TableHead className={styles.header}>
+        <TableRow>
+          <TableCell className={styles.hcell}>{props.name}</TableCell>
+          <TableCell></TableCell>
+        </TableRow>
+      </TableHead>
+
+      <TableBody>
+        {getData()}
+      </TableBody>
+    </Table>
+  )
 }
 
 

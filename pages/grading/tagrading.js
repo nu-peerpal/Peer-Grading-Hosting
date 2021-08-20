@@ -16,7 +16,6 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
     const { firstName, lastName } = users.find(
       user => user.canvasId == matching.userId
     );
-    console.log({matching})
     if (matching.review) {
       const reviewScoreComments = matching.review.reviewBody.scores;
       const transformedReview = reviewScoreComments.map(
@@ -57,6 +56,7 @@ const TAGrading = (props) => {
   const [peerMatchings, setPeerMatchings] = useState([]);
   const [submission, setSubmission] = useState();
   const [isDocument, setIsDocument] = useState(false);
+  const [presetComments, setPresetComments] = useState(['Great job!', 'Good but could use more detail', 'Missed the prompt']);
   let { id, submissionId } = router.query;
 
   useEffect(() => {
@@ -89,9 +89,7 @@ const TAGrading = (props) => {
           matching => matching.submissionId == submissionId
         );
         console.log({peerMatchings})
-        // console.log({peerMatchings})
         let tempPeerMatchings = transformMatchings(peerMatchings, rawRubric, usersRes.data);
-        // console.log({tempPeerMatchings})
         setPeerMatchings(tempPeerMatchings);
         setRubric(tempRubric);
         setReviewRubric(tempReviewRubric);
@@ -106,17 +104,6 @@ const TAGrading = (props) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (matchingsRes && usersRes && rawRubric.length > 0) {
-  //     const peerMatchings = matchingsRes.data.filter(
-  //       matching => matching.submissionId === submissionId
-  //     );
-  //     setPeerMatchings(
-  //       transformMatchings(peerMatchings, rawRubric, usersRes.data)
-  //     );
-  //   }
-  // }, [matchingsRes, usersRes, rawRubric]);
-
   return (
     <div className="Content">
       <Container name="TA Grading">
@@ -126,14 +113,9 @@ const TAGrading = (props) => {
           peerMatchings={peerMatchings}
           submission={submission}
           isDocument={isDocument}
+          presetComments={presetComments}
+          setPresetComments={setPresetComments}
         />
-        {/* { peerMatchings ? <div>Loading...</div> : <TAsubmission
-          assignmentRubric={rubric}
-          reviewRubric={reviewRubric}
-          peerMatchings={peerMatchings}
-          submission={submission}
-          isDocument={isDocument}
-        /> } */}
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </Container>
     </div>

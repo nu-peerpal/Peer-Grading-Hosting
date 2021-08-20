@@ -12,6 +12,7 @@ import { useUserData } from "../../../components/storeAPI";
 import StudentViewOutline from '../../../components/studentViewOutline';
 import ReloadMatchings from "../../../components/reloadMatchings";
 const axios = require("axios");
+import SubmitButton from '../../../components/submitButton';
 
 
 function Appeals(props) {
@@ -24,6 +25,7 @@ function Appeals(props) {
   const [submitResponse, setSubmitResponse] = useState("");
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [peerReviews, setPeerReviews] = useState([]);
+  const [submitSuccess, setSubmitSuccess] = useState(true)
 
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
@@ -53,9 +55,11 @@ function Appeals(props) {
       if (res.status == 200) {
         setSubmitResponse("Deadline set.")
         setExistingDueDate(true);
+        setSubmitSuccess(true);
       }
     }).catch(err => {
       setSubmitResponse("Something went wrong.")
+      setSubmitSuccess(false);
     })
   }
 
@@ -80,8 +84,9 @@ function Appeals(props) {
                     }}
                   />
               </form>
-              <Button onClick={handleSubmit}>{existingDueDate ? "Update Deadline" : "Set Deadline"}</Button>
-              {submitResponse}
+              <SubmitButton onClick={handleSubmit} title={existingDueDate ? "Update Deadline" : "Set Deadline"} 
+                submitAlert={submitResponse}
+                submitSuccess={submitSuccess}/>
             </div>
           </AccordionDetails>
         </Accordion>

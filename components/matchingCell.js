@@ -17,7 +17,6 @@ function MatchingCell(props) {
   const [formattedPeersCompleted, setFormattedPeersCompleted] = useState('');
   const [formattedPeersNotCompleted, setFormattedPeersNotCompleted] = useState('');
   const [formattedSubs, setFormattedSubs] = useState('');
-  console.log('props:',props)
 
   useEffect(() => {
     var formattedPeers = "";
@@ -30,16 +29,8 @@ function MatchingCell(props) {
     var newCompletedArray = props.completedReviewers;
 
     var prProgress = props.prProgress
-    var subMap = props.submissionMap
     var userProgress = props.userProgress
-    var progressCaseTwo = props.progressCaseTwo
-    var completedSubmissionIds = props.completedSubmissionIds
 
-    console.log('userProgress:',userProgress);
-
-    console.log('subMap:',subMap);
-  
-    console.log('completedSubmissionIds:',completedSubmissionIds);
 
     let numPeers;
     // console.log(props);
