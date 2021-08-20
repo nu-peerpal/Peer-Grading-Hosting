@@ -87,31 +87,6 @@ function ReloadMatchings(props) {
             // console.log('subBuckets:',subBuckets);
             PRs.forEach(review => {
 
-              // if (review.matchingType == 'appeal') {
-              //   if (matchingsFromAppeals) {      
-              //     matchingsFromAppeals[review.userId].push({
-              //       assignmentId: review.assignmentId,
-              //       assignmentSubmissionId: review.submissionId,
-              //       matchingType: review.matchingType,
-              //       review: review.review,
-              //       reviewReview: review.reviewReview,
-              //       submissionId: review.submissionId,
-              //       userId: review.userId
-              //     })
-
-              //   } else {
-              //     matchingsFromAppeals[review.userId] = {
-              //       assignmentId: review.assignmentId,
-              //       assignmentSubmissionId: review.assignmentSubmissionId,
-              //       id: review.id,
-              //       matchingType: review.matchingType,
-              //       review: review.review,
-              //       reviewReview: review.reviewReview,
-              //       submissionId: review.submissionId,
-              //     }
-              //   }
-              // }
-
               if (review.matchingType == 'appeal') { 
 
                   matchingsFromAppeals.push({

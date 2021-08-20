@@ -180,13 +180,6 @@ function CheckMatching(props) {
           setAdditionalMatchings(newMatchings);
           console.log({matchings});
         })
-
-        // axios.post(`/api/sendemail?&type=additionalMatches`, {
-        //   userId: graders[0],
-        //   subject: 'Additional Matches',
-        //   message: `Additional matches: ${newMatchings} have been assigned.`
-        // })
-
       }
 
       //   // find all submission PRs assigned. could be used for detecting who didn't submit

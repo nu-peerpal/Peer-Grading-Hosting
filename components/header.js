@@ -12,9 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { flexbox } from '@material-ui/system';
 import axios from 'axios';
 import { useUserData } from "./storeAPI";
-import emailjs from 'emailjs-com';
-import{ init } from 'emailjs-com';
-init("user_D5GPTJOMaa45FrLXOIyvH");
 
 const helpButtonStyle = {
     color: "black",
@@ -26,10 +23,6 @@ const helpButtonStyle = {
     right: "10px",
     top: "10px"
 };
-
-const USER_ID = `user_D5GPTJOMaa45FrLXOIyvH`;
-const TEMPLATE_ID = `template_v18qlgg`;
-const SERVICE_ID = `service_bie3dyl`
 
 
 function Header(props) {
@@ -46,42 +39,16 @@ function Header(props) {
 
     const { userId, courseId, courseName, assignment } = useUserData();
 
-    // const send = require('gmail-send')({
-    //     user: 'peerpal.io@gmail.com',
-    //     pass: 'nupeerpal',
-    //     to:   'peerpal.io@gmail.com',
-    //     subject: `Bug/Issues from ${userId} `,
-    //   });
-
         async function handleSubmit(e) {
           setOpen(false);
           e.preventDefault()
 
           let res = await axios.post(`/api/sendemail?type=bug`, {
               userId: userId,
-              message: `${text.value}`
+              message: text.value
           })
 
           console.log('res:',res);
-
-        //     init("user_D5GPTJOMaa45FrLXOIyvH");
-
-        //     console.log(userId, text.value);
-        //     console.log(USER_ID);
-
-        //   let templateParams = {
-        //       userId: `${userId}`,
-        //       errorMessage: `${text.value}`
-        //   };
-
-        //   emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_ID)
-        //   .then((result) => {
-        //   alert("Message Sent, We will get back to you shortly", result.text);
-        //   },
-        //   (error) => {
-        //   alert("An error occurred, Please try again", error.text);
-        //     })
-
         };
        
     const inputProps = {

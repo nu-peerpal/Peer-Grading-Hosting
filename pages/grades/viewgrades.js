@@ -112,10 +112,12 @@ function ViewAssignmentGrade(props) {
   async function handleAppeal() {
     console.log('handling appeal');
 
+    // Notify TA when new appeals are assigned
+
      Promise.all([
           axios.post(`/api/peerReviews?type=multiple`,[appealFormat]),
           axios.post(`/api/sendemail?&type=appeals&courseId=${courseId}`, {
-            userId: appealFormat.userId, // need correct userId
+            userId: appealFormat.userId, 
             subject: 'Assigned Appeal',
             message: `New appeal for ${name} has been assigned.`
           })

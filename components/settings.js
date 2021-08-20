@@ -183,6 +183,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         setMatchedUsers(matched_users);
         setMatchedSubs(submissionBuckets);
 
+        // Notify students when they have new PeerPal tasks
 
         Promise.all(users.map(user => {
           return axios.post(`/api/sendemail?type=studentNotification&courseId=${courseId}`, {
