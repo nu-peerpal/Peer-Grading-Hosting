@@ -85,9 +85,8 @@ const SelectTaGrading = (props) => {
 
       const toDoReviews = [];
       const toDoGrades = []
-      let matchingsFromAppeals = []; // show matchings in appeals
+      // let matchingsFromAppeals = []; // show matchings in appeals
       console.log({reviewReviews})
-      console.log('reviewReviews:',reviewReviews)
       // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
       for (const sub of reviewReviews) {
         let finished = "";
@@ -117,9 +116,15 @@ const SelectTaGrading = (props) => {
           });
         }
 
-        if (sub.type == 'appeal') {
-          matchingsFromAppeals
-        }
+        // if (sub.type == 'appeal') {
+        //   matchingsFromAppeals.push({
+        //     name: "Grade group " + sub.submission.groupId + "'s submission" + finished,
+        //     canvasId: assignmentId,
+        //     rubricId: rubricId,
+        //     // matchingId: sub.matchingId,
+        //     data: {submissionId: sub.submission.canvasId, id: sub.matchingId},
+        //   })
+        // }
 
       }
     
