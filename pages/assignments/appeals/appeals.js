@@ -10,7 +10,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useRouter } from 'next/router';
 import { useUserData } from "../../../components/storeAPI";
 import StudentViewOutline from '../../../components/studentViewOutline';
+import ReloadMatchings from "../../../components/reloadMatchings";
 const axios = require("axios");
+
 
 function Appeals(props) {
   const { userId, courseId, courseName, assignment } = useUserData();
@@ -20,6 +22,8 @@ function Appeals(props) {
   const [loadedDeadline, setLoadedDeadline] = useState("");
   const [existingDueDate, setExistingDueDate] = useState(false);
   const [submitResponse, setSubmitResponse] = useState("");
+  const [matchingGrid, setMatchingGrid] = useState([]);
+  const [peerReviews, setPeerReviews] = useState([]);
 
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
@@ -27,14 +31,19 @@ function Appeals(props) {
   
   }
   useEffect(() => {
-    axios.get(`/api/assignments/${assignmentId}`).then(assignmentRes => {
-        let assignmentData = assignmentRes.data.data;
-        if (assignmentData.appealsDueDate) {
-          let formattedDate = formatTimestamp(assignmentData.appealsDueDate);
-          setLoadedDeadline(formattedDate);
-          setExistingDueDate(true);
-          console.log('got date:', formattedDate)
-        }
+    Promise.all([
+      axios.get(`/api/assignments/${assignmentId}`),
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`)
+    ]).then(data => {
+      let assignmentData = data[0].data.data
+      let peerReviewData = data[1].data.data
+      setPeerReviews(peerReviewData);
+      if (assignmentData.appealsDueDate) {
+        let formattedDate = formatTimestamp(assignmentData.appealsDueDate);
+        setLoadedDeadline(formattedDate);
+        setExistingDueDate(true);
+        console.log('got date:', formattedDate)
+      }
     })
   }, []);
 
@@ -76,10 +85,15 @@ function Appeals(props) {
             </div>
           </AccordionDetails>
         </Accordion>
+        <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid} />
+        <div className={styles.matchingGrid}>
+          {matchingGrid}
+        </div>
         </div>
       </Container>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
+
   );
 
 }

@@ -23,6 +23,7 @@ function ReloadMatchings(props) {
     const [reviewerId, setReviewerId] = useState();
     const [completedSubmissionIds, setCompletedSubmissionIds] = useState([]);
     const [prProgress, setPrProgress] = useState({});
+    const [matchingsFromAppeals, setMatchingsFromAppeals] = useState({})
     const PRs = props.matchings;
     const router = useRouter()
     let {assignmentId, assignmentName} = router.query;
@@ -82,8 +83,48 @@ function ReloadMatchings(props) {
             let completedSubmissionIds = [];
             let completedUserIds = [];
             let userProgress = {};
+            let matchingsFromAppeals = [] // show matchings in appeals
             // console.log('subBuckets:',subBuckets);
             PRs.forEach(review => {
+
+              // if (review.matchingType == 'appeal') {
+              //   if (matchingsFromAppeals) {      
+              //     matchingsFromAppeals[review.userId].push({
+              //       assignmentId: review.assignmentId,
+              //       assignmentSubmissionId: review.submissionId,
+              //       matchingType: review.matchingType,
+              //       review: review.review,
+              //       reviewReview: review.reviewReview,
+              //       submissionId: review.submissionId,
+              //       userId: review.userId
+              //     })
+
+              //   } else {
+              //     matchingsFromAppeals[review.userId] = {
+              //       assignmentId: review.assignmentId,
+              //       assignmentSubmissionId: review.assignmentSubmissionId,
+              //       id: review.id,
+              //       matchingType: review.matchingType,
+              //       review: review.review,
+              //       reviewReview: review.reviewReview,
+              //       submissionId: review.submissionId,
+              //     }
+              //   }
+              // }
+
+              if (review.matchingType == 'appeal') { 
+
+                  matchingsFromAppeals.push({
+                    assignmentId: review.assignmentId,
+                    assignmentSubmissionId: review.submissionId,
+                    matchingType: review.matchingType,
+                    review: review.review,
+                    reviewReview: review.reviewReview,
+                    submissionId: review.submissionId,
+                    userId: review.userId
+
+                  })
+              }
 
               if (userProgress[review.userId]) {
                 userProgress[review.userId].total += 1;
@@ -208,6 +249,8 @@ function ReloadMatchings(props) {
 
             console.log('userCompletions:',userCompletions);
 
+            console.log('matchingsFromAppeals:',matchingsFromAppeals);
+
             setUserCompletions(userCompletions);
             setSubmissionMap(subMap);
 
@@ -218,6 +261,8 @@ function ReloadMatchings(props) {
             setReviewerId(reviewerId);
 
             setCompletedSubmissionIds(completedSubmissionIds);
+
+            setMatchingsFromAppeals(matchingsFromAppeals);
 
             console.log('completedArray:',completedArray);
             console.log('completedSubmissionIds:',completedSubmissionIds);

@@ -85,7 +85,9 @@ const SelectTaGrading = (props) => {
 
       const toDoReviews = [];
       const toDoGrades = []
+      let matchingsFromAppeals = []; // show matchings in appeals
       console.log({reviewReviews})
+      console.log('reviewReviews:',reviewReviews)
       // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
       for (const sub of reviewReviews) {
         let finished = "";
@@ -114,6 +116,11 @@ const SelectTaGrading = (props) => {
               data: {submissionId: sub.submission.canvasId},
           });
         }
+
+        if (sub.type == 'appeal') {
+          matchingsFromAppeals
+        }
+
       }
     
     // console.log(reviewReviews.filter(review => review.done[2] == true));
@@ -177,16 +184,35 @@ const SelectTaGrading = (props) => {
     }
   }
 
-  function handleCompleted() {
+  async function handleCompleted() {
     if (!completedConfirmed) { // finished grading
       setCompletedConfirmed(true);
+      let notif = '';
+      let subject = '';
       if (assignmentDetails.reviewStatus == 5) {
         axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
+        notif = 'TA has completed TA reviews.'
+        subject = 'Completed TA reviews'
       }
       if (assignmentDetails.reviewStatus == 7) {
         axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 8});
+        notif = 'TA has completed appeal reviews.'
+        subject = 'Completed appeal reviews'
       }
       setReviewStatusSet("Confirmed");
+
+      // Notify instructor when TA reviews or appeals are complete
+      let instructors = await axios.get(`/api/users?courseId=${courseId}&enrollment=InstructorEnrollment`)
+      console.log('instructors:',instructors);
+        Promise.all([
+          axios.post(`/api/sendemail?type=appealsComplete&courseId=${courseId}`, {
+            userId: instructors.data.data[0].id, 
+            subject: subject,
+            message: notif
+          })
+        ]).then(res => {console.log('res:',res)
+            }).catch(err => console.log('err:',err))
+
     } else { // no longer finished grading
       setCompletedConfirmed(false);
       if (assignmentDetails.reviewStatus == 6) {

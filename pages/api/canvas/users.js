@@ -29,7 +29,8 @@ export default async (req, res) => {
                 lastName: name[1],
                 firstName: name[0],
                 enrollment: user.type,
-                courseId: user.course_id
+                courseId: user.course_id,
+                email: user.email
             }
         });
         responseHandler.response200(res, users);

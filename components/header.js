@@ -46,27 +46,42 @@ function Header(props) {
 
     const { userId, courseId, courseName, assignment } = useUserData();
 
+    // const send = require('gmail-send')({
+    //     user: 'peerpal.io@gmail.com',
+    //     pass: 'nupeerpal',
+    //     to:   'peerpal.io@gmail.com',
+    //     subject: `Bug/Issues from ${userId} `,
+    //   });
+
         async function handleSubmit(e) {
           setOpen(false);
           e.preventDefault()
 
-            init("user_D5GPTJOMaa45FrLXOIyvH");
+          let res = await axios.post(`/api/sendemail?type=bug`, {
+              userId: userId,
+              message: `${text.value}`
+          })
 
-            console.log(userId, text.value);
-            console.log(USER_ID);
+          console.log('res:',res);
 
-          let templateParams = {
-              userId: `${userId}`,
-              errorMessage: `${text.value}`
-          };
+        //     init("user_D5GPTJOMaa45FrLXOIyvH");
 
-          emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_ID)
-          .then((result) => {
-          alert("Message Sent, We will get back to you shortly", result.text);
-          },
-          (error) => {
-          alert("An error occurred, Please try again", error.text);
-            })
+        //     console.log(userId, text.value);
+        //     console.log(USER_ID);
+
+        //   let templateParams = {
+        //       userId: `${userId}`,
+        //       errorMessage: `${text.value}`
+        //   };
+
+        //   emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_ID)
+        //   .then((result) => {
+        //   alert("Message Sent, We will get back to you shortly", result.text);
+        //   },
+        //   (error) => {
+        //   alert("An error occurred, Please try again", error.text);
+        //     })
+
         };
        
     const inputProps = {

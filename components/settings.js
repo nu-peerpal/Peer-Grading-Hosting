@@ -182,6 +182,15 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         setMatchedUsers(matched_users);
         setMatchedSubs(submissionBuckets);
+
+
+        Promise.all(users.map(user => {
+          return axios.post(`/api/sendemail?type=studentNotification&courseId=${courseId}`, {
+            userId: user.canvasId,
+            subject: 'Assigned Peer Reviews',
+            message: `New peer reviews have been assigned.`
+          })
+        }))
   
         // create the grid that will show the matchings
         var mg = []

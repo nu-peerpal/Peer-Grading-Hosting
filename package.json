@@ -34,6 +34,7 @@
     "formik": "^2.1.5",
     "formik-material-ui": "^3.0.1",
     "fs": "0.0.1-security",
+    "gmail-send": "^1.8.10",
     "grommet": "^2.14.0",
     "grommet-icons": "^4.4.0",
     "ims-lti": "^3.0.2",

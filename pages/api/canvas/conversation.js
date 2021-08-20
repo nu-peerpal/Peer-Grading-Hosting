@@ -15,7 +15,7 @@ export default async (req, res) => {
           let userId = req.query.userId
           let message = req.query.message
           console.log('data:',data)
-          const response = await axios.post(canvas + `conversations?recipients=${userId}&body=${message}&group_conversations=true&subject=TAReviews`, {
+          const response = await axios.post(canvas + `conversations?recipients=${userId}&body=${message}&group_conversations=true&subject=TAReviews&bulk_message=true`, {
             headers: {
               'Authorization': `Bearer ${token}`
           }
