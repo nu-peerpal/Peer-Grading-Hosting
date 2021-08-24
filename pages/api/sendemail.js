@@ -8,6 +8,8 @@ export const config = {
 
 const canvas = process.env.CANVAS_HOST;
 const token = process.env.CANVAS_TOKEN;
+const gmailUser = process.env.GMAIL_USER;
+const gmailPass = process.env.GMAIL_PASS;
 const responseHandler = require("./utils/responseHandler");
 
 export default async (req, res) => {
@@ -30,8 +32,7 @@ export default async (req, res) => {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }})
-                
-                console.log('response.data:',response.data)
+
 
                 let foundUser = response.data.filter(user => user.id == req.body.userId)
 
@@ -43,8 +44,8 @@ export default async (req, res) => {
             }
 
             const sendBug = require('gmail-send')({
-                user: 'peerpal.io@gmail.com',
-                pass: 'nupeerpal',
+                user: gmailUser,
+                pass: gmailPass,
                 to:   recipient,
                 subject: subject,
               });
