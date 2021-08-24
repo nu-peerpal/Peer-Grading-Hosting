@@ -78,8 +78,23 @@ function ReloadMatchings(props) {
             let completedSubmissionIds = [];
             let completedUserIds = [];
             let userProgress = {};
+            let matchingsFromAppeals = [] // show matchings in appeals
             // console.log('subBuckets:',subBuckets);
             PRs.forEach(review => {
+
+              if (review.matchingType == 'appeal') { 
+
+                  matchingsFromAppeals.push({
+                    assignmentId: review.assignmentId,
+                    assignmentSubmissionId: review.submissionId,
+                    matchingType: review.matchingType,
+                    review: review.review,
+                    reviewReview: review.reviewReview,
+                    submissionId: review.submissionId,
+                    userId: review.userId
+
+                  })
+              }
 
               if (userProgress[review.userId]) {
                 userProgress[review.userId].total += 1;

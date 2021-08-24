@@ -28,3 +28,70 @@
         
     }
 }
+
+.matching {
+    margin: 0 40px 40px !important;
+}
+
+.matching{
+    &Cell{
+        @extend .flex_center;
+        text-align: center;
+        flex-direction: column;
+        padding: 5px;
+        height: 150px;
+        width: 150px;
+        background-color: $primary_color;
+        margin: 5px;
+        overflow-y: auto;
+        // overflow-x: hidden;
+
+        &__title{
+            font-size: 15px;;
+            margin: 0 !important;
+            margin-top: 5px !important;
+        }
+
+        &__value{
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0 !important;
+            color: black;
+        }
+
+        &__taValue{
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0 !important;
+            color: blue;
+        }
+
+        &__completedValue{
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0 !important;
+            color: green;
+        }
+
+        &__notCompletedValue{
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0 !important;
+            color: red;
+        }
+
+        &__progress{
+            // justify-self: end;
+            width: 100%;
+            position: relative;
+            bottom: 0px;
+        }
+    }
+
+    &Grid{
+        
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+}

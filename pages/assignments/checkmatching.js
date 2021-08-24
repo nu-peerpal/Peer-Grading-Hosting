@@ -52,20 +52,17 @@ function CheckMatching(props) {
   // }
 
   function incrementStep() {
-    // axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5}).then(res => {
-    //   let message = {
-    //     recipients: [String(graders[0])],
-    //     body: `TA reviews for assignment ${assignmentName} are ready to be completed.`
-    //   }
-    //   axios.post("/api/canvas/conversation/", message);
-    //   setResponse('Successfully moved on to next step');
-    // })
-    console.log('graders[0]:',graders[0]);
-    let taId = graders[0];
-    let message = `TA reviews for assignment ${assignmentName} are ready to be completed.`
-    // axios.post(`/api/canvas/conversation?userId=${taId}&message=${message}`).then(res => {
-    //   console.log('res:',res);
-    // })
+    // Notify TA when TA reviews are assigned/ready to be completed
+    Promise.all([
+      axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5}),
+      axios.post(`/api/sendemail?type=taReviewAssignment&courseId=${courseId}`, {
+        userId: graders[0],
+        subject: 'TA Review Assignment',
+        message: `TA reviews for assignment ${assignmentName} are ready to be completed.`
+      })
+    ]).then(res => {console.log('res:',res)
+        setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
+
   }
   async function handleSubmit() {
     // post peer matchings
@@ -74,17 +71,22 @@ function CheckMatching(props) {
     .then(res => {
       console.log("res", res);
       axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
-      let message = {
-        recipients: String(graders[0]),
-        body: `TA reviews for assignment ${assignmentName} are ready to be completed.`
-      }
-      axios.post("/api/canvas/conversation/", message);
+
+      // Notify TA when additional matches are assigned
+      axios.post(`/api/sendemail?&type=additionalMatches&courseId=${courseId}`, {
+        userId: graders[0],
+        subject: 'Additional Matches',
+        message: `${additionalMatchings.length} additional matches have been assigned.`
+      }).then(res => {console.log('res:',res)
+        setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
+
       setResponse('Submitted successfully.')})
     .catch(err => {
       console.log(err);
       setResponse('An error occurred:' + err);
       // errs.push('Peer Matchings not posted');
     });
+
   }
 
   useEffect(() => {
@@ -179,6 +181,7 @@ function CheckMatching(props) {
           console.log({matchings});
         })
       }
+
       //   // find all submission PRs assigned. could be used for detecting who didn't submit
       //   matchings.forEach(match => {
       //     let subMatched = allMatchings.filter(x => (x.assignmentId == assignmentId && x.submissionId == match[1]));

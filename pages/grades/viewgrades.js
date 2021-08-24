@@ -111,14 +111,24 @@ function ViewAssignmentGrade(props) {
 
   async function handleAppeal() {
     console.log('handling appeal');
-    let res = await axios.post(`/api/peerReviews?type=multiple`,[appealFormat]).catch(err => console.log(err))
-    console.log({res})
-    if (res.status == 201) {
-      setAppealAvailable(false);
-      setAppealButtonText('Appeal Submitted');
-    } else {
-      setAppealButtonText('Something Went Wrong. Try again');
-    }
+
+    // Notify TA when new appeals are assigned
+
+     Promise.all([
+          axios.post(`/api/peerReviews?type=multiple`,[appealFormat]),
+          axios.post(`/api/sendemail?&type=appeals&courseId=${courseId}`, {
+            userId: appealFormat.userId, 
+            subject: 'Assigned Appeal',
+            message: `New appeal for ${name} has been assigned.`
+          })
+        ]).then(res => {console.log('res:',res)
+            if (res[0].status == 201) {
+              setAppealAvailable(false);
+              setAppealButtonText('Appeal Submitted');
+            } else {
+              setAppealButtonText('Something Went Wrong. Try again');
+            }
+            }).catch(err => console.log('err:',err))
     
   }
   async function removeAppeal() {
