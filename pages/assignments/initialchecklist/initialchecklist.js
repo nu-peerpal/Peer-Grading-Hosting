@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./initialchecklist.module.scss";
 import Container from "../../../components/container";
 import Button from "@material-ui/core/Button";
@@ -11,6 +11,7 @@ import { useUserData } from "../../../components/storeAPI";
 import { useRouter } from 'next/router'
 import { PanoramaFishEye } from "@material-ui/icons";
 import StudentViewOutline from '../../../components/studentViewOutline';
+import SubmitButton from '../../../components/submitButton';
 const axios = require("axios");
 
 
@@ -27,6 +28,11 @@ const InitialChecklist = (props) => {
   const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   const [fieldsReady, setFieldsReady] = React.useState(false);
+  const [submitResponse, setSubmitResponse] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(true);
+  const [existingChanges, setExistingChanges] = useState(true);
+  const [anyChanges, setAnyChanges] = useState("disable");
+  const [coursesData,setCoursesData] = useState([]);
   let localDate = new Date(dueDate);
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
@@ -40,18 +46,58 @@ const InitialChecklist = (props) => {
       // })
       return {
         id: rubricObj.id,
-        rubric: rubricObj.data}
+        rubric: rubricObj.data
+      }
     });
-    console.log({rubrics});
+    console.log({ rubrics });
     const res = await axios.post(`/api/rubrics?type=multiple`, rubrics).catch(err => console.log('no new rubrics posted.'));
     console.log(res);
+  }
+
+  useEffect(() => {
+    axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
+      // console.log('rubrics: ', response.data.data)
+      setRubricOptions(response.data.data);
+    });
+    axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
+      setPrGroupOptions(response.data.data);
+    });
+    // setDueDate(null)
+    axios.get(`/api/courses/${courseId}`).then(response => {
+      setCoursesData(response.data.data);
+    });
+
+  }, []);
+
+  function toDate(timestamp) {
+    var d = new Date(timestamp);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var currentHour = d.getHours();
+    if (currentHour < 10) {
+      currentHour = '0' + currentHour;
+    }
+    var currentMinute = d.getMinutes();
+    if (currentMinute < 10) {
+      currentMinute = '0' + currentMinute;
+    }
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute);
+    console.log('toDate date:', date);
+    return date;
   }
 
   async function handleSubmit() {
     var rubric = null;
     var i;
-    await uploadRubrics(rubricOptions);
-    
+    console.log('rubricOptions:',rubricOptions)
+    uploadRubrics(rubricOptions);
+
     for (i = 0; i < rubricOptions.length; i++) {
       if (rubricOptions[i].id == rubricId) {
         rubric = rubricOptions[i];
@@ -66,36 +112,30 @@ const InitialChecklist = (props) => {
       prGroup: prGroup,
       rubric: rubric
     }
-    let reviewAssignmentRes = await axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
-      assignment = assignment.data.data
-      console.log({assignment})
-      assignment["reviewRubricId"] = parseInt(rubricId);
-      if (dueDate != "") {
-        assignment["assignmentDueDate"] = dueDate.replace("T", " ");
+    axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
+      console.log('assignment initialchecklist:', assignment)
+      if (assignment.status == 200) {
+        setSubmitResponse("Peer Review Assignment Created.")
+        setExistingChanges(true);
+        setSubmitSuccess(true);
+        assignment = assignment.data.data
+        console.log({ assignment })
+        assignment["reviewRubricId"] = parseInt(rubricId);
+        if (dueDate != "") {
+          assignment["assignmentDueDate"] = dueDate.replace("T", " ");
+        }
+        assignment["canvasId"] = parseInt(assignmentId);
+        assignment["id"] = parseInt(assignmentId);
+        assignment["rubricId"] = parseInt(router.query.rubricId);
+        assignment["reviewStatus"] = 1;
+        axios.post(`/api/assignments`, assignment)
+        setAnyChanges("disable");
       }
-      assignment["canvasId"] = parseInt(assignmentId);
-      assignment["id"] = parseInt(assignmentId);
-      assignment["rubricId"] = parseInt(router.query.rubricId);
-      assignment["reviewStatus"] = 1;
-      axios.post(`/api/assignments`, assignment)
-    });
-    console.log({reviewAssignmentRes});
-    router.push({
-      pathname: '/',
+    }).catch(err => {
+      setSubmitResponse("Something went wrong.")
+      setSubmitSuccess(false);
     })
   }
-
-  useEffect(() => {
-    axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
-      // console.log('rubrics: ', response.data.data)
-      setRubricOptions(response.data.data);
-    });
-    axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
-      setPrGroupOptions(response.data.data);
-    });
-    // setDueDate(null)
-    
-  }, []);
 
   return (
     <div className="Content">
@@ -109,15 +149,20 @@ const InitialChecklist = (props) => {
             <div className={styles.column__content}>
               Name of the peer review assignment:
               <form>
-                <input type="text" value={prName} onChange={(e) => setPrName(e.target.value)} />
+                <input type="text" value={prName} 
+                onChange={e => {
+                  setPrName(e.target.value)
+                  setAnyChanges("")}} /> {/* setAnyChanges("")*/ }
               </form>
             </div>
-            <br/>
+            <br />
             <div className={styles.column__content}>
               Select peer review assignment group:
               <form>
-                <select value={prGroup} onChange={e => setPrGroup(e.target.value)} >
-                <option key={0} value={-1}>Select Assignment Group</option>
+                <select value={prGroup} onChange={e => {
+                  setPrGroup(e.target.value)
+                  setAnyChanges("")}} >
+                  <option key={0} value={-1}>Select Assignment Group</option>
                   {prGroupOptions.map(prGroup => {
                     return <option key={prGroup.id} value={prGroup.id}>{prGroup.name}</option>;
                   })}
@@ -136,19 +181,21 @@ const InitialChecklist = (props) => {
               <div>
                 <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p>
               </div>
-              <div style={{marginTop: '25px'}}>
-              Due date for the peer review assignment:
-              <form noValidate>
-                <TextField
-                  id="datetime-local"
-                  type="datetime-local"
-                  defaultValue={"2021-05-24T11:59:50Z"}
-                  onChange={e => setPrDueDate(e.target.value+":59-05:00")} // hardcode CT, might have to change with time shift
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </form>
+              <div style={{ marginTop: '25px' }}>
+                Due date for the peer review assignment:
+                <form noValidate>
+                  <TextField
+                    id="datetime-local"
+                    type="datetime-local"
+                    defaultValue={"2021-05-24T11:59:50Z"}
+                    onChange={e => {
+                      setPrDueDate(e.target.value + ":59-05:00")
+                      setAnyChanges("")}} // hardcode CT, might have to change with time shift
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </form>
               </div>
 
             </div>
@@ -162,8 +209,10 @@ const InitialChecklist = (props) => {
             <div className={styles.column__content}>
               Select a rubric for the peer review assignment.
               <form>
-                <select value={rubricId} onChange={e => setRubricId(e.target.value)} >
-                <option key={0} value={-1}>Select Rubric</option>
+                <select value={rubricId} onChange={e => {
+                  setRubricId(e.target.value)
+                  setAnyChanges("")}} >
+                  <option key={0} value={-1}>Select Rubric</option>
                   {rubricOptions.map(rubricObj => {
                     return <option key={rubricObj.id} value={rubricObj.id}>{rubricObj.title}</option>;
                   })}
@@ -175,9 +224,17 @@ const InitialChecklist = (props) => {
       </Container>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-      {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
-          Create Peer Review Assignment
-        </Button>}
+        {/* {rubricId != -1 && prGroup != -1 && prDueDate && */}
+        {/* <Button onClick={handleSubmit}>
+            Create Peer Review Assignment
+           </Button>    */}
+        <SubmitButton onClick={handleSubmit} 
+          title={existingChanges ? "Create Peer Review Assignment" : "Create Peer Review Assignment"}
+          /* anyChanges={anyChanges} */
+          submitAlert={submitResponse}
+          submitSuccess={submitSuccess} />
+
+        {/*} */}
       </div>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
