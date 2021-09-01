@@ -71,6 +71,9 @@ function TeacherView(props) {
       <Link href={"/grading/selectAssignment"}>
         <a>TA Grading</a>
       </Link>
+      <Link href={"/coursesettings"}>
+        <a>General Course Settings</a>
+      </Link>
       {/* <Link href={"/canvas/canvas"}>
         <a>Canvas</a>
       </Link> */}

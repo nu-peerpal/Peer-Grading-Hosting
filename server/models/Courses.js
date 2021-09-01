@@ -14,6 +14,48 @@ module.exports = (sequelize, Sequelize) => {
     canvasKey: {
       type: Sequelize.STRING,
     },
+    bonusPercent: {
+      type: Sequelize.INTEGER,
+    },
+    reviewRubric: {
+      type: Sequelize.JSON,
+    },
+    matchingSettings: {
+      type: Sequelize.JSON,
+    },
+    assignmentGroup: {
+      type: Sequelize.JSON,
+    },
+    matchingAlgo: {
+      type: Sequelize.STRING,
+    },
+    subGradeAlgo: {
+      type: Sequelize.STRING,
+    },
+    prGradeAlgo: {
+      type: Sequelize.STRING,
+    },
+    addMatchAlgo: {
+      type: Sequelize.STRING,
+    },
+    peerLoad: {
+      type: Sequelize.INTEGER,
+    },
+    graderLoad: {
+      type: Sequelize.INTEGER,
+    },
+    assignmentName: {
+      type: Sequelize.STRING,
+    },
+    tas: {
+      type: Sequelize.JSON,
+    },
+    prDueDate: {
+      type: Sequelize.DATE,
+    },
+    appealDueDate: {
+      type: Sequelize.DATE,
+    }
   });
 
   // Courses.associate = (db) => {
