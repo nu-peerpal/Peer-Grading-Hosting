@@ -12,29 +12,6 @@ function formJson(params) {
   return j;
 }
 
-/* function peerMatch (graders, peers, submissions, peer_load, grader_load){
-//     var json  = formJson([["graders",graders],["peers",peers],["submissions",submissions], ["peer_load",peer_load], ["grader_load",grader_load]])
-//     return axios.post('https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/peerMatch', json)
-//     .then((response) => {
-//         //console.log(response)
-//         if (response.status !== 200){
-//             console.log('failed call')
-//             return response.status
-//         }
-//         response = response.data
-//         if (response.response.success) {
-//   //          console.log('response',response.response.matching)
-//             return response.response.matching
-//         }
-//         else{
-//             console.log('failed alg')
-//             return response.log
-
-//         }
-//     }, (error) => {
-//         console.log(error)})
-//     }*/
-
 function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
   var json = formJson([
     ["graders", graders],

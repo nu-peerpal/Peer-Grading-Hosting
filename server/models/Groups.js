@@ -5,12 +5,12 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
 
-  Groups.associate = (db) => {
-    // Groups.belongsTo(db.assignments, {
-    //   foreignKey: "assignmentId",
-    // });
-    Groups.hasMany(db.group_enrollments);
-    Groups.hasMany(db.assignment_submissions);
-  };
+  // Groups.associate = (db) => {
+  //   // Groups.belongsTo(db.assignments, {
+  //   //   foreignKey: "assignmentId",
+  //   // });
+  //   // Groups.hasMany(db.group_enrollments);
+  //   // Groups.hasMany(db.assignment_submissions);
+  // };
   return Groups;
 };

@@ -100,6 +100,17 @@ function Matching(props) {
     } else {
       setErrors(String(errs));
     }
+
+    // Notify students when they have new PeerPal tasks
+
+    Promise.all(userList.map(user => {
+      return axios.post(`/api/sendemail?type=studentNotification&courseId=${courseId}`, {
+        userId: user.canvasId,
+        subject: 'Assigned Peer Reviews',
+        message: `New peer reviews have been assigned.`
+      })
+    }))
+
   }
 
   return (

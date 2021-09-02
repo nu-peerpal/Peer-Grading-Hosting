@@ -23,7 +23,7 @@ export default async (req, res) => {
             let recipient, subject, message;
 
             if (req.query.type == 'bug') {
-                recipient = 'peerpal.io@gmail.com'
+                recipient = gmailUser;
                 subject = `Bug/Issues from ${req.body.userId}`
                 message = `I have encountered the following bugs/issues: ${req.body.message}.`
                 

@@ -9,6 +9,12 @@ module.exports = (sequelize, Sequelize) => {
     firstName: {
       type: Sequelize.STRING,
     },
+    enrollment: {
+      type: Sequelize.STRING,
+    },
+    courseId: {
+      type: Sequelize.STRING,
+    }
   });
 
   Users.associate = db => {
