@@ -155,6 +155,7 @@ function CourseSettings(props) {
         }
         setInitialData(initial);
         console.log('initial data:', initial)
+        console.log('initial pr due date type:',typeof initial.prDueDate)
       })
     }
   }, [userCreated]);
@@ -209,6 +210,7 @@ function CourseSettings(props) {
               //console.log('coursesettings:', courseSettingsJson)
               axios.patch(`/api/courses/${courseId}`, courseSettingsJson).then(res => {
                 console.log('coursesettings:', courseSettingsJson)
+                console.log('after pr due date type:', typeof courseSettingsJson.prDueDate)
                 console.log('res:', res)
               });
               console.log('data1:', data)

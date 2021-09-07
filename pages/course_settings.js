@@ -23,6 +23,7 @@ import { Field, Formik, Form } from "formik";
 import DatePicker from "react-datepicker";
 import DatePickerField from "../components/datepickerfield";
 import Cookies from 'js-cookie';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const axios = require("axios");
 
@@ -36,7 +37,7 @@ function CourseSettings(props) {
   //const { assignmentId, assignmentName, rubricId } = router.query;
   const assignmentId = 109;
   const assignmentName = 'Null Group Test';
-  const [appealDueDate, setAppealDueDate] = useState();
+  const [appealDueDate, setAppealDueDate] = useState("");
   const [loadedDeadline, setLoadedDeadline] = useState("");
   const [existingDueDate, setExistingDueDate] = useState(false);
   const [submitResponse, setSubmitResponse] = useState("");
@@ -56,7 +57,7 @@ function CourseSettings(props) {
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
   const [prGroup, setPrGroup] = React.useState(-1); // list of group names and ids
   const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
-  const [prDueDate, setPrDueDate] = React.useState(null); // PR assignment due date
+  const [prDueDate, setPrDueDate] = useState(""); // PR assignment due date
   const [prRubric, setPrRubric] = React.useState(-1); // selecting rubric ID for PR assignment
   //const { userId, courseId, assignment } = useUserData(); // data from LTI launch
   //const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
@@ -110,6 +111,21 @@ function CourseSettings(props) {
     return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
   }
 
+  function toDate(timestamp) {
+    var d = new Date(timestamp);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + d.getHours() + ':' + d.getMinutes());
+    console.log('toDate date:', date);
+    return date;
+  }
+
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
     var rubrics = rawRubrics.map(rubricObj => {
@@ -158,12 +174,21 @@ function CourseSettings(props) {
         let initial = data[5].data.data;
         initial.peerLoad = String(initial.peerLoad);
         initial.graderLoad = String(initial.graderLoad);
-        
+        console.log('initial pr due date type:', typeof initial.prDueDate);
+        initial.prDueDate = toDate(initial.prDueDate);
+        initial.appealDueDate = toDate(initial.appealDueDate);
+        console.log('initial pr due date', initial.prDueDate);
+        console.log('initial appeal due date', initial.appealDueDate);
+        /* initial.prDueDate = formatTimestamp(initial.prDueDate);
+        initial.appealDueDate = formatTimestamp(initial.appealDueDate) */
+
         if (!initial.tas) {
           initial.tas = {};
         }
         setInitialData(initial);
         console.log('initial data:', initial)
+        console.log('date today: ', Date.now())
+        console.log('date today type:', typeof Date.now())
       })
     }
   }, [userCreated]);
@@ -173,7 +198,7 @@ function CourseSettings(props) {
       <Container name={"Settings for assignment: " + assignmentName}>
         <div className={styles.desc}>
           <Formik
-            enableReinitialize= {true}
+            enableReinitialize={true}
             key={tas}
             initialValues={initialData}
 
@@ -188,7 +213,8 @@ function CourseSettings(props) {
                 prGradeAlgo: "",
                 addMatchAlgo: "",
                 assignmentName: prName,
-                tas: data.TA, // or tas?
+                /* tas: data.TA, // or tas? */
+                tas: tas,
                 peerLoad: peerLoad,
                 graderLoad: graderLoad,
                 matchingSettings: matchingSettings,
@@ -209,6 +235,7 @@ function CourseSettings(props) {
               //console.log('coursesettings:', courseSettingsJson)
               axios.patch(`/api/courses/${courseId}`, courseSettingsJson).then(res => {
                 console.log('coursesettings:', courseSettingsJson)
+                console.log('after pr due date type:', typeof courseSettingsJson.prDueDate)
                 console.log('res:', res)
               });
               console.log('data1:', data)
@@ -229,13 +256,12 @@ function CourseSettings(props) {
                         as={TextField}
                         className={styles.formfield}
                         value={values.peerLoad}
-                        onKeyUp={
-                          handleChange}
-                        /* onChange={e => {
-                          values.peerLoad = e.target.value;
-                          setPeerLoad(e.target.value)
-                          initialData.peerLoad = e.target.value
-                        }} */
+                        onKeyUp={handleChange}
+                      /* onChange={e => {
+                        values.peerLoad = e.target.value;
+                        setPeerLoad(e.target.value)
+                        initialData.peerLoad = e.target.value
+                      }} */
                       />
                     </div>
                   </div>
@@ -251,41 +277,14 @@ function CourseSettings(props) {
                           as={TextField}
                           className={styles.formfield}
                           onKeyUp={handleChange}
-                          /* onChange={e => {
-                            values.graderLoad = e.target.value;
-                            setGraderLoad(e.target.value)
-                          }} */
+                        /* onChange={e => {
+                          values.graderLoad = e.target.value;
+                          setGraderLoad(e.target.value)
+                        }} */
                         />
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className={styles.below}>
-                  TAs:
-                  {tas.map(taList =>
-                    <Field
-                      key={taList}
-                      name="tas"
-                      component={AutoComplete}
-                      required={true}
-                      label="TA"
-                      options={taList}
-                      /* placeholder={initialData.tas} */
-                      value={values.tas}
-                      /* onKeyUp={handleChange} */
-                      /* onKeyUp={handleChange.then(res => {
-                        setTaList(e.target.value)
-                        values.tas = e.target.value
-                      })}*/
-
-                      onChange={e => {
-                        /* handleChange(e) */
-                        values.tas = e.target.value
-                        setTaList(e.target.value)
-                        console.log('ta values:', e.target.value)
-                      }}
-                    />
-                  )}
                 </div>
 
                 <div className={styles.below}>
@@ -315,6 +314,23 @@ function CourseSettings(props) {
                   </div>
                 </div>
 
+                <div className={styles.below}>
+                  TAs:
+                  {tas.map(taList =>
+                    <Field
+                      key={taList}
+                      name="tas"
+                      component={AutoComplete}
+                      required={true}
+                      label="TA"
+                      options={taList}
+                      /* placeholder={initialData.tas} */
+                      value={values.tas}
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
+
                 {/* peer review enabling section */}
                 <div className={styles.below}>
                   <AccordionDetails>
@@ -327,17 +343,17 @@ function CourseSettings(props) {
                           Name of the peer review assignment:
 
                           <Field
-                            name="prAssignmentName"
+                            name="assignmentName"
                             type="input"
-                            value={values.prAssignmentName}
+                            value={values.assignmentName}
                             required={true}
                             as={TextField}
                             className={styles.formfield}
                             onKeyUp={handleChange}
-                            /* onChange={e => {
-                              values.prAssignmentName = e.target.value;
-                              setPrName(e.target.value)
-                            }} */
+                          /* onChange={e => {
+                            values.prAssignmentName = e.target.value;
+                            setPrName(e.target.value)
+                          }} */
                           />
 
                         </div>
@@ -346,7 +362,7 @@ function CourseSettings(props) {
                         <div className={styles.column__content}>
                           Select peer review assignment group:
 
-                        {/* <Field
+                          {/* <Field
                           //key={options}
                           name="Peer Review Assignment Group"
                           className={styles.formfield}
@@ -357,7 +373,7 @@ function CourseSettings(props) {
                           onChange={e => { values.prGroupOptions = e.target.value }}
                         /> */}
 
-                        {/* <Field key={prGroupOptions}
+                          {/* <Field key={prGroupOptions}
                           as="select"
                           name="peer review assignment group"
 
@@ -378,19 +394,19 @@ function CourseSettings(props) {
                           })}
                         </Field> */}
 
-                        
+
                           <div>
-                          <select value={values.assignmentGroup}
-                          /* onChange={e => setPrGroup(e.target.value)}  */
-                          onKeyUp={handleChange}
-                          name="assignmentGroup"
-                          >
-                            <option key={0} value={-1}>Select Assignment Group</option>
-                            {/* <option key={0} value={-1}>{initialData.assignmentGroup}</option> */}
-                            {prGroupOptions.map(prGroup => {
-                              return <option key={prGroup.id} value={prGroup.name}>{prGroup.name}</option>;
-                            })}
-                          </select>
+                            <select value={values.assignmentGroup}
+                              /* onChange={e => setPrGroup(e.target.value)}  */
+                              onChange={handleChange}
+                              name="assignmentGroup"
+                            >
+                              <option key={0} value={-1}>Select Assignment Group</option>
+                              {/* <option key={0} value={-1}>{initialData.assignmentGroup}</option> */}
+                              {prGroupOptions.map(prGroup => {
+                                return <option key={prGroup.id} value={prGroup.name}>{prGroup.name}</option>;
+                              })}
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -407,13 +423,15 @@ function CourseSettings(props) {
                           </div>
                           <div style={{ marginTop: '25px' }}>
                             Due date for the peer review assignment:
-
                             <TextField
                               id="datetimelocal"
                               name="prDueDate"
+                              /* type="datetime-local" */
                               type="datetime-local"
-                              defaultValue={"2021-05-24T11:59:50Z"}
-                              onKeyUp={handleChange}
+                              /* defaultValue="2021-05-24T11:59" */
+                              value={values.prDueDate}
+                              /* value={values.prDueDate} */
+                              onChange={handleChange}
                               /* onChange={e => {
                                 values.prDueDate = e.target.value;
                                 console.log('values:', values);
@@ -453,18 +471,19 @@ function CourseSettings(props) {
                           </Field>
                         </form> */}
 
-                        <div>
-                          <select value={prRubric} 
-                          /* onChange={e => setPrRubric(e.target.value)}  */
-                          onKeyUp={handleChange}
-                          >
-                            <option key={0} value={-1}>Select Rubric</option>
-                            {rubricOptions.map(rubricObj => {
-                              /* console.log('rubric:', rubricObj) */
-                              return <option key={rubricObj.id} value={rubricObj.title}>{rubricObj.title}</option>;
-                            })}
-                          </select>
-                        </div>
+                          <div>
+                            <select value={values.reviewRubric}
+                              /* onChange={e => setPrRubric(e.target.value)}  */
+                              name="reviewRubric"
+                              onChange={handleChange}
+                            >
+                              <option key={0} value={-1}>Select Rubric</option>
+                              {rubricOptions.map(rubricObj => {
+                                /* console.log('rubric:', rubricObj) */
+                                return <option key={rubricObj.id} value={rubricObj.title}>{rubricObj.title}</option>;
+                              })}
+                            </select>
+                          </div>
 
                         </div>
                       </div>
@@ -476,10 +495,11 @@ function CourseSettings(props) {
                   <div className={styles.formfield}>
                     <TextField className={styles.formfield}
                       name="appealDueDate"
-                      id="datetime-local"
+                      id="datetimelocal"
                       type="datetime-local"
                       label="Appeal Due Date"
-                      onKeyUp={handleChange}
+                      value={values.appealDueDate}
+                      onChange={handleChange}
                       /* onChange={e => {
                         values.appealDueDate = e.target.value;
                         console.log('appeal:', values);
