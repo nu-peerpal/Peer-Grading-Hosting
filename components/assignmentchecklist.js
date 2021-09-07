@@ -6,7 +6,6 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
 import axios from 'axios';
 
 
@@ -39,23 +38,21 @@ function getSteps() {
     ["Peer Matching: ", { 'link': "/assignments/matching/matching" }],
     ["Review Due Date: ", { 'date': "status" }],
     ["Additional Matches: ", { 'link': "/assignments/checkmatching" }],
-    // ["TA Grading: ", { 'link': "/assignments/tamatchinglist/tamatchinglist" }],
     ["TA Grading: ", { 'link': "/grading/selectTaGrading" }],
     ["Review and Submission Reports: ", { 'link': "/assignments/reportlist/reportlist" }],
-    // ["Submission Reports: ", { 'link': "/assignments/submissionreportlist/submissionreportlist" }],
     ["Appeals: ", { 'link': "/assignments/appeals/appeals" }], // "Either Not started, Ongoing or Passed"
     ["Send Grades: ", { 'link': "/assignments/sendgrades/sendgrades"}]
   ];
 }
 
-function incActiveStep(activeStep){
-  if (activeStep == 8){
-    return 0
-  }
-  else{
-    return activeStep + 1
-  }
-}
+// function incActiveStep(activeStep){
+//   if (activeStep == 8){
+//     return 0
+//   }
+//   else{
+//     return activeStep + 1
+//   }
+// }
 function assignmentchecklist(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);

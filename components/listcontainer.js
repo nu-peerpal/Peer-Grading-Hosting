@@ -10,10 +10,8 @@ import Link from 'next/link'
 function Info(props) { // Display list item description
   const dueDate = props.dueDate;
   const info = props.info;
-  console.log('props:',props)
   if (dueDate) {
     let newDate = new Date(dueDate);
-    let nextActionItem = props.actionItem
     let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
     return <TableCell className={styles.info} > {dateText} </TableCell> 
   }
@@ -24,10 +22,8 @@ function Info(props) { // Display list item description
 
 function ListContainer(props) {
   function getData() {
-    //console.log('list props:', props);
     var information = props;
     var link = "";
-    console.log({information});
     if (information.data) {
       return (
         information.data.map(x => {

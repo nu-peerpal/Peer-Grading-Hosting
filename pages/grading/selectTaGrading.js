@@ -23,7 +23,6 @@ const SelectTaGrading = (props) => {
   var { assignmentName, assignmentId, name, id, rubricId } = router.query;
   if (!assignmentName) assignmentName = name;
   if (!assignmentId) assignmentId = id;
-  // console.log({assignmentId})
   useEffect(() => {
     if (!userId) { // check if state isn't active
       if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -41,24 +40,18 @@ const SelectTaGrading = (props) => {
       const allMatchings = data[1].data.data;
       const assignmentData = data[2].data.data;
       setAssignmentDetails(assignmentData);
-      // console.log({allMatchings})
 
       const taMatchings = data[1].data.data.filter(match => match.userId == userId);
-      // console.log({taMatchings});
       let reviewReviews = [];
       let subMatch, revMatches;
       taMatchings.forEach(match => {
-        console.log({match})
         subMatch = submissions.filter(submission => (submission.canvasId == match.submissionId && submission.assignmentId == match.assignmentId));
         revMatches = allMatchings.filter(matching => (matching.submissionId == subMatch[0].canvasId && matching.assignmentId == assignmentId));
-        // console.log({revMatches})
-        // console.log({subMatch})
         let graded = false;
         let allGraded = [];
         revMatches.forEach(match => {
           if (match.reviewReview && match.userId != userId) {
             graded = true;
-            // console.log(match.reviewReview.reviewBody[0])
             if (match.reviewReview.reviewBody[0].points === ""){
               allGraded.push(false); // if empty review (not even 0) then it must not be graded
             } else {
@@ -66,14 +59,12 @@ const SelectTaGrading = (props) => {
             }
           }
         });
-        // console.log({allGraded})
         if (allGraded.includes(false)) {
           allGraded = false;
         } else {
           allGraded = true;
         }
         // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
-        // console.log({match})
         reviewReviews.push({
           type: match.matchingType,
           done: [match.review!=null, graded, allGraded],
@@ -82,10 +73,10 @@ const SelectTaGrading = (props) => {
         });
       });
       reviewReviews.sort(function(a, b){return a.groupId-b.groupId})
-      console.log('reviews:',reviewReviews)
 
       const toDoReviews = [];
       const toDoGrades = []
+      // let matchingsFromAppeals = []; // show matchings in appeals
       console.log({reviewReviews})
       // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
       for (const sub of reviewReviews) {
@@ -115,18 +106,24 @@ const SelectTaGrading = (props) => {
               data: {submissionId: sub.submission.canvasId},
           });
         }
+
+        // if (sub.type == 'appeal') {
+        //   matchingsFromAppeals.push({
+        //     name: "Grade group " + sub.submission.groupId + "'s submission" + finished,
+        //     canvasId: assignmentId,
+        //     rubricId: rubricId,
+        //     // matchingId: sub.matchingId,
+        //     data: {submissionId: sub.submission.canvasId, id: sub.matchingId},
+        //   })
+        // }
+
       }
-    
-    // console.log(reviewReviews.filter(review => review.done[2] == true));
-    // console.log(reviewReviews.filter(review => (review.done[0] == false && review.type == 'additional')))
-    // console.log(reviewReviews.filter(review => review.done[2] == false))
     let tempFlag = false;
-    console.log((reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0));
+    // console.log((reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0));
     if ((reviewReviews.filter(review => review.done[2] == false).length == 0) && (reviewReviews.filter(review => (review.done[0] == false && (review.type == 'additional' || review.type == 'appeal'))).length == 0)) {
       setReviewsCompleted(true)
       tempFlag = true;
     }
-    console.log({tempFlag})
     if (assignmentData.reviewStatus >= 6) {
       if (tempFlag) {
         if (assignmentData.reviewStatus == 6) {
@@ -178,16 +175,35 @@ const SelectTaGrading = (props) => {
     }
   }
 
-  function handleCompleted() {
+  async function handleCompleted() {
     if (!completedConfirmed) { // finished grading
       setCompletedConfirmed(true);
+      let notif = '';
+      let subject = '';
       if (assignmentDetails.reviewStatus == 5) {
         axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 6});
+        notif = 'TA has completed TA reviews.'
+        subject = 'Completed TA reviews'
       }
       if (assignmentDetails.reviewStatus == 7) {
         axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 8});
+        notif = 'TA has completed appeal reviews.'
+        subject = 'Completed appeal reviews'
       }
       setReviewStatusSet("Confirmed");
+
+      // Notify instructor when TA reviews or appeals are complete
+      let instructors = await axios.get(`/api/users?courseId=${courseId}&enrollment=InstructorEnrollment`)
+      console.log('instructors:',instructors);
+        Promise.all([
+          axios.post(`/api/sendemail?type=appealsComplete&courseId=${courseId}`, {
+            userId: instructors.data.data[0].id, 
+            subject: subject,
+            message: notif
+          })
+        ]).then(res => {console.log('res:',res)
+            }).catch(err => console.log('err:',err))
+
     } else { // no longer finished grading
       setCompletedConfirmed(false);
       if (assignmentDetails.reviewStatus == 6) {
