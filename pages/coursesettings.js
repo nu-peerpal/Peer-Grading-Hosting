@@ -23,6 +23,16 @@ import { Field, Formik, Form } from "formik";
 import DatePicker from "react-datepicker";
 import DatePickerField from "../components/datepickerfield";
 import Cookies from 'js-cookie';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import SubmitButton from '../components/submitButton';
+import Alert from '@material-ui/lab/Alert';
 
 const axios = require("axios");
 
@@ -30,16 +40,56 @@ const axios = require("axios");
 // bonus percent: added when TA doesn't grade a student's assignment
 //localhost8081/courseSettings?assignmentname='name' assignmentid
 
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+  noLabel: {
+    marginTop: theme.spacing(3),
+  },
+}));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(ta, tas, theme) {
+  return {
+    fontWeight:
+      tas.indexOf(ta) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
+
 function CourseSettings(props) {
+  console.log('props:', props);
   const { userId, courseId, courseName, assignment, createUser, savedStudentId } = useUserData();
   const router = useRouter();
   //const { assignmentId, assignmentName, rubricId } = router.query;
   const assignmentId = 109;
   const assignmentName = 'Null Group Test';
-  const [appealDueDate, setAppealDueDate] = useState();
+  const [appealDueDate, setAppealDueDate] = React.useState("");
   const [loadedDeadline, setLoadedDeadline] = useState("");
   const [existingDueDate, setExistingDueDate] = useState(false);
   const [submitResponse, setSubmitResponse] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   // matching.js
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
@@ -56,7 +106,7 @@ function CourseSettings(props) {
   const [rubricOptions, setRubricOptions] = React.useState([]); // displays all rubrics in Canvas
   const [prGroup, setPrGroup] = React.useState(-1); // list of group names and ids
   const [prGroupOptions, setPrGroupOptions] = React.useState([]); // list of group names
-  const [prDueDate, setPrDueDate] = React.useState(null); // PR assignment due date
+  const [prDueDate, setPrDueDate] = React.useState(""); // PR assignment due date
   const [prRubric, setPrRubric] = React.useState(-1); // selecting rubric ID for PR assignment
   //const { userId, courseId, assignment } = useUserData(); // data from LTI launch
   //const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
@@ -69,7 +119,9 @@ function CourseSettings(props) {
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
   // console.log({rubricOptions});
-  const [tas, setTas] = useState([]);
+  const classes = useStyles();
+  const theme = useTheme();
+  const [tas, setTas] = React.useState([]);
   const [bonusPercent, setBonusPercent] = useState();
   const [reviewRubric, setReviewRubric] = useState([]);
   const [matchingSettings, setMatchingSettings] = useState([]);
@@ -78,10 +130,28 @@ function CourseSettings(props) {
   const [prGradeAlgo, setPrGradeeAlgo] = useState("");
   const [addMatchAlgo, setAddMatchAlgo] = useState("");
   const [taList, setTaList] = useState({});
+  const [taNames, setTaNames] = React.useState([]);
   const [peerLoad, setPeerLoad] = useState("");
   const [graderLoad, setGraderLoad] = useState("");
   const [userCreated, setUserCreated] = useState(false);
-  const [initialData, setInitialData] = useState([]);
+  const [initialData, setInitialData] = useState({
+    peerLoad: "",
+    graderLoad: "",
+    bonusPercent: "",
+    prAssignmentName: "",
+    prAssignmentGroup: "",
+    prDueDate: "",
+    rubric: "",
+    appealDueDate: "",
+    tas: [],
+    matchingAlgo: "", subGradeAlgo: "", prGradeAlgo: "", addMatchAlgo: "",
+  });
+  const [courseSettingsJsonObj, setCourseSettingsJsonObj] = useState({});
+  const [showAlert, setShowAlert] = useState(false);
+  console.log('canvasform props:', props);
+  let alert = (
+    <Alert style={{ marginLeft: '10px' }} severity={submitSuccess ? "success" : "error"}>{submitResponse}</Alert>
+  )
 
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -99,10 +169,28 @@ function CourseSettings(props) {
     return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
   }
 
-  function initial() {
-
+  function toDate(timestamp) {
+    var d = new Date(timestamp);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var currentHour = d.getHours();
+    if (currentHour < 10) {
+      currentHour = '0' + currentHour;
+    }
+    var currentMinute = d.getMinutes();
+    if (currentMinute < 10) {
+      currentMinute = '0' + currentMinute;
+    }
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute);
+    console.log('toDate date:', date);
+    return date;
   }
-
 
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
@@ -126,7 +214,7 @@ function CourseSettings(props) {
       axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
       axios.get(`/api/canvas/rubrics?courseId=${courseId}`),
       axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`),
-      axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment`),
+      axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/courses/${courseId}`),
       ]).then(data => {
         let assignmentData = data[0].data.data;
@@ -148,72 +236,89 @@ function CourseSettings(props) {
         data[4].data.data.forEach(ta => {
           taNames.push(ta["firstName"] + " " + ta["lastName"]);
         })
+        console.log('settas:', [taNames])
+        console.log('settanames:', taNames)
         setTas([taNames]);
+        setTaNames(taNames);
         let initial = data[5].data.data;
+        initial.peerLoad = String(initial.peerLoad);
+        initial.graderLoad = String(initial.graderLoad);
+        console.log('initial pr due date type:', typeof initial.prDueDate);
+        initial.prDueDate = toDate(initial.prDueDate);
+        initial.appealDueDate = toDate(initial.appealDueDate);
+        console.log('initial pr due date', initial.prDueDate);
+        console.log('initial appeal due date', initial.appealDueDate);
+        /* initial.prDueDate = formatTimestamp(initial.prDueDate);
+        initial.appealDueDate = formatTimestamp(initial.appealDueDate) */
+
         if (!initial.tas) {
           initial.tas = {};
         }
         setInitialData(initial);
         console.log('initial data:', initial)
-        console.log('initial pr due date type:',typeof initial.prDueDate)
+        console.log('date today: ', Date.now())
+        console.log('date today type:', typeof Date.now())
       })
     }
   }, [userCreated]);
 
   return (
     <div className="Content">
-      <Container name={"Settings for assignment: " + assignmentName}>
+      <Container name={"Settings for Course Using Assignment: " + assignmentName}>
         <div className={styles.desc}>
           <Formik
+            enableReinitialize={true}
             key={tas}
-            initialValues={{
-              peerLoad: initialData.peerLoad,
-              graderLoad: initialData.graderLoad,
-              bonusPercent: initialData.bonusPercent,
-              prAssignmentName: initialData.assignmentName,
-              prAssignmentGroup: initialData.assignmentGroup,
-              prDueDate: initialData.prDueDate,
-              rubric: initialData.reviewRubric,
-              appealDueDate: initialData.appealDueDate,
-              tas: initialData.tas,
-              matchingAlgo: "", subGradeAlgo: "", prGradeAlgo: "", addMatchAlgo: "",
-            }}
-            onSubmit={async (data, { setSubmitting }) => {
+            initialValues={initialData}
 
+            onSubmit={(data, { setSubmitting }) => {
+              /* tas prop to general component */
+              console.log('onsubmit data:', data)
               let courseSettingsJson = {
-                appealDueDate: appealDueDate,
-                prDueDate: prDueDate,
-                bonusPercent: bonusPercent,
+                appealDueDate: data.appealDueDate,
+                prDueDate: data.prDueDate,
+                bonusPercent: data.bonusPercent,
                 matchingAlgo: "",
                 subGradeAlgo: "",
                 prGradeAlgo: "",
                 addMatchAlgo: "",
-                assignmentName: prName,
-                tas: data.TA, // or tas?
-                peerLoad: peerLoad,
-                graderLoad: graderLoad,
-                matchingSettings: matchingSettings,
+                assignmentName: data.assignmentName,
+                /* tas: data.TA, // or tas? */
+                tas: data.tas,
+                peerLoad: data.peerLoad,
+                graderLoad: data.graderLoad,
+                matchingSettings: data.matchingSettings,
               };
-              if (prRubric != -1) {
-                courseSettingsJson.reviewRubric = prRubric;
+              if (data.reviewRubric != -1) {
+                courseSettingsJson.reviewRubric = data.reviewRubric;
               } else {
                 courseSettingsJson.reviewRubric = null;
               }
-              if (prGroup != -1) {
-                courseSettingsJson.assignmentGroup = prGroup;
+              if (data.assignmentGroup != -1) {
+                courseSettingsJson.assignmentGroup = data.assignmentGroup;
               } else {
-                courseSettingsJson.assignmentGroup = null;
+                courseSettingsJson.assignmentGroup = data.assignmentGroup;
               }
+              setCourseSettingsJsonObj(courseSettingsJson);
+              console.log('coursesettingsjsonobj:', courseSettingsJsonObj);
 
-              /* create handleSubmit function (no inputs)*/
-              //axios.patch('/api/canvas/${canvasId}',all json objects updated)
-              //console.log('coursesettings:', courseSettingsJson)
               axios.patch(`/api/courses/${courseId}`, courseSettingsJson).then(res => {
-                console.log('coursesettings:', courseSettingsJson)
-                console.log('after pr due date type:', typeof courseSettingsJson.prDueDate)
-                console.log('res:', res)
-              });
-              console.log('data1:', data)
+                if (res.status == 200) {
+                  setSubmitResponse("Changes set.")
+                  setExistingDueDate(true);
+                  setSubmitSuccess(true);
+                  setShowAlert(true);
+                  console.log('coursesettings:', courseSettingsJson)
+                  console.log('after pr due date type:', typeof courseSettingsJson.prDueDate)
+                  console.log('res:', res)
+                  console.log('data1:', data)
+                  console.log('data1 appeal due date:', data.appealDueDate)
+                  console.log('data1 pr due date:', data.prDueDate)
+                }
+              }).catch(err => {
+                setSubmitResponse("Something went wrong.")
+                setSubmitSuccess(false);
+              })
             }}
           >
             {({ values, handleChange, dirty }) => (
@@ -226,16 +331,17 @@ function CourseSettings(props) {
                         name="peerLoad"
                         type="input"
                         /* placeholder={initialData.peerLoad} */
+                        /* value={values.peerLoad} */
                         required={true}
                         as={TextField}
                         className={styles.formfield}
                         value={values.peerLoad}
-                        onChange={e => {
-                          values.peerLoad = e.target.value;
-                          setPeerLoad(e.target.value)
-                          console.log('peer load:', values);
-                          initialData.peerLoad = e.target.value
-                        }}                        
+                        onKeyUp={handleChange}
+                      /* onChange={e => {
+                        values.peerLoad = e.target.value;
+                        setPeerLoad(e.target.value)
+                        initialData.peerLoad = e.target.value
+                      }} */
                       />
                     </div>
                   </div>
@@ -250,36 +356,17 @@ function CourseSettings(props) {
                           required={true}
                           as={TextField}
                           className={styles.formfield}
-                          onChange={e => {
-                            values.graderLoad = e.target.value;
-                            setGraderLoad(e.target.value)
-                          }}
+                          onKeyUp={handleChange}
+                        /* onChange={e => {
+                          values.graderLoad = e.target.value;
+                          setGraderLoad(e.target.value)
+                        }} */
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className={styles.below}>
-                  TAs:
-                  {tas.map(taList =>
-                    <Field
-                      key={taList}
-                      name="tas"
-                      component={AutoComplete}
-                      required={true}
-                      label="TA"
-                      options={taList}
-                      /* placeholder={initialData.tas} */
-                      value={values.tas}
-                      onChange={e => {
-                        values.tas = e.target.value
-                        setTaList(e.target.value)
-                        console.log('ta values:', e.target.value)
-                      }}
-                    />
-                  )}
-                </div>
-
+                {/* /api/users */}
                 <div className={styles.below}>
                   Bonus Percent:
                   <div >
@@ -290,12 +377,12 @@ function CourseSettings(props) {
                       as={TextField}
                       className={styles.formfield}
                       value={values.bonusPercent}
-                      onChange={e => {
+                      onKeyUp={handleChange}
+                      /* onChange={e => {
                         values.bonusPercent = e.target.value;
                         console.log('bonus:', values);
                         setBonusPercent(e.target.value)
-                        initialData.bonusPercent = e.target.value
-                      }}
+                      }} */
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -305,6 +392,36 @@ function CourseSettings(props) {
                       }}
                     />
                   </div>
+                </div>
+
+                {/* rubrics */}
+                <div className={styles.below} >
+                  TAs and Instructors Responsible for Grading this Course:
+                  <InputLabel id="demo-mutiple-checkbox-label"></InputLabel>
+                  <Select
+                    labelId="demo-mutiple-chip-label"
+                    id="demo-mutiple-chip"
+                    name="tas"
+                    multiple
+                    value={values.tas}
+                    onChange={handleChange}
+                    input={<Input id="select-multiple-chip" />}
+                    renderValue={(selected) => (
+                      <div className={classes.chips}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} className={classes.chip} />
+                        ))}
+                      </div>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {taNames.map((name) => (
+                      <MenuItem key={name} value={name} >
+                        <Checkbox checked={values.tas.indexOf(name) > -1} />
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* peer review enabling section */}
@@ -319,16 +436,17 @@ function CourseSettings(props) {
                           Name of the peer review assignment:
 
                           <Field
-                            name="prAssignmentName"
+                            name="assignmentName"
                             type="input"
-                            value={values.prAssignmentName}
+                            value={values.assignmentName}
                             required={true}
                             as={TextField}
                             className={styles.formfield}
-                            onChange={e => {
-                              values.prAssignmentName = e.target.value;
-                              setPrName(e.target.value)
-                            }}
+                            onKeyUp={handleChange}
+                          /* onChange={e => {
+                            values.prAssignmentName = e.target.value;
+                            setPrName(e.target.value)
+                          }} */
                           />
 
                         </div>
@@ -337,7 +455,7 @@ function CourseSettings(props) {
                         <div className={styles.column__content}>
                           Select peer review assignment group:
 
-                        {/* <Field
+                          {/* <Field
                           //key={options}
                           name="Peer Review Assignment Group"
                           className={styles.formfield}
@@ -348,7 +466,7 @@ function CourseSettings(props) {
                           onChange={e => { values.prGroupOptions = e.target.value }}
                         /> */}
 
-                        {/* <Field key={prGroupOptions}
+                          {/* <Field key={prGroupOptions}
                           as="select"
                           name="peer review assignment group"
 
@@ -369,15 +487,19 @@ function CourseSettings(props) {
                           })}
                         </Field> */}
 
-                        
+
                           <div>
-                          <select value={prGroup} onChange={e => setPrGroup(e.target.value)} >
-                            <option key={0} value={-1}>Select Assignment Group</option>
-                            {/* <option key={0} value={-1}>{initialData.assignmentGroup}</option> */}
-                            {prGroupOptions.map(prGroup => {
-                              return <option key={prGroup.id} value={prGroup.name}>{prGroup.name}</option>;
-                            })}
-                          </select>
+                            <select value={values.assignmentGroup}
+                              /* onChange={e => setPrGroup(e.target.value)}  */
+                              onChange={handleChange}
+                              name="assignmentGroup"
+                            >
+                              <option key={0} value={-1}>Select Assignment Group</option>
+                              {/* <option key={0} value={-1}>{initialData.assignmentGroup}</option> */}
+                              {prGroupOptions.map(prGroup => {
+                                return <option key={prGroup.id} value={prGroup.name}>{prGroup.name}</option>;
+                              })}
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -394,24 +516,46 @@ function CourseSettings(props) {
                           </div>
                           <div style={{ marginTop: '25px' }}>
                             Due date for the peer review assignment:
-
                             <TextField
                               id="datetimelocal"
                               name="prDueDate"
+                              /* type="datetime-local" */
                               type="datetime-local"
-                              defaultValue={"2021-05-24T11:59:50Z"}
-                              onChange={e => {
+                              /* defaultValue="2021-05-24T11:59" */
+                              value={values.prDueDate}
+                              /* value={values.prDueDate} */
+                              onChange={handleChange}
+                              /* onChange={e => {
                                 values.prDueDate = e.target.value;
                                 console.log('values:', values);
                                 setPrDueDate(e.target.value + ":59-05:00")
-                              }} // hardcode CT, might have to change with time shift
+                              }} */ // hardcode CT, might have to change with time shift
                               InputLabelProps={{
                                 shrink: true,
                               }}
                             />
 
                           </div>
+                          <div style={{ marginTop: '25px' }}>
+                            Appeals Due Date:
+                            <TextField className={styles.formfield}
+                              name="appealDueDate"
+                              id="datetimelocal"
+                              type="datetime-local"
+                              value={values.appealDueDate}
+                              onChange={handleChange}
+                              /* onChange={e => {
+                                values.appealDueDate = e.target.value;
+                                console.log('appeal:', values);
+                                setAppealDueDate(e.target.value + ":59-05:00")
+                              }} */ // hardcode CT, might have to change with time shift
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                            />
+                          </div>
                         </div>
+
                       </div>
 
                       {/* rubric selection section */}
@@ -439,15 +583,19 @@ function CourseSettings(props) {
                           </Field>
                         </form> */}
 
-                        <div>
-                          <select value={prRubric} onChange={e => setPrRubric(e.target.value)} >
-                            <option key={0} value={-1}>Select Rubric</option>
-                            {rubricOptions.map(rubricObj => {
-                              /* console.log('rubric:', rubricObj) */
-                              return <option key={rubricObj.id} value={rubricObj.title}>{rubricObj.title}</option>;
-                            })}
-                          </select>
-                        </div>
+                          <div>
+                            <select value={values.reviewRubric}
+                              /* onChange={e => setPrRubric(e.target.value)}  */
+                              name="reviewRubric"
+                              onChange={handleChange}
+                            >
+                              <option key={0} value={-1}>Select Rubric</option>
+                              {rubricOptions.map(rubricObj => {
+                                /* console.log('rubric:', rubricObj) */
+                                return <option key={rubricObj.id} value={rubricObj.title}>{rubricObj.title}</option>;
+                              })}
+                            </select>
+                          </div>
 
                         </div>
                       </div>
@@ -456,35 +604,22 @@ function CourseSettings(props) {
                 </div>
 
                 <AccordionDetails>
-                  <div className={styles.formfield}>
-                    <TextField className={styles.formfield}
-                      name="appealDueDate"
-                      id="datetime-local"
-                      type="datetime-local"
-                      label="Appeal Due Date"
-                      onChange={e => {
-                        values.appealDueDate = e.target.value;
-                        console.log('appeal:', values);
-                        setAppealDueDate(e.target.value + ":59-05:00")
-                      } // hardcode CT, might have to change with time shift
-                      }
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </div>
-                </AccordionDetails>
-
-                <AccordionDetails>
-                  <div className={styles.below}>
+                  <div className={styles.submitContainer}>
                     <Button variant="contained"
                       color="primary"
                       className="text-right"
-                      /* onClick={handleSubmit} */
+                      /*  onClick={()=>{
+                         setShowAlert(true)
+                       }} */
                       type="submit"
-                      disabled={!dirty}> Update All </Button>
-                    {submitResponse}
+                      disabled={!dirty}> Update Changes </Button>
+                    {showAlert ? alert : null}
+
                   </div>
+                  {/* <SubmitButton 
+                  onClick={handleSubmit} title="Update Changes"
+                  submitAlert={submitResponse}
+                  submitSuccess={submitSuccess} /> */}
                 </AccordionDetails>
               </Form>
             )}
