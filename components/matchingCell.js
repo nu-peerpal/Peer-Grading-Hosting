@@ -9,7 +9,6 @@ import Box from '@material-ui/core/Box';
 
 // display submission and peers reviewing it
 function MatchingCell(props) {
-  const [prProgress, setPrProgress] = useState({});
   const [numPeers, setNumPeers] = useState();
   const [numSubs, setNumSubs] = useState();
   const [formattedTAs, setFormattedTAs] = useState('');
@@ -24,14 +23,8 @@ function MatchingCell(props) {
     var formattedTAsNotCompleted = "";
     var formattedPeersCompleted = "";
     var formattedPeersNotCompleted = "";
-
-    // need to import this variable from reloadMatchings.js and convert it to string form
-    var newCompletedArray = props.completedReviewers;
-
     var prProgress = props.prProgress
     var userProgress = props.userProgress
-
-
     let numPeers;
     // console.log(props);
 
@@ -47,11 +40,9 @@ function MatchingCell(props) {
 
     if (props.peers){
       numPeers = props.peers.length;
-    
-
-
+      console.log('peers', props.peers)
       props.peers.forEach(peer => {
-        if (prProgress[props.submissionId] && prProgress[props.submissionId].completedReviewers.includes(parseInt(peer.id))) {
+        if (prProgress && (prProgress[props.submissionId] && prProgress[props.submissionId].completedReviewers.includes(parseInt(peer.id)))) {
           if (peer["name"].includes("TA")) {
             formattedTAs += peer["name"];
             formattedTAs += (", ");
@@ -69,7 +60,7 @@ function MatchingCell(props) {
     } else {
         // do logic for listing out completed submissions
           props.submissions.forEach(submission => {
-            if (userProgress[props.reviewerId] && userProgress[props.reviewerId].completedSubmissions.includes(submission.id)) {
+            if (userProgress && (userProgress[props.reviewerId] && userProgress[props.reviewerId].completedSubmissions.includes(submission.id))) {
                   formattedPeersCompleted += (JSON.stringify(submission.submission));
                   formattedPeersCompleted += (", ");
                 } else {
@@ -176,8 +167,13 @@ function LinearWithValueLabel(props) {
   const [progressBarMax, setProgressBarMax] = React.useState(0);
 
   React.useEffect(() => {
+    if (props.progress) {
       setProgress(props.progress[0])
       setProgressBarMax(props.progress[1])
+    } else {
+      setProgress(0)
+      setProgressBarMax(1)
+    }
   }, []);
 
   return (

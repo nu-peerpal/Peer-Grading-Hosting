@@ -47,10 +47,10 @@ const InitialChecklist = (props) => {
     console.log(res);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     var rubric = null;
     var i;
-    uploadRubrics(rubricOptions);
+    await uploadRubrics(rubricOptions);
     
     for (i = 0; i < rubricOptions.length; i++) {
       if (rubricOptions[i].id == rubricId) {
@@ -66,7 +66,7 @@ const InitialChecklist = (props) => {
       prGroup: prGroup,
       rubric: rubric
     }
-    axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
+    let reviewAssignmentRes = await axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
       assignment = assignment.data.data
       console.log({assignment})
       assignment["reviewRubricId"] = parseInt(rubricId);
@@ -78,6 +78,10 @@ const InitialChecklist = (props) => {
       assignment["rubricId"] = parseInt(router.query.rubricId);
       assignment["reviewStatus"] = 1;
       axios.post(`/api/assignments`, assignment)
+    });
+    console.log({reviewAssignmentRes});
+    router.push({
+      pathname: '/',
     })
   }
 

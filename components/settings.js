@@ -109,12 +109,12 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
           // if they want to see submissions first
           if (subFirstView) {
             for (var obj in matchedSubs) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} progress={[0,1]}/>)
             }
           }
           else{
             for (var obj in matchedUsers) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} progressCaseTwo={[0,1]}/>)
             }
           }
   
@@ -137,6 +137,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         algGraders.push(selectedGraders[i]["id"])
       }
       algGraders = algGraders.sort(function(a, b){return a-b});
+      let errHandle = "";
       try {
         const matchings = await peerMatch(
           algGraders,
@@ -145,8 +146,11 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
+        errHandle = matchings;
+        console.log({matchings})
         let matched_users = {};
         let submissionBuckets = {};
+        let prProgress = {};
         let grader, sub, user;
         // console.log({submissions});
         for (let i in matchings) {
@@ -178,8 +182,10 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
             submissionBuckets[sub].push(matched_users[grader]);
           } else {
             submissionBuckets[sub] = [matched_users[grader]];
+            // prProgress[sub]
           }
         }
+        // console.log({submissionBuckets})
         setMatchedUsers(matched_users);
         setMatchedSubs(submissionBuckets);
   
@@ -190,12 +196,12 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         if (subFirstView) {
           // console.log(submissionBuckets);
           for (var obj in submissionBuckets) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} progress={[0,1]}/>)
           }
         }
         else{
           for (var obj in matched_users) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} />)
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} progressCaseTwo={[0,1]} />)
           }
         }
   
@@ -204,7 +210,8 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         setSubmitted(true);
         setSubmitting(false);
       } catch(err) {
-        alert('Algorithm failed! Try adjusting Peer or Grader Load.');
+        console.log({err})
+        alert('Algorithm failed! Error Message: ' + errHandle);
       }
   
     }
@@ -237,7 +244,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
               as={TextField}
               className={styles.formfield}
             />
-            TAs: {/* why isn't the label working here ??  */}
+            Graders: {/* why isn't the label working here ??  */}
             {tas.map(taList => 
               <Field
               key={taList}
