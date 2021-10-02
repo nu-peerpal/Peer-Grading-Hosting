@@ -216,7 +216,7 @@ function Dashboard(props) {
           //setToDoReviews(toDoReviews)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
 
-          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus:reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
           //ID where duedate and linked are defined
@@ -228,13 +228,14 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = tempStudentInProgressReviews.filter(function(e){
-        return e.reviewStatus < 4
-      })
+      const studentToDoReviews = tempStudentInProgressReviews.filter(({reviewStatus} => reviewStatus < 4);
+
       // const studentDoneReviews = toDoReviews.filter(function(e){
       //   return e.reviewStatus >= 4
       // })
       console.log('ta todos:',taToDoReviews)
+      conosle.log('studentToDoReviews',studentToDoReviews);
+      conosle.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
@@ -299,6 +300,7 @@ function ToDoList(props) {
   }
 }
 function StudentToDoList(props) {
+  console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
     name="Peer Review Assignments"

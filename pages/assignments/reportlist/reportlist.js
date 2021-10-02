@@ -212,6 +212,7 @@ const ReviewReports = () => {
       // Change User ID to User Name for Review Reports
       let newReviewReport = [];
       for (let revRep in reports[1][1]) {
+        console.log('reports:',reports)
         let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
         let j = dbSubs.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
         let revGrade;
