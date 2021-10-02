@@ -46,7 +46,7 @@ function Dashboard(props) {
       const toDoReviews = [];
       const taToDoReviews = [];
       // const studentCompletedReviews = [];
-      const studentInProgressReviews = [];
+      const tempStudentInProgressReviews = [];
       for (const { id, name, assignmentDueDate, reviewDueDate, rubricId, reviewStatus } of assignments) { // push OG assignments
         let actionItem = ''
         let taActionItem = ''
@@ -116,7 +116,7 @@ function Dashboard(props) {
           //setToDoReviews(toDoReviews)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
           
-          studentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
           //ID where duedate and linked are defined
@@ -128,13 +128,15 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = studentInProgressReviews.filter(function(e){
+      const studentToDoReviews = await tempStudentInProgressReviews.filter(function(e){
         return e.reviewStatus < 4
       })
       // const studentDoneReviews = toDoReviews.filter(function(e){
       //   return e.reviewStatus >= 4
       // })
       console.log('ta todos:',taToDoReviews)
+      conosle.log('studentToDoReviews',studentToDoReviews);
+      conosle.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
@@ -199,6 +201,7 @@ function ToDoList(props) {
   }
 }
 function StudentToDoList(props) {
+  console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
     name="Assignments to Review"

@@ -20,6 +20,9 @@ export default async (req, res) => {
         if (req.query.assignmentId) {
           params.assignmentId = req.query.assignmentId;
         }
+        if (req.query.submissionId) {
+          params.grade = req.query.submissionId
+        }
         let reviewGradesReports = await db.review_grades_reports.findAll({
           where: params,
         });
