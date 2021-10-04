@@ -40,7 +40,7 @@ function MatchingCell(props) {
 
     if (props.peers){
       numPeers = props.peers.length;
-      console.log('peers', props.peers)
+      // console.log('peers', props.peers)
       props.peers.forEach(peer => {
         if (prProgress && (prProgress[props.submissionId] && prProgress[props.submissionId].completedReviewers.includes(parseInt(peer.id)))) {
           if (peer["name"].includes("TA")) {

@@ -46,7 +46,7 @@ function Dashboard(props) {
       const toDoReviews = [];
       const taToDoReviews = [];
       // const studentCompletedReviews = [];
-      const studentInProgressReviews = [];
+      const tempStudentInProgressReviews = [];
       for (const { id, name, assignmentDueDate, reviewDueDate, rubricId, reviewStatus } of assignments) { // push OG assignments
         let actionItem = ''
         let taActionItem = ''
@@ -116,7 +116,7 @@ function Dashboard(props) {
           //setToDoReviews(toDoReviews)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
           
-          studentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus:reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
           //ID where duedate and linked are defined
@@ -128,7 +128,7 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = studentInProgressReviews.filter(function(e){
+      const studentToDoReviews = tempStudentInProgressReviews.filter(function(e){
         return e.reviewStatus < 4
       })
       // const studentDoneReviews = toDoReviews.filter(function(e){
@@ -192,16 +192,16 @@ function ToDoList(props) {
   } else { // No items in to do list. 
   return <ListContainer
     name="Todos"
-    data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
+    data= {[{name:"Enable your first assignment for Peer Reviews under Canvas Assignments!"}]}
     info= "Get Started"
-    link= "/canvas/canvasSelect"
+    link= "/"
   />
   }
 }
 function StudentToDoList(props) {
   if (props.toDoReviews) {
     return <ListContainer
-    name="Assignments to Review"
+    name="Peer Review Assignments"
     data={props.toDoReviews}
     student={props.ISstudent}
     link="/peer_reviews/selectReview"

@@ -10,7 +10,7 @@ import { useUserData } from "./storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 
-function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
+function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
     const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
     const [tas, setTas] = useState([]);
     const [matchedUsers, setMatchedUsers] = useState();
@@ -75,20 +75,24 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         // console.log({tempSubmissionData});
         let subStudents = {};
+        let subStudentId = {};
         let tempSubmissions = []; // set submissions for peerMatch alg
         for (let sub in tempSubmissionData) {
           let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"]);
           let subId = tempSubmissionData[sub]["canvasId"];
-          student = student[0]["firstName"] + " " + student[0]["lastName"];
+          let studentName = student[0]["firstName"] + " " + student[0]["lastName"];
           bucket = tempSubmissionData[sub]["canvasId"];
           if (subStudents[bucket]) {
-            subStudents[bucket].push(student);
+            subStudents[bucket].push(studentName);
+            subStudentId[bucket].push(student[0].canvasId);
           } else {
-            subStudents[bucket] = [student];
+            subStudents[bucket] = [studentName];
+            subStudentId[bucket] = [student[0].canvasId];
           }
           tempSubmissions.push([tempSubmissionData[sub]["submitterId"],subId]);
         }
         // console.log({subStudents})
+        setSubStudentIds(subStudentId)
         setSubmissionGroups(subStudents);
         // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
         setTas([tempTas]);
@@ -137,6 +141,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         algGraders.push(selectedGraders[i]["id"])
       }
       algGraders = algGraders.sort(function(a, b){return a-b});
+      setGrader(algGraders);
       let errHandle = "";
       try {
         const matchings = await peerMatch(
@@ -219,7 +224,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
     return (
       <div>
       <Formik
-        initialValues={{ peerLoad: 3, graderLoad: 10, TA: [] }}
+        initialValues={{ peerLoad: 3, graderLoad: 6, TA: [] }}
         onSubmit={async (data, { setSubmitting }) => {
           createMatchings(data, setSubmitting);
         }}
