@@ -26,40 +26,26 @@ const helpButtonStyle = {
 
 
 function Header(props) {
-
     const [open, setOpen] = useState(false);
-  
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
+    const [text, setText] = useState({
+        value: ''
+    });
+    const handleClickOpen = () => { setOpen(true) };
+    const handleClose = () => { setOpen(false) };
     const { userId, courseId, courseName, assignment } = useUserData();
-
-        async function handleSubmit(e) {
-          setOpen(false);
-          e.preventDefault()
-
-          let res = await axios.post(`/api/sendemail?type=bug`, {
-              userId: userId,
-              message: text.value
-          })
-
-          console.log('res:',res);
-        };
+    async function handleSubmit(e) {
+        setOpen(false);
+        e.preventDefault()
+        let res = await axios.post(`/api/sendemail?type=bug`, {
+            userId: userId,
+            message: text.value
+        })
+        console.log('res:',res);
+    };
        
     const inputProps = {
         step: 300,
     };
-
-    // state variable for text
-
-    const [text, setText] = useState({
-        value: ''
-    });
 
     function updateText(e) {
         setText({value: e.target.value});
@@ -69,7 +55,7 @@ function Header(props) {
 
         <div className={styles.header}>
             <Link href={"/"}>
-            <h1 className={styles.header__name}>PeerPal</h1>
+                <h1 className={styles.header__name}>PeerPal</h1>
             </Link>
             <div>
                 <Button style={helpButtonStyle} onClick={handleClickOpen}>Report Bug</Button>

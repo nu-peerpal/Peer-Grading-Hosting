@@ -1,9 +1,10 @@
 const { CollectionsOutlined } = require("@material-ui/icons");
 const axios = require("axios")
 const { server } = require("./config/index.js");
+const { canvas, token } = require("./canvasConfig.js");
 
-const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
-const token = "Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n"
+// const canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
+// const token = "Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n"
 
 
 // gets up to 300 users from a course given the courseId

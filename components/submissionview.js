@@ -204,7 +204,7 @@ function Grading(rubric, matching, review, disabled) {
                   <TableCell>
                     <Button
                       className={styles.save}
-                      // disabled={!dirty}
+                      disabled={(!dirty && disabled)}
                       type='submit'
                     >
                       Save

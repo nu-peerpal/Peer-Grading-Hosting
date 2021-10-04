@@ -20,6 +20,8 @@ function Matching(props) {
   const [matchingExists, setMatchingExists] = useState(false);
   const [peerReviews, setPeerReviews] = useState([]);
   const [submissionData, setSubmissionData] = useState();
+  const [subStudentIds, setSubStudentIds] = useState();
+  const [grader, setGrader] = useState();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState("");
   const [userList, setUserList] = useState([]);
@@ -43,14 +45,17 @@ function Matching(props) {
         id: user.canvasId,
         canvasId: user.canvasId,
         lastName: user.lastName,
-        firstName: user.firstName
+        firstName: user.firstName,
+        enrollment: user.enrollment,
+        courseId: user.courseId
       }
     })
     let errs = [];
     console.log("adding users", usersData);
 
     await axios.post(`/api/users?type=multiple`, usersData).catch(error => {
-      console.log(error);
+      // console.log(error);
+      console.log('Users already posted')
       // errs.push('Redundant users not posted.');
     });
     // remove duplicate submission data
@@ -75,16 +80,43 @@ function Matching(props) {
       console.log(error);
       errs.push('New Submissions not posted.');
     });
+    // post group enrollments
+    let group_enrollments = [];
+    reduced_subs.forEach(submission => { // for each submission posted
+      subStudentIds[submission.canvasId].forEach(userId => { // for each user with that submission
+        group_enrollments.push({
+          assignmentId: assignmentId,
+          userId: userId,
+          submissionId: submission.canvasId
+        });
+      });
+    });
+    console.log('adding group enrollments:', group_enrollments);
+    await axios.post(`/api/groupEnrollments?type=multiple`, group_enrollments).catch(error => {
+      console.log(error);
+      errs.push('Group enrollments failed.');
+    });
 
     // post peer matchings
     const peerMatchings = matchings.map(matching => {
-      return {
-        matchingType: "initial",
-        review: null,
-        reviewReview: null,
-        assignmentId: assignmentId,
-        submissionId: matching[1],
-        userId: matching[0]
+      if (grader.includes(matching[0])) { // if grader matching
+        return {
+          matchingType: "TA",
+          review: null,
+          reviewReview: null,
+          assignmentId: assignmentId,
+          submissionId: matching[1],
+          userId: matching[0]
+        }
+      } else { // student matching
+        return {
+          matchingType: "initial",
+          review: null,
+          reviewReview: null,
+          assignmentId: assignmentId,
+          submissionId: matching[1],
+          userId: matching[0]
+        }
       }
     })
     console.log("POST peer matchings", peerMatchings);
@@ -100,11 +132,22 @@ function Matching(props) {
     } else {
       setErrors(String(errs));
     }
+
+    // Notify students when they have new PeerPal tasks
+
+    Promise.all(userList.map(user => {
+      return axios.post(`/api/sendemail?type=studentNotification&courseId=${courseId}`, {
+        userId: user.canvasId,
+        subject: 'Assigned Peer Reviews',
+        message: `New peer reviews have been assigned on PeerPal.`
+      })
+    }))
+
   }
 
   return (
     <div className="Content">
-      <Container name={"Peer Matching: " + router.query.assignmentName}>
+      <Container name={"Peer Matching: " + assignmentName}>
       {matchingExists ? <Accordion defaultExpanded={true} className={styles.matching}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Existing Matching
@@ -123,6 +166,8 @@ function Matching(props) {
               // graders={graders}
               // peers={peers}
               setSubmissionData={setSubmissionData}
+              setSubStudentIds={setSubStudentIds}
+              setGrader={setGrader}
               setMatchings={setMatchings}
               setMatchingGrid={setMatchingGrid}
               setSubmitted={setSubmitted}

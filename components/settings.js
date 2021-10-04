@@ -10,7 +10,7 @@ import { useUserData } from "./storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 
-function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
+function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
     const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
     const [tas, setTas] = useState([]);
     const [matchedUsers, setMatchedUsers] = useState();
@@ -75,20 +75,24 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         }
         // console.log({tempSubmissionData});
         let subStudents = {};
+        let subStudentId = {};
         let tempSubmissions = []; // set submissions for peerMatch alg
         for (let sub in tempSubmissionData) {
           let student = tempUsers.filter(user => user.canvasId == tempSubmissionData[sub]["submitterId"]);
           let subId = tempSubmissionData[sub]["canvasId"];
-          student = student[0]["firstName"] + " " + student[0]["lastName"];
+          let studentName = student[0]["firstName"] + " " + student[0]["lastName"];
           bucket = tempSubmissionData[sub]["canvasId"];
           if (subStudents[bucket]) {
-            subStudents[bucket].push(student);
+            subStudents[bucket].push(studentName);
+            subStudentId[bucket].push(student[0].canvasId);
           } else {
-            subStudents[bucket] = [student];
+            subStudents[bucket] = [studentName];
+            subStudentId[bucket] = [student[0].canvasId];
           }
           tempSubmissions.push([tempSubmissionData[sub]["submitterId"],subId]);
         }
         // console.log({subStudents})
+        setSubStudentIds(subStudentId)
         setSubmissionGroups(subStudents);
         // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
         setTas([tempTas]);
@@ -109,12 +113,12 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
           // if they want to see submissions first
           if (subFirstView) {
             for (var obj in matchedSubs) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj]} progress={[0,1]}/>)
             }
           }
           else{
             for (var obj in matchedUsers) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} progressCaseTwo={[0,1]}/>)
             }
           }
   
@@ -137,6 +141,8 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         algGraders.push(selectedGraders[i]["id"])
       }
       algGraders = algGraders.sort(function(a, b){return a-b});
+      setGrader(algGraders);
+      let errHandle = "";
       try {
         const matchings = await peerMatch(
           algGraders,
@@ -145,8 +151,11 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
+        errHandle = matchings;
+        console.log({matchings})
         let matched_users = {};
         let submissionBuckets = {};
+        let prProgress = {};
         let grader, sub, user;
         // console.log({submissions});
         for (let i in matchings) {
@@ -178,20 +187,12 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
             submissionBuckets[sub].push(matched_users[grader]);
           } else {
             submissionBuckets[sub] = [matched_users[grader]];
+            // prProgress[sub]
           }
         }
+        // console.log({submissionBuckets})
         setMatchedUsers(matched_users);
         setMatchedSubs(submissionBuckets);
-
-        // Notify students when they have new PeerPal tasks
-
-        Promise.all(users.map(user => {
-          return axios.post(`/api/sendemail?type=studentNotification&courseId=${courseId}`, {
-            userId: user.canvasId,
-            subject: 'Assigned Peer Reviews',
-            message: `New peer reviews have been assigned.`
-          })
-        }))
   
         // create the grid that will show the matchings
         var mg = []
@@ -200,12 +201,12 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         if (subFirstView) {
           // console.log(submissionBuckets);
           for (var obj in submissionBuckets) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} />)
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} progress={[0,1]}/>)
           }
         }
         else{
           for (var obj in matched_users) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} />)
+            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} progressCaseTwo={[0,1]} />)
           }
         }
   
@@ -214,7 +215,8 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
         setSubmitted(true);
         setSubmitting(false);
       } catch(err) {
-        alert('Algorithm failed! Try adjusting Peer or Grader Load.');
+        console.log({err})
+        alert('Algorithm failed! Error Message: ' + errHandle);
       }
   
     }
@@ -222,7 +224,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
     return (
       <div>
       <Formik
-        initialValues={{ peerLoad: 3, graderLoad: 10, TA: [] }}
+        initialValues={{ peerLoad: 3, graderLoad: 6, TA: [] }}
         onSubmit={async (data, { setSubmitting }) => {
           createMatchings(data, setSubmitting);
         }}
@@ -247,7 +249,7 @@ function Settings({ setSubmitted, setSubmissionData, setMatchings, setMatchingGr
               as={TextField}
               className={styles.formfield}
             />
-            TAs: {/* why isn't the label working here ??  */}
+            Graders: {/* why isn't the label working here ??  */}
             {tas.map(taList => 
               <Field
               key={taList}

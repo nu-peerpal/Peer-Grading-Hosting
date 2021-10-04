@@ -5,10 +5,6 @@ import MatchingCell from "./matchingCell";
 import { useRouter } from 'next/router';
 import styles from "../pages/assignments/matching/matching.module.scss";
 const axios = require("axios");
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 
 function ReloadMatchings(props) {
     const { userId, courseId, revertFromStudent, savedStudentId } = useUserData();
@@ -216,12 +212,7 @@ function ReloadMatchings(props) {
             setUserProgress(userProgress);
             setReviewerId(reviewerId);
             setCompletedSubmissionIds(completedSubmissionIds);
-
-            // remove duplicates
-            let newCompletedArray = [...new Set(completedArray)];
-            setCompletedReviewers(newCompletedArray);
   
-
             // remove duplicates for completedSubmissionIds
             let newCompletedSubmissionIds = [...new Set(completedSubmissionIds)];
             setCompletedSubmissionIds(newCompletedSubmissionIds);
@@ -232,9 +223,11 @@ function ReloadMatchings(props) {
             // create the grid that will show the matchings
             var mg = []
             // if they want to see submissions first
+            console.log({subBuckets})
+            console.log({prProgress}) 
             if (subFirstView) {
                 for (var obj in subBuckets) {
-                mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={subBuckets[obj].reviewers} progress={subBuckets[obj].progress} completedReviewers={newCompletedArray} prProgress={prProgress} submissionMap={subMap} submissionId={subBuckets[obj].submissionId} />)
+                mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={subBuckets[obj].reviewers} progress={subBuckets[obj].progress} prProgress={prProgress} submissionMap={subMap} submissionId={subBuckets[obj].submissionId} />)
                 }
             }
             else{
@@ -257,7 +250,7 @@ function ReloadMatchings(props) {
           // if they want to see submissions first
           if (subFirstView) {
             for (var obj in matchedSubs) {
-              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj].reviewers} progress={matchedSubs[obj].progress} completedReviewers={completedReviewers} prProgress={prProgress} submissionMap={submissionMap} submissionId={matchedSubs[obj].submissionId} />)
+              mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={matchedSubs[obj].reviewers} progress={matchedSubs[obj].progress} prProgress={prProgress} submissionMap={submissionMap} submissionId={matchedSubs[obj].submissionId} />)
             }
           }
           else{

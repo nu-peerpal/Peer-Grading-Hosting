@@ -2,13 +2,8 @@ import React from "react";
 import Link from "next/link";
 import styles from "./styles/navbar.module.scss";
 
-class NavControl extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const isStudent = this.props.ISstudent;
+function NavControl(props) {
+  const isStudent = props.ISstudent;
     let nav;
 
     // return student or TA navigation view
@@ -19,10 +14,9 @@ class NavControl extends React.Component {
     }
 
     return <div>{nav}</div>;
-  }
 }
 
-function StudentView(props) {
+function StudentView() {
   return (
     <div className={styles.nav}>
       <Link href={"/"}>
@@ -38,8 +32,6 @@ function StudentView(props) {
       <Link href={"/completedassignments"}> 
         <a>Completed Reviews</a>
       </Link>
-      {//HOW TO VIEW COMPLETED REVIEWS??? WHERE IS THE LINK??
-      }
       {/* <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
       </Link> */}
@@ -53,7 +45,7 @@ function StudentView(props) {
   );
 }
 
-function TeacherView(props) {
+function TeacherView() {
   return (
     <div className={styles.nav}>
       <Link href={"/"}>
@@ -65,11 +57,11 @@ function TeacherView(props) {
       <Link href={"/completedassignments"}>
         <a>Completed Assignments</a>
       </Link>
-      {/* <Link href={"/assignments/fullassignmentview/fullassignmentview"}>
-        <a>View Assignment Details</a>
-      </Link> */}
       <Link href={"/grading/selectAssignment"}>
         <a>TA Grading</a>
+      </Link>
+      <Link href={"/peerpal/peerpalsettings"}>
+        <a>PeerPal Settings</a>
       </Link>
       {/* <Link href={"/canvas/canvas"}>
         <a>Canvas</a>
