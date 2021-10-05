@@ -61,11 +61,11 @@ app
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
-        console.log('lti provider:',provider)
-        // console.log('lti request: ',req);
+        // console.log('lti provider:',provider)
+        console.log('lti request: ',req);
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {
-            // console.log(provider);
+            console.log(provider);
             //copying all the useful data from the provider to what will be stored for the user
             userData.user_id = provider.body.custom_canvas_user_id;
             userData.context_id = provider.body.custom_canvas_course_id;
