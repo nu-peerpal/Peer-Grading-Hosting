@@ -63,27 +63,28 @@ function SendGrades(props) {
   }
 
   useEffect(() => {
-    Promise.all([axios.get(`/api/users?courseId=${courseId}&enrollment=StudentEnrollment`),axios.get(`/api/submissions?assignmentId=${assignmentId}`),axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`)]).then(responseData => {
+    Promise.all([axios.get(`/api/users?courseId=${courseId}&enrollment=StudentEnrollment`),
+        axios.get(`/api/submissions?assignmentId=${assignmentId}`),
+        axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`),
+        axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`),
+        axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)])
+    .then(responseData => {
         let userData = responseData[0].data.data;
         let submissionsData = responseData[1].data.data;
         let reviewGradesData = responseData[2].data.data;
-        let canvasSubmissionsData = responseData[3].data.data;
-        let appealData = responseData[4].data.data;
+        let appealData = responseData[3].data.data;
+        let groupData = responseData[4].data.data;
         setStudents(userData);
         console.log({userData})
         console.log({submissionsData})
         console.log({reviewGradesData})
-        console.log({canvasSubmissionsData})
         console.log({appealData})
+        console.log({groupData});
         // match users to submissions
         userData.forEach(student => {
-            let userSubmissions = canvasSubmissionsData.filter(sub => sub.submitterId == student.canvasId);
-            if (userSubmissions.length > 0 && userSubmissions[0].submission) {
-                let subGroupId = userSubmissions[0].groupId;
-                if (!subGroupId) { 
-                    subGroupId = userSubmissions[0].submitterId;
-                }
-                let submission = submissionsData.filter(sub => sub.groupId == subGroupId);
+            let enrollment = groupData.filter(x => x.userId == student.canvasId);
+            if (enrollment.length > 0) {
+                let submission = submissionsData.filter(sub => sub.canvasId == enrollment[0].submissionId)
                 console.log({submission})
                 if (submission.length == 0) { // empty assignment, didn't turn it in
                     student.grade = 'not submitted';

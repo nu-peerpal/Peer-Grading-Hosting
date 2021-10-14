@@ -31,23 +31,24 @@ function ViewAssignmentGrade(props) {
   let { id, name } = router.query;
 
   useEffect(() => {
-      Promise.all([axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${id}`),axios.get(`/api/submissions?assignmentId=${id}`),axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`),axios.get(`/api/assignments/${id}`),axios.get(`/api/peerReviews?assignmentId=${id}`)]).then(data => {
-        let canvasSubmissionsRes = data[0].data.data;
-        let submissionsRes = data[1].data.data;
-        let reviewReportsRes = data[2].data.data;
-        let assignmentRes = data[3].data.data;
-        let peerReviews = data[4].data.data;
+      Promise.all([axios.get(`/api/submissions?assignmentId=${id}`),
+        axios.get(`/api/reviewGradesReports?userId=${userId}&assignmentId=${id}`),
+        axios.get(`/api/assignments/${id}`),
+        axios.get(`/api/peerReviews?assignmentId=${id}`),
+        axios.get(`/api/groupEnrollments?assignmentId=${id}&userId=${userId}`)]).then(data => {
+        let submissionsRes = data[0].data.data;
+        let reviewReportsRes = data[1].data.data;
+        let assignmentRes = data[2].data.data;
+        let peerReviews = data[3].data.data;
+        let groupData = data[4].data.data;
         console.log({data})
         // let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
         // find which group users are in
-        let groupSub = canvasSubmissionsRes.filter(x => x.submitterId == userId);
         let userSubmissions;
-        if (groupSub[0]) { // only if student actually submitted assignment
-          let group = groupSub[0].groupId;
-          if (group == null) group = groupSub[0].submitterId; // if null group, use userId 
-          userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
-          if (userSubmissions.length > 1) console.log('student has more than one submission for assignment.')
+        if (groupData[0]) { // only if student actually submitted the assignment
+          userSubmissions = submissionsRes.filter(sub => sub.canvasId == groupData[0].submissionId);
           if (!userSubmissions[0].report.includes('TA Review 1')) setEligibleAppeal(true); // if no TA review, eligible for appeal
+
           // check for existing appeal or if appeal deadline has passed
           if (assignmentRes.appealsDueDate) {
             let today = new Date();
@@ -116,11 +117,11 @@ function ViewAssignmentGrade(props) {
 
      Promise.all([
           axios.post(`/api/peerReviews?type=multiple`,[appealFormat]),
-          axios.post(`/api/sendemail?&type=appeals&courseId=${courseId}`, {
-            userId: appealFormat.userId, 
-            subject: 'Assigned Appeal',
-            message: `New appeal for ${name} has been assigned.`
-          })
+          // axios.post(`/api/sendemail?&type=appeals&courseId=${courseId}`, {
+          //   userId: appealFormat.userId, 
+          //   subject: 'Assigned Appeal',
+          //   message: `New appeal for ${name} has been assigned.`
+          // })
         ]).then(res => {console.log('res:',res)
             if (res[0].status == 201) {
               setAppealAvailable(false);

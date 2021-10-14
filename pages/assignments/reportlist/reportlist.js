@@ -160,65 +160,36 @@ const ReviewReports = () => {
   }
 
   async function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/submissions?assignmentId=${assignmentId}`)])
+    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),
+      reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),
+      axios.get(`/api/submissions?assignmentId=${assignmentId}`),
+      axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)])
     .then(reports => {
       console.log('reports',reports);
       setUploadSubReports(reports[0]);
       setUploadRevReports(reports[1]);
       setRevReportsLog(reports[1][3]);
       setSubReportsLog(reports[0][2])
-      let dbSubs = reports[3].data.data;
+      let dbSubs = reports[2].data.data;
       setDbSubmissions(dbSubs);
-      let submissions = reports[2].data.data;
+      const groupData = reports[3].data.data;
       // Change Submissions to Names for Submission Reports
-      // organize submissions by group
-      let subGroups = {};
-      let bucket;
-      submissions.forEach(submission => { // sort submissions by {groupId: [...userIds]}
-        if (!submission.groupId) {
-          bucket = submission.submitterId;
-        } else {
-          bucket = submission.groupId;
-        }
-        if (subGroups[bucket]) {
-          subGroups[bucket].push(submission.submitterId);
-          subGroups[bucket].sort(function(a, b){return a-b})
-        } else {
-          subGroups[bucket] = [submission.submitterId];
-        }
-      });
-      let tempGroup, tempSub, tempAid;
-      for (let sub in submissions) { // grab group, find lowest group member, get aid
-        if (!submissions[sub]["groupId"]) { // if null group, change to userId
-          tempGroup = submissions[sub].submitterId;
-        } else {
-          tempGroup = submissions[sub]["groupId"];
-        }
-        // tempGroup = submissions[sub]["groupId"];
-        tempSub = submissions.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
-        tempAid = tempSub[0].canvasId;
-        submissions[sub]["canvasId"] = tempAid;
-      }
       let subStudents = {};
       let submissionMap = {};
-      for (let sub in submissions) { // map submissionId: ...userIds
-        let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
-        let studentId = student[0].canvasId;
-        student = student[0]["firstName"] + " " + student[0]["lastName"];
-        bucket = submissions[sub]["canvasId"];
-        // if (submissions[sub]["groupId"]) {
-        //   bucket = submissions[sub]["canvasId"];
-        // } else {
-        //   bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
-        // }
-        if (subStudents[bucket]) {
-          subStudents[bucket].push(student);
-          submissionMap[bucket].push(studentId);
-        } else {
-          subStudents[bucket] = [student];
-          submissionMap[bucket] = [studentId];
-        }
-      }
+      dbSubs.forEach(submission => { // sort submissionMap by {submissionId: [...userIds]}
+        let groupMatch = groupData.filter(x => x.submissionId == submission.canvasId);
+        let userIds = groupMatch.map(enrollment => enrollment.userId);
+        let students = [];
+        userIds.forEach(id => { // sort subStudents by {submissionId: [...{studentObj}]}
+          let student = users.filter(user => user.canvasId == id);
+          student = student[0]["firstName"] + " " + student[0]["lastName"];
+          students.push(student);
+        })
+        submissionMap[submission.canvasId] = userIds;
+        subStudents[submission.canvasId] = students;
+      });
+
+
       console.log({subStudents})
       console.log({submissionMap})
       setSubmissionMap(submissionMap);
@@ -265,18 +236,17 @@ const ReviewReports = () => {
     });
   }
   useEffect(() => {
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
+    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
       let peerReviews = dbData[0].data.data;
       setPeerMatchings(peerReviews);
-      let users = dbData[1].data.data;
-      let rubric = dbData[2].data.data.rubric;
-      let dbUsers = dbData[3].data.data;
+      let rubric = dbData[1].data.data.rubric;
+      let dbUsers = dbData[2].data.data;
       rubric = rubric.map(section => {
         return [section.points, section.title];
       });
       let reviewRubric = [];
       // console.log({peerReviews})
-      let TAs = users.filter(user => user.enrollment == "TaEnrollment");
+      let TAs = dbUsers.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
       let subReportData, revReportData;
       let graders = [];
       let reviews = [];
