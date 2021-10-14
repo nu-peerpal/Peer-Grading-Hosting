@@ -116,7 +116,7 @@ function CheckMatching(props) {
       let tempGraders, tempReviews, tempMatching;
       tempGraders = tempReviews = tempMatching = [];
       if (usersRes && completeReviewsRes && allMatchingsRes) {
-        let justGraders = usersRes.data.filter(user => user.enrollment == "TaEnrollment");
+        let justGraders = usersRes.data.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
         tempGraders = justGraders.map(user => user.canvasId);
         tempReviews = completeReviewsRes.data.map(
           ({ submissionId, userId, review }) => {
@@ -158,30 +158,33 @@ function CheckMatching(props) {
     (async () => {
       // console.log('alg inputs:')
       // console.log({graders}, {reviews}, {matching})
-      const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
-        graders,
-        reviews,
-        matching
-      );
-      if (matchings) {
-        let newMatchings = [];
-        console.log({allMatchings})
-        matchings.forEach(match => {
-          newMatchings.push({
-            assignmentId: assignmentId,
-            assignmentSubmissionId: null,
-            matchingType: "additional",
-            review: null,
-            reviewReview: null,
-            submissionId: match[1],
-            userId: match[0]
-          });
-          setPeerReviews(newMatchings);
-          setAdditionalMatchings(newMatchings);
-          console.log({matchings});
-        })
+      if (graders.length!=0) {
+        const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
+          graders,
+          reviews,
+          matching
+        );
+        if (matchings) {
+          let newMatchings = [];
+          console.log({allMatchings})
+          matchings.forEach(match => {
+            newMatchings.push({
+              assignmentId: assignmentId,
+              assignmentSubmissionId: null,
+              matchingType: "additional",
+              review: null,
+              reviewReview: null,
+              submissionId: match[1],
+              userId: match[0]
+            });
+            setPeerReviews(newMatchings);
+            setAdditionalMatchings(newMatchings);
+            console.log({matchings});
+          })
+        } 
+      } else {
+        console.log('Algorithm success. No additional matches found.')
       }
-
       //   // find all submission PRs assigned. could be used for detecting who didn't submit
       //   matchings.forEach(match => {
       //     let subMatched = allMatchings.filter(x => (x.assignmentId == assignmentId && x.submissionId == match[1]));

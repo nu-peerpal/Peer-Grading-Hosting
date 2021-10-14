@@ -34,7 +34,7 @@ function ListContainer(props) {
           if (!x.actionItem) x.actionItem='';
           let date = '';
           let type = '';
-          console.log({x})
+          // console.log({x})
           if (x.reviewStatus > 1){
             date = x.reviewDueDate;
             type = 'Review';
