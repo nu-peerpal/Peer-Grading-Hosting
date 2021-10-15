@@ -23,49 +23,31 @@ function ReloadMatchings(props) {
     let {assignmentId, assignmentName} = router.query;
 
     useEffect(() => {
-      Promise.all([axios.get(`/api/users`), axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`)]).then(userData => {
+      Promise.all([axios.get(`/api/users`),
+        axios.get(`/api/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),
+        axios.get(`/api/groupEnrollments?courseId=${courseId}&assignmentId=${assignmentId}`)]).then(userData => {
             let users = userData[0].data.data;
-            let submissions = userData[1].data.data;
-            console.log({submissions})
+            let dbSubs = userData[1].data.data;
+            let groupData = userData[2].data.data;
+
+
+            // Change Submissions to Names for Submission Reports
+            let subMap = {};
+            dbSubs.forEach(submission => { // sort subMap by {submissionId: [...userIds]}
+              let groupMatch = groupData.filter(x => x.submissionId == submission.canvasId);
+              let userIds = groupMatch.map(enrollment => enrollment.userId);
+              let students = [];
+              userIds.forEach(id => { // sort subStudents by {submissionId: [...{studentObj}]}
+                let student = users.filter(user => user.canvasId == id);
+                student = student[0]["firstName"] + " " + student[0]["lastName"];
+                students.push(student);
+              })
+              subMap[submission.canvasId] = students;
+            });
             let tempUser;
-            let subBuckets = {};
             let userBuckets = {};
-            let bucket;
-            let subGroups = {};
-            submissions.forEach(submission => { // sort submissions by {groupId: [...userIds]}
-              if (!submission.groupId) {
-                bucket = submission.submitterId;
-              } else {
-                bucket = submission.groupId;
-              }
-              if (subGroups[bucket]) {
-                subGroups[bucket].push(submission.submitterId);
-                subGroups[bucket].sort(function(a, b){return a-b})
-              } else {
-                subGroups[bucket] = [submission.submitterId];
-              }
-            });
-            let tempGroup, tempSub, tempAid;
-            for (let sub in submissions) { // grab group, find lowest group member, get aid
-              if (!submissions[sub]["groupId"]) { // if null group, change to userId
-                tempGroup = submissions[sub].submitterId;
-              } else {
-                tempGroup = submissions[sub]["groupId"];
-              }
-              tempSub = submissions.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
-              tempAid = tempSub[0].canvasId;
-              submissions[sub]["canvasId"] = tempAid;
-            }
-            let subMap = {}; // set up object: {submissionId: [...user names]}
-            submissions.forEach(sub => {
-              let student = users.filter(x => x.canvasId == sub.submitterId)
-              student = student[0].firstName + " " + student[0].lastName;
-              if (subMap[sub.canvasId]) {
-                subMap[sub.canvasId].push(student);
-              } else {
-                subMap[sub.canvasId] = [student];
-              }
-            });
+            let subBuckets = {};
+
             console.log({subMap})
             console.log('Peer Reviews:',PRs);
             let prProgress = {};
