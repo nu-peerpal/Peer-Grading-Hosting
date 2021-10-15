@@ -48,8 +48,8 @@ function ReloadMatchings(props) {
             let userBuckets = {};
             let subBuckets = {};
 
-            console.log({subMap})
-            console.log('Peer Reviews:',PRs);
+            // console.log({subMap})
+            // console.log('Peer Reviews:',PRs);
             let prProgress = {};
             let completedArray = [];
             let notCompletedArray = [];
@@ -205,8 +205,8 @@ function ReloadMatchings(props) {
             // create the grid that will show the matchings
             var mg = []
             // if they want to see submissions first
-            console.log({subBuckets})
-            console.log({prProgress}) 
+            // console.log({subBuckets})
+            // console.log({prProgress}) 
             if (subFirstView) {
                 for (var obj in subBuckets) {
                 mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={subBuckets[obj].reviewers} progress={subBuckets[obj].progress} prProgress={prProgress} submissionMap={subMap} submissionId={subBuckets[obj].submissionId} />)
@@ -218,7 +218,7 @@ function ReloadMatchings(props) {
                 mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={userBuckets[obj]["name"]} submissions={userBuckets[obj]["submissions"]} progressCaseTwo={userBuckets[obj]["progressCaseTwo"]} userProgress={userProgress} reviewerId={userBuckets[obj].userId} completedSubmissionIds={newCompletedSubmissionIds} />)
                 }
             }
-            console.log({mg})
+            // console.log({mg})
             props.setMatchingGrid(mg);
         })
 
@@ -240,7 +240,7 @@ function ReloadMatchings(props) {
               mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} progressCaseTwo={matchedUsers[obj]["progressCaseTwo"]} userProgress={userProgress} reviewerId={matchedUsers[obj].userId} completedSubmissionIds={completedSubmissionIds} />)
             }
           }
-          console.log({mg})
+          // console.log({mg})
           props.setMatchingGrid(mg);
         }
       },[subFirstView])

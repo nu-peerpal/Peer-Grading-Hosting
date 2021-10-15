@@ -101,7 +101,8 @@ function CheckMatching(props) {
       const allMatchingsRes = data[2].data;
       setAllMatchings(allMatchingsRes.data);
       const rubricRes = data[3].data.data;
-
+      console.log({completeReviewsRes})
+      console.log({allMatchingsRes})
       // find who didn't complete their PRs
       let studentList = [];
       allMatchingsRes.data.forEach(match => {
@@ -120,7 +121,9 @@ function CheckMatching(props) {
       let tempGraders, tempReviews, tempMatching;
       tempGraders = tempReviews = tempMatching = [];
       if (usersRes && completeReviewsRes && allMatchingsRes) {
+        console.log({usersRes})
         let justGraders = usersRes.data.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
+        console.log({justGraders})
         tempGraders = justGraders.map(user => user.canvasId);
         tempReviews = completeReviewsRes.data.map(
           ({ submissionId, userId, review }) => {
@@ -160,8 +163,8 @@ function CheckMatching(props) {
   const [additionalMatchings, setAdditionalMatchings] = useState([]);
   useEffect(() => {
     (async () => {
-      // console.log('alg inputs:')
-      // console.log({graders}, {reviews}, {matching})
+      console.log('alg inputs:')
+      console.log({graders}, {reviews}, {matching})
       if (graders.length!=0) {
         const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
           graders,
@@ -187,7 +190,7 @@ function CheckMatching(props) {
           })
         } 
       } else {
-        console.log('Algorithm success. No additional matches found.')
+        console.log('No additional matches found.')
       }
       //   // find all submission PRs assigned. could be used for detecting who didn't submit
       //   matchings.forEach(match => {
