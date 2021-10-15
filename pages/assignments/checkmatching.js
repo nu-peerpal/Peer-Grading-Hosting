@@ -72,13 +72,13 @@ function CheckMatching(props) {
       console.log("res", res);
       axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
 
-      // Notify TA when additional matches are assigned
-      axios.post(`/api/sendemail?&type=additionalMatches&courseId=${courseId}`, {
-        userId: graders[0],
-        subject: 'Additional Matches',
-        message: `${additionalMatchings.length} additional matches have been assigned.`
-      }).then(res => {console.log('res:',res)
-        setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
+      // // Notify TA when additional matches are assigned
+      // axios.post(`/api/sendemail?&type=additionalMatches&courseId=${courseId}`, {
+      //   userId: graders[0],
+      //   subject: 'Additional Matches',
+      //   message: `${additionalMatchings.length} additional matches have been assigned.`
+      // }).then(res => {console.log('res:',res)
+      //   setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
 
       setResponse('Submitted successfully.')})
     .catch(err => {
@@ -90,7 +90,11 @@ function CheckMatching(props) {
   }
 
   useEffect(() => {
-    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(data => {
+    Promise.all([axios.get(`/api/users?courseId=${courseId}`),
+      axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
+      axios.get(`/api/rubrics/${rubricId}`)])
+    .then(data => {
       // console.log({data});
       const usersRes = data[0].data;
       const completeReviewsRes = data[1].data;
