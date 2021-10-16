@@ -113,6 +113,8 @@ function CheckMatching(props) {
             if (!studentList.includes(name)) {
               studentList.push(name);
             }
+          } else { // must be grader
+            if (match.reviewReview) completeReviewsRes.push(match)
           }
         }
       })
@@ -126,11 +128,20 @@ function CheckMatching(props) {
         console.log({justGraders})
         tempGraders = justGraders.map(user => user.canvasId);
         tempReviews = completeReviewsRes.data.map(
-          ({ submissionId, userId, review }) => {
-            let simpleReview = review.reviewBody.scores.map((row, index) => {
-              let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
-              return [percent, row[1]]
-            });
+          ({ submissionId, userId, review, reviewReview }) => {
+            let simpleReview;
+            if (review) { // student review
+              simpleReview = review.reviewBody.scores.map((row, index) => {
+                let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
+                return [percent, row[1]]
+              });
+            } else { // TA review
+              simpleReview = reviewReview.instructorGrades.map(row => {
+                let percent = Math.round((row.points/row.maxPoints)*100)/100;
+                return [percent, row.comment]
+              })
+            }
+            
 
             return [userId, submissionId, simpleReview]} // format as algorithm input
         );
