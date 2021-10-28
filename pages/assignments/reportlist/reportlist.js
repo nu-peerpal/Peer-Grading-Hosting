@@ -58,7 +58,7 @@ const ReviewReports = () => {
       grades: userSubGrades
     }
     let res1 = await axios.post(`/api/canvas/grades`,subGradePost).catch(err => console.log({err}))
-    
+
     let assignmentData = await axios.get(`/api/assignments/${assignmentId}`);
     let assignment = assignmentData.data.data;
     let revGradePost = {
@@ -103,37 +103,36 @@ const ReviewReports = () => {
       // check for review_reports
       let dbRevReports = await axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`);
       dbRevReports = dbRevReports.data.data;
-      let review_grades_reports;
-      if (dbRevReports.length > 0) {
-        review_grades_reports = uploadRevReports[1].map(report => {
-          console.log('finding report data:', report[0],report[1])
-          let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId && r.grade == report[1]));
-          if (dbReport.length > 1) console.log('too many matches')
-          return {
-            id: dbReport[0].id,
-            grade: report[1],
-            report: report[2],
-            assignmentId: parseInt(assignmentId),
-            userId: report[0]
-          }
-        });
-        console.log('updating review reports:', review_grades_reports);
-        await axios.patch(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+
+      // create report payload with id if report already exists
+      const review_grades_reports = uploadRevReports[1].map(report => {
+        console.log('finding report data:', report[0],report[1])
+        let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId));
+        if (dbReport.length > 1) console.log('too many matches')
+        return {
+          ...((dbReport[0]) ? {id: dbReport[0].id} : {}), // add old report id if there is one.
+          grade: report[1],
+          report: report[2],
+          assignmentId: parseInt(assignmentId),
+          userId: report[0]
+        }
+      });
+
+      const newReviewReports = review_grades_reports.filter(r => !r.id);
+      const updateReviewReports = review_grades_reports.filter(r => r.id);
+
+      if (updateReviewReports.length > 0) {
+        console.log('updating review reports:', updateReviewReports);
+        await axios.patch('/api/reviewGradesReports?type=multiple', updateReviewReports).then(res => {
           console.log({res})
         }).catch(err => {
           errs.push(err);
           console.log({err})});
-      } else {
-        review_grades_reports = uploadRevReports[1].map(report => {
-          return {
-            grade: report[1],
-            report: report[2],
-            assignmentId: parseInt(assignmentId),
-            userId: report[0]
-          }
-        })
-        console.log('uploading review reports:', review_grades_reports);
-        await axios.post(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+      }
+
+      if (newReviewReports.length > 0) {
+        console.log('uploading review reports:', newReviewReports);
+        await axios.post('/api/reviewGradesReports?type=multiple', newReviewReports).then(res => {
           console.log({res})
         }).catch(err => {
           errs.push(err);
@@ -259,7 +258,7 @@ const ReviewReports = () => {
           // console.log('ta id',TAs[ta].canvasId)
           if (TAs[ta].canvasId == pr.userId) {
             // grader = true;
-            if (!graders.includes(pr.userId)) graders.push(pr.userId); 
+            if (!graders.includes(pr.userId)) graders.push(pr.userId);
           }
         }
       })
@@ -275,7 +274,7 @@ const ReviewReports = () => {
           reviewScores = pr.review.reviewBody.scores.map((row,i) => {
             return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]] // convert scores to {0 - 1} scale
           });
-          if (pr.reviewReview) { 
+          if (pr.reviewReview) {
             if (reviewRubric.length === 0) { // construct reviewRubric for alg
               reviewRubric = pr.reviewReview.reviewBody.map(row => [row.maxPoints, row.element])
               // console.log({reviewRubric})
@@ -348,8 +347,8 @@ const ReviewReports = () => {
   },[])
 
   return (
-    <div className="Content"> 
-      {needsLoading ? 
+    <div className="Content">
+      {needsLoading ?
         <Container name={"Generate Reports"}>
           <Button disabled={isLoading} onClick={() => generateReports()}>Generate Reports</Button>
         </Container>
@@ -369,7 +368,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                      {i === loadSRSubmission ? 
+                      {i === loadSRSubmission ?
                       <SubmissionView s3Link={sub[2]}/>
                       :
                         <Button onClick={() => setLoadSRSubmission(i)}>Load Submission</Button>
@@ -395,7 +394,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {i === loadRRSubmission ? 
+                    {i === loadRRSubmission ?
                       <SubmissionView s3Link={rev[3]}/>
                       :
                         <Button onClick={() => setLoadRRSubmission(i)}>Load Submission</Button>

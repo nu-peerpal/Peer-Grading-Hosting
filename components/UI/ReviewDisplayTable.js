@@ -126,7 +126,11 @@ const ReviewDisplayTable = ({
                   {section.points}
                   <Tooltip
                     classes={{ tooltip: classes.tooltip }}
-                    title={section.comment}
+                    title={
+                      <div style={{whiteSpace: "pre-wrap"}}>
+                        {section.comment}
+                      </div>
+                    }
                     arrow
                   >
                     <CopyToClipboard text={section.comment} onCopy={onCopyText}>
