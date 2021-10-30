@@ -13,7 +13,7 @@ function Info(props) { // Display list item description
   if (dueDate) {
     let newDate = new Date(dueDate);
     let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    return <TableCell className={styles.info} > {dateText} </TableCell> 
+    return <TableCell className={styles.info} > {dateText} </TableCell>
   }
   else {
     return <TableCell className={styles.info}>{info}</TableCell>;
@@ -43,12 +43,12 @@ function ListContainer(props) {
             date = x.assignmentDueDate;
             type = 'Assignment';
           }
-          
+
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
-          
+
                 <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
               </TableRow>
             </Link>
