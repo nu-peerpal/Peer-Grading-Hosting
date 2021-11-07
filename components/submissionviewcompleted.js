@@ -33,24 +33,6 @@ class SubmissionCompleted extends React.Component {
     this.props.rubric.map((x) => gradingrubric.push(x));
 
     const taReviewReport = this.props.taReviewReview;
-    console.log('taReviewReport:',taReviewReport);
-
-    const isInstructor = this.props.instructor;
-    console.log('isInstructor:',isInstructor);
-
-    const viewPrAssessment = this.props.viewPeerReviewAssessment;
-
-    console.log('this.props:',this.props);
-
-    // testing for how comments look in paragraph form
-
-    // taReviewReport["reviewBody"]["0"]["comment"] = 'This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form.'
-    // taReviewReport["reviewBody"]["1"]["comment"] = 'This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form.'
-    // taReviewReport["reviewBody"]["2"]["comment"] = 'This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form. This is a test to see how comments look in paragraph form.'
-
-    // taReviewReport["reviewBody"]["0"]["comment"] = 'c1'
-    // taReviewReport["reviewBody"]["1"]["comment"] = 'c2'
-    // taReviewReport["reviewBody"]["2"]["comment"] = 'c3'
 
     return (
       <div className={styles.sub}>
@@ -207,33 +189,20 @@ class SubmissionCompleted extends React.Component {
         </div>
       }
       </Container>
-        <br />
-        <br />
-        {taReviewReport ?
-          <div className={styles.comparestatement}>
-            Compare your peer review for this submission with the TA's review below
-          </div>
-          :
-          null
-        }
-        {taReviewReport ?
-          <br />
-          :
-          null
-        }
-        <br />
-        <Accordion defaultExpanded={true} className={styles.acc}>
+      <br />
+      <br />
+      <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Submission {this.props.subId} (click to show submission)
           </AccordionSummary>
           <AccordionDetails>
             {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
           </AccordionDetails>
-        </Accordion>
+      </Accordion>
         <br />
         <br />
         <div className={styles.peerreviewreport}>
-            Completed Peer Review
+            Compare your peer review for this submission with the TA's review below:
         </div>
         <br />
         {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
@@ -260,7 +229,6 @@ function getInitialValues(rubric, review) {
       grades.push(0);
     }
   }
-  // console.log({grades})
   return { Grades: grades, Comments: comments, FinalComment: finalcomment };
 }
 
@@ -292,7 +260,6 @@ function getFinalScore(data, rubric) {
   return body;
 }
 
-// console.log('what reviews should look like', js.reviews[0])
 function Grading(rubric, matching, review, disabled, taReviewReport) {
     var initialValues = getInitialValues(rubric, review);
   var maxScore = getMaxScore(rubric);
@@ -311,10 +278,6 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
             document.getElementById("submitted").style.display = "";
           }
         });
-        // fetch(`/api/peerReviews/${matching}`, {
-        //   method: "PATCH",
-        //   body: JSON.stringify(getFinalScore(data, rubric)),
-        // });
       }}
     >
       {({ values, handleChange, dirty }) => (
