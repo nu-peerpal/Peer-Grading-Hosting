@@ -31,7 +31,7 @@ function SendGrades(props) {
               if (student.grade == "not submitted") { // if no submission, grade is 0
                   submissionGrades.push([parseInt(student.canvasId), 0]);
               } else {
-                submissionGrades.push([parseInt(student.canvasId), parseInt(student.grade)]);
+                submissionGrades.push([parseInt(student.canvasId), student.grade]);
               }
               if (student.reviewGrade == "reviews not submitted") {
                 reviewGrades.push([parseInt(student.canvasId), 0]);
@@ -55,7 +55,7 @@ function SendGrades(props) {
               grades: reviewGrades
           }
           let revRes = await axios.post(`/api/canvas/grades`, postReviewGrades).catch(err2 => console.log({err2}));
-          
+
           axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 9}).then(res => {
             setCanvasUploaded("Submitted to Canvas.")
           })
@@ -99,7 +99,7 @@ function SendGrades(props) {
                         }
                         student.grade = appealGrade;
                     }
-                    
+
                 }
             } else { // user did not submit assignment
                 student.grade = 'not submitted';
