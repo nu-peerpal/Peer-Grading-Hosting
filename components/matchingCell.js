@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-// import ReloadMatchings from "../../../components/reloadMatchings"; 
+// import ReloadMatchings from "../../../components/reloadMatchings";
 
 // display submission and peers reviewing it
 function MatchingCell(props) {
@@ -32,10 +32,7 @@ function MatchingCell(props) {
     let numSubs;
     if (props.submissions){
       numSubs = props.submissions.length;
-      for (var i = 0; i < numSubs; i++) {
-        formattedSubs += (JSON.stringify(props.submissions[i]));
-        formattedSubs += (", ")
-      }
+      formattedSubs += props.submissions.map(s => JSON.stringify(s)).join(", ");
     }
 
     if (props.peers){
@@ -70,8 +67,8 @@ function MatchingCell(props) {
               })
             }
 
-            
-  
+
+
     setNumPeers(numPeers);
     setNumSubs(numSubs);
     setFormattedTAs(formattedTAs);
@@ -80,7 +77,7 @@ function MatchingCell(props) {
     setFormattedPeersNotCompleted(formattedPeersNotCompleted);
     setFormattedSubs(formattedSubs);
   }, [])
-  
+
      if (!props.reviewer){
       return (
         <div className={styles.matchingCell}>
@@ -121,10 +118,10 @@ function MatchingCell(props) {
         </div>
       );
     }
-  
+
   }
 
-  // Progress bar 
+  // Progress bar
 
 function LinearProgressWithLabel(props) {
   let MIN = 0;
