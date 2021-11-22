@@ -22,7 +22,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
     const [submissions,setSubmissions] = useState([]);
     const router = useRouter()
     const { userId, courseId, courseName, assignment } = useUserData();
-  
+
     useEffect(() => {
       // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
       Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${router.query.assignmentId}`)]).then((canvasData) => {
@@ -32,7 +32,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         setSubmissionData(tempSubmissionData); //used for pushing submissions later
         // separate users, compile data for alg call
         let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
-        let tempGraders = []; 
+        let tempGraders = [];
         let tempTas = [];
         for (let grader in graderData) {
           tempTas.push(graderData[grader]["firstName"] + " " + graderData[grader]["lastName"]);
@@ -98,13 +98,13 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         setTas([tempTas]);
         setUsers(tempUsers);
         setUserList(tempUsers);
-        setGraders(tempGraders); 
+        setGraders(tempGraders);
         setPeers(tempPeers.sort(function(a, b){return a-b}));// sort by increasing user id
         setSubmissions(tempSubmissions);
-        
+
       });
     },[]);
-  
+
       useEffect(() => {
         console.log('View toggled!');
         if (matchedUsers && matchedSubs) {
@@ -121,11 +121,11 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
               mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matchedUsers[obj]["name"]} submissions={matchedUsers[obj]["submissions"]} progressCaseTwo={[0,1]}/>)
             }
           }
-  
+
           setMatchingGrid(mg);
         }
       },[subFirstView])
-  
+
     // run algo, produce matchings
     async function createMatchings(data, setSubmitting) {
       setSubmitting(true);
@@ -193,23 +193,27 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         // console.log({submissionBuckets})
         setMatchedUsers(matched_users);
         setMatchedSubs(submissionBuckets);
-  
+
         // create the grid that will show the matchings
         var mg = []
-  
+
         // if they want to see submissions first
         if (subFirstView) {
           // console.log(submissionBuckets);
           for (var obj in submissionBuckets) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={submissionBuckets[obj]} progress={[0,1]}/>)
+            const key = `sub: ${obj}; peers: ${submissionBuckets[obj].map(({name}) => name)}`;
+            console.log(`submissionKey [${key}]`);
+            mg.push(<MatchingCell subFirstView={subFirstView} key={key} submission={obj} peers={submissionBuckets[obj]} progress={[0,1]}/>)
           }
         }
         else{
           for (var obj in matched_users) {
-            mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={matched_users[obj]["name"]} submissions={matched_users[obj]["submissions"]} progressCaseTwo={[0,1]} />)
+            const key = `peer: ${matched_users[obj].name}; subs: ${matched_users[obj].submissions}`;
+            console.log(`reviewerKey [${key}]`);
+            mg.push(<MatchingCell subFirstView={subFirstView} key={key} reviewer={matched_users[obj].name} submissions={matched_users[obj].submissions} progressCaseTwo={[0,1]} />)
           }
         }
-  
+
         setMatchingGrid(mg);
         setMatchings(matchings);
         setSubmitted(true);
@@ -218,9 +222,9 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         console.log({err})
         alert('Algorithm failed! Error Message: ' + errHandle);
       }
-  
+
     }
-  
+
     return (
       <div>
       <Formik
@@ -250,7 +254,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
               className={styles.formfield}
             />
             Graders: {/* why isn't the label working here ??  */}
-            {tas.map(taList => 
+            {tas.map(taList =>
               <Field
               key={taList}
               name="TA"
@@ -275,7 +279,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
       </div>
     );
   }
-  
-  
+
+
 
   export default Settings;
