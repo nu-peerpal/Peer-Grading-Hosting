@@ -8,11 +8,24 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import { useFormik } from "formik";
 import { Field } from "formik";
+
 import { createGradeValidator } from "./PeerReviewMatrix";
 
+const sum = (lst,identity=0) => {
+  lst.reduce((a, b) => a + b, identity)
+}
 
-const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen, setDoneGrading, doneGrading, presetComments, setPresetComments }) => {
+const prod = (lst,identity=1) => {
+  lst.reduce((a, b) => a * b, identity)
+}
+
+
+
+const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen, setDoneGrading, doneGrading, presetComments, setPresetComments, calcReviewGradeTotal, calcReviewGradeComplete }) => {
+
+  const formik = useFormik({});
 
   return (
   <TableContainer style={{ backgroundColor: "rgb(248,248,248)" }}>
@@ -28,12 +41,15 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
         {reviewRubric.map(({ element, maxPoints }, i) => {
           const [comment, setComment] = useState('');
           const [presetter, setPresetter] = useState(false);
-          function changeComment(e) {
-            values[`${userId}`][i].comment = e.target.value;
-            setComment(e.target.value);
+          function eventChangeComment(e) {
+            return changeComment(e.target.value);
+          }
+          function changeComment(c) {
+            values[`${userId}`][i].comment = c;
+            setComment(c);
           }
           return(
-          <TableRow>
+          <TableRow key={`reviewreview-user${userId}-element${i}`}>
             <TableCell style={{ paddingLeft: "80px" }}>{element}</TableCell>
             <TableCell style={{ position: "relative" }}>
               <Field
@@ -43,7 +59,11 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
                 style={{ width: "60px" }}
                 label="Points"
                 value={values[`${userId}`][i].points}
-                validate={createGradeValidator(maxPoints)}
+                validate={(value) => {
+                  calcReviewGradeTotal();
+                  calcReviewGradeComplete();
+                  return createGradeValidator(maxPoints)(value);
+                }}
               />
               {/* display error for grade validation */}
               {errors[`${userId}`] && errors[`${userId}`][i] && (
@@ -62,12 +82,12 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
                 label="Comments"
                 variant="outlined"
                 value={comment == '' ? values[`${userId}`][i].comment : comment}
-                onChange={changeComment}
+                onChange={eventChangeComment}
               />
               {/* section for preset comments */}
               <div className={styles.preset}>
                 <>
-                <Button 
+                <Button
                 onClick={()=>{
                   let newPresets = presetComments;
                   if (comment == '') {
@@ -84,7 +104,7 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
                       margin: "2.5px 5px",
                       padding: "0 5px"}}>SAVE COMMENT AS PRESET
                       </Button>
-                <Presets key={presetter} presetComments={presetComments} setComment={setComment}/>
+                <Presets key={presetter} presetComments={presetComments} setComment={changeComment}/>
                 </>
               </div>
 
@@ -92,14 +112,21 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
           </TableRow>
         )})}
         <TableCell>
-          <Button 
+          <Button
             onClick={()=>{
               setIsRowOpen(false);
               setDoneGrading(!doneGrading);
-            }} 
+            }}
             style={{ backgroundColor: (doneGrading) ? 'lightGray' : 'rgba(146, 25, 188, 0.34)'}}
           >
             {(doneGrading) ? 'MARK AS UNFINISHED' : 'MARK AS FINISHED'}
+          </Button>
+          <Button
+            onClick={() => {
+              setIsRowOpen(false);
+            }}
+          >
+            Close
           </Button>
         </TableCell>
       </TableBody>
@@ -115,9 +142,9 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
         } else {
           commentAlias = comment.substring(0,27) + "..."
         }
-        
+
         return (
-        <Button 
+        <Button
         onClick={()=>props.setComment(comment)}
         style={{background: "lightgray",
           color: "darkgray",

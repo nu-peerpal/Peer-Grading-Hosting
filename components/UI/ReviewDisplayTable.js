@@ -19,6 +19,14 @@ const useStyles = makeStyles({
   }
 });
 
+const sum = (lst,identity=0) => {
+  return lst.reduce((a, b) => a + b, identity)
+}
+
+const prod = (lst,identity=1) => {
+  return lst.reduce((a, b) => a * b, identity)
+}
+
 const ReviewDisplayTable = ({
   assignmentRubric,
   reviewRubric,
@@ -59,10 +67,28 @@ const ReviewDisplayTable = ({
         const [expandDisabled, setExpandDisabled] = useState(false);
         const [isRowOpen, setIsRowOpen] = useState(false);
         const [doneGrading, setDoneGrading] = useState(false);
+        const [reviewGradeTotal, setReviewGradeTotal] = useState(null);
+        const [reviewGradeComplete, setReviewGradeComplete] = useState(null);
+
+        function calcReviewGradeTotal() {
+          console.log(values[`${userId}`].map(({points}) => points));
+          const total = sum(values[`${userId}`].map(({points}) => (points) ? points : 0));
+          setReviewGradeTotal(total);
+        }
+
+        function calcReviewGradeComplete() {
+          const complete = prod(values[`${userId}`].map(({points}) => !!points));
+          setReviewGradeComplete(complete);
+        }
+
+        if (reviewGradeTotal === null) {
+          calcReviewGradeTotal();
+          calcReviewGradeComplete();
+        }
 
         return (
           <ExpandingTableRow
-            key={userId}
+            key={`grade-row-${userId}`}
             numCols={review.length + 2}
             details={
               <ReviewGradingTable
@@ -72,6 +98,8 @@ const ReviewDisplayTable = ({
                 userId={userId}
                 setIsRowOpen={setIsRowOpen}
                 setDoneGrading={setDoneGrading}
+                calcReviewGradeComplete={calcReviewGradeComplete}
+                calcReviewGradeTotal={calcReviewGradeTotal}
                 doneGrading={doneGrading}
                 presetComments={presetComments}
                 setPresetComments={setPresetComments}
@@ -83,7 +111,7 @@ const ReviewDisplayTable = ({
             doneGrading={doneGrading}
           >
             <TableCell>
-              {firstName} {lastName} {doneGrading && <CheckCircleOutlinedIcon style={{fill: "green"}}/>}
+              {firstName} {lastName} {doneGrading && <CheckCircleOutlinedIcon style={{fill: "green"}} />} ({reviewGradeTotal}{(reviewGradeComplete)?"":"?"})
             </TableCell>
 
             {/* show points per section */}
