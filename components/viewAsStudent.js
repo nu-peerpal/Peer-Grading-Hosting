@@ -36,7 +36,14 @@ function ViewAsStudent(props) {
         }
         setCurrentUserId(event.target.value);
     };
+
+
+    console.log(`courseId ${courseId}`);
     useEffect(() => {
+        if (!courseId) {
+          console.log("courseId not set");
+          return;
+        }
         axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
             let users = res.data.data;
             // console.log({users})
@@ -55,7 +62,7 @@ function ViewAsStudent(props) {
                 customUsers.push({
                     name: obj["firstName"] + " " + obj["lastName"] + " (TA)",
                     id: obj["canvasId"],
-                    type: "ta"                    
+                    type: "ta"
                 })
             });
             // console.log('custom users:',customUsers);
@@ -78,7 +85,7 @@ function ViewAsStudent(props) {
                 </TableHead>
 
                 <TableBody>
-                    
+
                         <TableRow className={styles.row}>
                             <TableCell className={styles.name} style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                     View as Student
@@ -105,7 +112,7 @@ function ViewAsStudent(props) {
                                 </Link>
                             </TableCell>
                         </TableRow>
-                </TableBody>     
+                </TableBody>
             </Table>
         </div>
     )};
