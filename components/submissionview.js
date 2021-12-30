@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./styles/submissionview.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -18,6 +18,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
+import SubmitButton from './submitButton';
 const axios = require("axios");
 
 class Submission extends React.Component {
@@ -28,7 +29,7 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    
+
     return (
       <div className={styles.sub}>
         <Accordion defaultExpanded={true} className={styles.acc}>
@@ -36,7 +37,7 @@ class Submission extends React.Component {
             Submission {this.props.subId}
           </AccordionSummary>
           <AccordionDetails>
-            {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
+            {this.props.isDocument ? <iframe style={{ width: "100%", height: "100%", minHeight: "80vh" }} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
           </AccordionDetails>
         </Accordion>
         <br />
@@ -53,7 +54,7 @@ function getInitialValues(rubric, review) {
   var comments = [];
   var grades = [];
   var finalcomment = "";
-  if (review){
+  if (review) {
     for (var i = 0; i < len; i++) {
       comments.push(review.scores[i][1]);
       grades.push(review.scores[i][0]);
@@ -98,14 +99,15 @@ function getFinalScore(data, rubric) {
 
 // console.log('what reviews should look like', js.reviews[0])
 function Grading(rubric, matching, review, disabled) {
+  var anyChanges = false;
   var maxScore = getMaxScore(rubric);
   return (
     <Formik
-      enableReinitialize= {true}
+      enableReinitialize={true}
       initialValues={getInitialValues(rubric, review)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+        axios.patch(`/api/peerReviews/${matching}`, { review: getFinalScore(data, rubric) }).then(res => {
           console.log('rubric post:', res);
           // setSubmitting(false);
           if (res.status === 200) {
@@ -204,11 +206,16 @@ function Grading(rubric, matching, review, disabled) {
                   <TableCell>
                     <Button
                       className={styles.save}
-                      // disabled={!dirty}
+                      disabled={disabled}
                       type='submit'
                     >
                       Save
                     </Button>
+                    {/* <SubmitButton onClick={props.handleSubmit}
+                      title={existingDueDate ? "Update Deadline" : "Set Deadline"}
+                      anyChanges={anyChanges}
+                      submitAlert={submitResponse}
+                      submitSuccess={submitSuccess} /> */}
                   </TableCell>
                   <TableCell
                     id='submitted'
