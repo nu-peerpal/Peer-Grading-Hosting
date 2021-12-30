@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
 import Submission from "../../components/submissionview";
+import SubmitButton from "../../components/submitButton";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
@@ -13,6 +14,7 @@ const getData = async url => {
 
 const PeerReview = (props) => {
   const { userId, courseId, courseName, assignment, roles } = useUserData();
+  console.log('peerreview userdata:',useUserData)
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
   const [isDocument, setIsDocument] = useState(false);
@@ -44,7 +46,7 @@ const PeerReview = (props) => {
     if (roles.includes("ta") || roles.includes("instructor")) {
       return false;
     }
-    return false;
+    return true;
     // const dueDateObj = new Date(dueDate);
     // const ONE_HOUR = 60 * 60 * 1000;
     // return ((new Date) - dueDateObj) > ONE_HOUR;
