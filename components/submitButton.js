@@ -12,7 +12,7 @@ const CanvasForm = (props) => {
 
     return (
         <>
-      <Button color="primary" variant="outlined" onClick={()=>{
+      <Button color="primary" variant="contained" disabled={props.anyChanges} onClick={()=>{
           props.onClick().then(()=>setShowAlert(true));
         }}>
         {props.title}

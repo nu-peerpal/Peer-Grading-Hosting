@@ -5,6 +5,7 @@ import styles from "./assignments/initialchecklist//initialchecklist.module.scss
 import Button from "@material-ui/core/Button";
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
+import TableCell from '@material-ui/core/TableCell';
 import Input from '@material-ui/core/Input';
 import FilledInput from '@material-ui/core/FilledInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -33,6 +34,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import SubmitButton from '../components/submitButton';
 import Alert from '@material-ui/lab/Alert';
+import Link from 'next/link'
 
 const axios = require("axios");
 
@@ -81,6 +83,7 @@ function getStyles(ta, tas, theme) {
 function CourseSettings(props) {
   console.log('props:', props);
   const { userId, courseId, courseName, assignment, createUser, savedStudentId } = useUserData();
+  console.log('useUserData:', useUserData());
   const router = useRouter();
   //const { assignmentId, assignmentName, rubricId } = router.query;
   const assignmentId = 109;
@@ -148,6 +151,9 @@ function CourseSettings(props) {
   });
   const [courseSettingsJsonObj, setCourseSettingsJsonObj] = useState({});
   const [showAlert, setShowAlert] = useState(false);
+  const [anyChanges, setAnyChanges] = useState('disable');
+  const [assignments, setAssignments] = React.useState([]);
+  const [currentAssignment, setCurrentAssignment] = useState('');
   console.log('canvasform props:', props);
   let alert = (
     <Alert style={{ marginLeft: '10px' }} severity={submitSuccess ? "success" : "error"}>{submitResponse}</Alert>
@@ -208,6 +214,10 @@ function CourseSettings(props) {
     console.log(res);
   }
 
+  const handleChange = (event) => {
+    setCurrentAssignment(event.target.value);
+  };
+
   useEffect(() => {
     if (courseId != "") {
       Promise.all([axios.get(`/api/assignments/${assignmentId}`),
@@ -216,6 +226,7 @@ function CourseSettings(props) {
       axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`),
       axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/courses/${courseId}`),
+      axios.get(`/api/assignments?courseId=${courseId}`)
       ]).then(data => {
         let assignmentData = data[0].data.data;
         console.log(assignmentData);
@@ -250,6 +261,13 @@ function CourseSettings(props) {
         console.log('initial appeal due date', initial.appealDueDate);
         /* initial.prDueDate = formatTimestamp(initial.prDueDate);
         initial.appealDueDate = formatTimestamp(initial.appealDueDate) */
+        let canvasAssignments = [];
+        data[6].data.data.forEach(assignment => {
+          canvasAssignments.push(assignment.name);
+        })
+        setAssignments(canvasAssignments);
+        console.log('tas: ', initial.tas)
+        console.log('canvas assignment names: ', canvasAssignments)
 
         if (!initial.tas) {
           initial.tas = {};
@@ -264,7 +282,41 @@ function CourseSettings(props) {
 
   return (
     <div className="Content">
-      <Container name={"Settings for Course Using Assignment: " + assignmentName}>
+      <Container
+        //                                                 CHANGE TO DROPDOWN
+        // name={"Settings for Course Using Assignment: " + assignments[0].name}
+        name={"Settings for Course Using Assignment: " + currentAssignment}
+      >
+        <TableCell
+          /* className={styles.name}  */
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            fontSize: '15pt',
+          }}>
+          Select Assigment in Course:
+          <FormControl variant="outlined" style={{ marginLeft: '15px' }}>
+            <InputLabel > Assignment </InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              style={{ width: '200px' }}
+              name="assignment"
+              value={currentAssignment}
+              onChange={handleChange}
+            >
+              {assignments.map((name) => (
+                <MenuItem key={name} value={name} >
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </TableCell>
+        <div className={styles.below} >
+        </div>
+
         <div className={styles.desc}>
           <Formik
             enableReinitialize={true}
@@ -308,6 +360,9 @@ function CourseSettings(props) {
                   setExistingDueDate(true);
                   setSubmitSuccess(true);
                   setShowAlert(true);
+                  setAnyChanges('disable');
+                  console.log('submitted:', submitted)
+                  setSubmitted(true);
                   console.log('coursesettings:', courseSettingsJson)
                   console.log('after pr due date type:', typeof courseSettingsJson.prDueDate)
                   console.log('res:', res)
@@ -586,6 +641,7 @@ function CourseSettings(props) {
                           <div>
                             <select value={values.reviewRubric}
                               /* onChange={e => setPrRubric(e.target.value)}  */
+                              id="reviewRubric"
                               name="reviewRubric"
                               onChange={handleChange}
                             >
@@ -614,7 +670,6 @@ function CourseSettings(props) {
                       type="submit"
                       disabled={!dirty}> Update Changes </Button>
                     {showAlert ? alert : null}
-
                   </div>
                   {/* <SubmitButton 
                   onClick={handleSubmit} title="Update Changes"
