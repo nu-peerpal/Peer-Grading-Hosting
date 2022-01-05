@@ -28,7 +28,7 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    
+
     return (
       <div className={styles.sub}>
         <Accordion defaultExpanded={true} className={styles.acc}>
@@ -108,7 +108,7 @@ function Grading(rubric, matching, review, disabled) {
         axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
           // setSubmitting(false);
-          if (res.status === 200) {
+          if (res.status === 201) {
             document.getElementById("submitted").innerHTML = "Submitted";
             document.getElementById("submitted").style.display = "";
           }

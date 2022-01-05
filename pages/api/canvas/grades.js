@@ -28,20 +28,28 @@ export default async (req, res) => {
                 grade_data: grade_data
             }
             console.log('GRADE DATA:',data)
-            let res = await axios.post(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/submissions/update_grades", data, {
-                headers: {'Authorization': `Bearer ${token}`}
-                }).catch(err => console.log('error:',err)) // might have to post by group at a future date.
+            let theError = null;
+            let response = await axios.post(canvas + "courses/" + courseId + "/assignments/" + assignmentId + "/submissions/update_grades", data, {
+              headers: {'Authorization': `Bearer ${token}`}
+            }).catch(err => {
+              theError = err;
+              console.log('error:',err)
+            }) // might have to post by group at a future date.
 
-            responseHandler.msgResponse201(
+            if (200 <= response.status && response.status < 300) {
+              responseHandler.response201(
                 res,
-                "Successfully created Canvas entries.",
+                response.data,
               );
+            } else {
+              responseHandler.response400(res, theError);
+            }
           break;
         default:
           throw new Error("Invalid HTTP method");
       }
     } catch (err) {
+      console.log('/api/canvas/grades',{err})
       responseHandler.response400(res, err);
     }
   };
-  

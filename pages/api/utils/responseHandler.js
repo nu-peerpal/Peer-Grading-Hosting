@@ -8,6 +8,11 @@ exports.msgResponse200 = (res, msg) => {
   return res;
 };
 
+exports.response201 = (res, data) => {
+  res.status(201).json({ status: "success", data });
+  return res;
+};
+
 exports.msgResponse201 = (res, msg) => {
   res.status(201).json({ status: "success", message: msg });
   return res;

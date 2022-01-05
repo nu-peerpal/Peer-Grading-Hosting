@@ -30,7 +30,7 @@ function Appeals(props) {
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
     return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
-  
+
   }
   useEffect(() => {
     Promise.all([
@@ -52,7 +52,7 @@ function Appeals(props) {
   async function handleSubmit() {
     // console.log({appealDueDate})
     axios.patch(`/api/assignments/${assignmentId}`,{ appealsDueDate: appealDueDate }).then(res => {
-      if (res.status == 200) {
+      if (res.status == 201) {
         setSubmitResponse("Deadline set.")
         setExistingDueDate(true);
         setSubmitSuccess(true);
@@ -84,7 +84,7 @@ function Appeals(props) {
                     }}
                   />
               </form>
-              <SubmitButton onClick={handleSubmit} title={existingDueDate ? "Update Deadline" : "Set Deadline"} 
+              <SubmitButton onClick={handleSubmit} title={existingDueDate ? "Update Deadline" : "Set Deadline"}
                 submitAlert={submitResponse}
                 submitSuccess={submitSuccess}/>
             </div>

@@ -20,6 +20,7 @@ function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
     ["peer_load", peerLoad],
     ["grader_load", graderLoad]
   ]);
+  console.log({graders,peers,submissions,peerLoad,graderLoad});
   return axios
     .post(
       "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/peerMatch",

@@ -23,14 +23,11 @@ function ReloadMatchings(props) {
     let {assignmentId, assignmentName} = router.query;
 
     useEffect(() => {
-      Promise.all([axios.get(`/api/users`),
+      Promise.all([axios.get(`/api/users?courseId=${courseId}`),
         axios.get(`/api/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),
         axios.get(`/api/groupEnrollments?courseId=${courseId}&assignmentId=${assignmentId}`)]).then(userData => {
-            let users = userData[0].data.data;
-            let dbSubs = userData[1].data.data;
-            let groupData = userData[2].data.data;
-
-
+            let [users,dbSubs,groupData] = userData.map(({data}) => data.data);
+            
             // Change Submissions to Names for Submission Reports
             let subMap = {};
             dbSubs.forEach(submission => { // sort subMap by {submissionId: [...userIds]}
@@ -60,7 +57,7 @@ function ReloadMatchings(props) {
             // console.log('subBuckets:',subBuckets);
             PRs.forEach(review => {
 
-              if (review.matchingType == 'appeal') { 
+              if (review.matchingType == 'appeal') {
 
                   matchingsFromAppeals.push({
                     assignmentId: review.assignmentId,
@@ -140,7 +137,7 @@ function ReloadMatchings(props) {
                       submissions: [{
                         submission: [sub],
                         id: review.submissionId}]
-                      
+
                     }
                 }
 
@@ -154,14 +151,14 @@ function ReloadMatchings(props) {
                         id: tempUser.canvasId,
                       })
                     subBuckets[sub].submissionId = review.submissionId
-  
-                        
+
+
                 } else {
                   let progressArray = [];
                   if (review.review) progressArray = [1,1]
-                  else progressArray = [0,1] 
+                  else progressArray = [0,1]
                     subBuckets[sub] = {
-                      progress: progressArray, 
+                      progress: progressArray,
                       reviewers: [{
                         name: tempUser.firstName + " " + tempUser.lastName,
                         id: tempUser.canvasId}]
@@ -194,7 +191,7 @@ function ReloadMatchings(props) {
             setUserProgress(userProgress);
             setReviewerId(reviewerId);
             setCompletedSubmissionIds(completedSubmissionIds);
-  
+
             // remove duplicates for completedSubmissionIds
             let newCompletedSubmissionIds = [...new Set(completedSubmissionIds)];
             setCompletedSubmissionIds(newCompletedSubmissionIds);
@@ -206,7 +203,7 @@ function ReloadMatchings(props) {
             var mg = []
             // if they want to see submissions first
             // console.log({subBuckets})
-            // console.log({prProgress}) 
+            // console.log({prProgress})
             if (subFirstView) {
                 for (var obj in subBuckets) {
                 mg.push(<MatchingCell subFirstView={subFirstView} key={obj} submission={obj} peers={subBuckets[obj].reviewers} progress={subBuckets[obj].progress} prProgress={prProgress} submissionMap={subMap} submissionId={subBuckets[obj].submissionId} />)
@@ -214,7 +211,7 @@ function ReloadMatchings(props) {
             }
             else{
                 for (var obj in userBuckets) {
-                  // add all the props to send to matchingCell, need userId, userProgress array, pass info to matchingCell 
+                  // add all the props to send to matchingCell, need userId, userProgress array, pass info to matchingCell
                 mg.push(<MatchingCell subFirstView={subFirstView} key={obj} reviewer={userBuckets[obj]["name"]} submissions={userBuckets[obj]["submissions"]} progressCaseTwo={userBuckets[obj]["progressCaseTwo"]} userProgress={userProgress} reviewerId={userBuckets[obj].userId} completedSubmissionIds={newCompletedSubmissionIds} />)
                 }
             }

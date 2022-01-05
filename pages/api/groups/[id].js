@@ -2,6 +2,7 @@ const db = require("../../../models/index.js");
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {
+  console.log("WARNING: THIS API [api/groups/:id] IS DEPRECATED");
   try {
     let group = await db.groups.findByPk(req.query.id);
     switch (req.method) {

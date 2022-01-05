@@ -26,4 +26,3 @@ export default async (req, res) => {
       responseHandler.response400(res, err);
     }
   };
-  

@@ -33,12 +33,12 @@ app
     server.use(bodyParser.json({limit: '300kb'}));
     server.use(cookieParser());
     server.enable('trust proxy');
-    
+
     //connecting to database, connect function defined in /models/index.js
     (async () => {
       await db.connect();
     })();
-    
+
     server.post("*", async function(req, res, next) {
       try {
         // console.log('LTI REQ:', req);
@@ -56,8 +56,8 @@ app
             console.log("AUTHENTICATED.")
             return handle(req, res);
           }
-        } 
-        
+        }
+
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
@@ -65,7 +65,6 @@ app
         console.log('lti request: ',req);
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {
-            console.log(provider);
             //copying all the useful data from the provider to what will be stored for the user
             userData.user_id = provider.body.custom_canvas_user_id;
             userData.context_id = provider.body.custom_canvas_course_id;
@@ -102,8 +101,8 @@ app
         userData = await keyv.get(nonce);
         if (userData){
           req.userData = userData;
-        } 
-      } 
+        }
+      }
       var data  = await req.userData;
       return handle(req, res);
 
@@ -115,8 +114,8 @@ app
         userData = await keyv.get(nonce);
         if (userData){
           req.userData = userData;
-        } 
-      } 
+        }
+      }
       var data  = await req.userData;
       return handle(req, res);
     });
@@ -127,12 +126,12 @@ app
         userData = await keyv.get(nonce);
         if (userData){
           req.userData = userData;
-        } 
-      } 
+        }
+      }
       var data  = await req.userData;
       return handle(req, res);
     });
-   
+
     server.listen(port, (err) => {
       if (err) throw err;
       console.log(`> App running on ${port}`);

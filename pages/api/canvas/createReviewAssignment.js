@@ -18,7 +18,7 @@ export default async (req, res) => {
       case "POST":
         const { courseId, assignmentName, prName, prDueDate, prGroup, rubric } = req.body
         const data = {
-          assignment: { 
+          assignment: {
             name: prName,
             due_at: prDueDate, //"2021-05-01T11:59:00Z"
             description: "Peer Review Assignment for " + assignmentName,

@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 const axios = require("axios");
 import StudentViewOutline from '../../../components/studentViewOutline';
 import ReloadMatchings from "../../../components/reloadMatchings";
-
+import canvasCalls from "../../../canvasCalls";
 
 function Matching(props) {
   const [matchings, setMatchings] = useState([]);
@@ -35,7 +35,8 @@ function Matching(props) {
         setMatchingExists(true);
         setPeerReviews(peerReviewData)
       }
-    })
+    });
+    console.log({userList});
   }, [])
 
   async function handleSubmit() {
@@ -45,19 +46,12 @@ function Matching(props) {
         id: user.canvasId,
         canvasId: user.canvasId,
         lastName: user.lastName,
-        firstName: user.firstName,
-        enrollment: user.enrollment,
-        courseId: user.courseId
+        firstName: user.firstName
       }
     })
     let errs = [];
     console.log("adding users", usersData);
 
-    await axios.post(`/api/users?type=multiple`, usersData).catch(error => {
-      // console.log(error);
-      console.log('Users already posted')
-      // errs.push('Redundant users not posted.');
-    });
     // remove duplicate submission data
     function contains(a, id) {
       var i = a.length;
@@ -144,6 +138,9 @@ function Matching(props) {
     }))
 
   }
+
+  console.log({userList});
+  console.log({submissionData});
 
   return (
     <div className="Content">

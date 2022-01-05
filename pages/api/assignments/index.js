@@ -1,6 +1,8 @@
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
+const requestHandler = require("../utils/requestHandler");
+
 export const config = {
   api: {
     bodyParser: false,
@@ -34,17 +36,7 @@ const assignmentsHandler = async (req, res) => {
         break;
 
       case "POST":
-        if (req.query.type === "multiple") {
-          await Promise.all(
-            req.body.map(assignment => db.assignments.create(assignment)),
-          );
-        } else {
-          await db.assignments.create(req.body);
-        }
-        responseHandler.msgResponse201(
-          res,
-          "Successfully created database entries.",
-        );
+        await requestHandler.post(req,res, {table: "assignments"});
         break;
 
       default:

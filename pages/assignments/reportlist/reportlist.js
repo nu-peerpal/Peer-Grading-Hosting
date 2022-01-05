@@ -235,33 +235,27 @@ const ReviewReports = () => {
     });
   }
   useEffect(() => {
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
-      let peerReviews = dbData[0].data.data;
+    console.log({courseId});
+    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users?courseId=${courseId}`)]).then(dbData => {
+      let [peerReviews,rubricData,dbUsers] = dbData.map(({data}) => data.data);
+
+      let rubric = rubricData.rubric;
       setPeerMatchings(peerReviews);
-      let rubric = dbData[1].data.data.rubric;
-      let dbUsers = dbData[2].data.data;
+
       rubric = rubric.map(section => {
         return [section.points, section.title];
       });
       let reviewRubric = [];
       // console.log({peerReviews})
-      let TAs = dbUsers.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
+      let graders = dbUsers
+        .filter(({enrollment}) => (enrollment === "TaEnrollment" || enrollment === "InstructorEnrollment"))
+        .map(({id}) => id);
       let subReportData, revReportData;
-      let graders = [];
       let reviews = [];
       let revReviews = [];
-      console.log({TAs})
+      console.log({graders})
       console.log({peerReviews})
       // console.log({rubric})
-      peerReviews.forEach(pr => { // identify TA for reviewreview
-        for (let ta in TAs) {
-          // console.log('ta id',TAs[ta].canvasId)
-          if (TAs[ta].canvasId == pr.userId) {
-            // grader = true;
-            if (!graders.includes(pr.userId)) graders.push(pr.userId);
-          }
-        }
-      })
       peerReviews.forEach(pr => {
         let adjustedReview, reviewScores;
         let score;

@@ -22,6 +22,8 @@ function ViewAsStudent(props) {
     const [canvasUsers, setCanvasUsers] = useState([]);
     const { userId, courseId, courseName, assignment, actAsStudent, revertFromStudent, savedStudentId } = useUserData();
 
+
+
     // view as student OR TA
     const handleSubmit = () => {
         actAsStudent(currentUserId);
@@ -39,6 +41,7 @@ function ViewAsStudent(props) {
 
 
     console.log(`courseId ${courseId}`);
+
     useEffect(() => {
         if (!courseId) {
           console.log("courseId not set");
@@ -67,7 +70,7 @@ function ViewAsStudent(props) {
             });
             // console.log('custom users:',customUsers);
             setCanvasUsers(customUsers)});
-    }, [])
+    }, [courseId])
 
     // useEffect(() => {
     //     console.log('user id is now:', userId);

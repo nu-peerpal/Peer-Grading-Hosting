@@ -52,7 +52,7 @@ export default async (req, res) => {
                   }),
                 ),
               );
-              responseHandler.msgResponse200(
+              responseHandler.msgResponse201(
                 res,
                 "Successfully updated database entries.",
               );
