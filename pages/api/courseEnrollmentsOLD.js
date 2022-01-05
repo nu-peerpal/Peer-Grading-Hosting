@@ -3,6 +3,7 @@ const responseHandler = require("./utils/responseHandler");
 
 export default async (req, res) => {
   try {
+    console.log("courseEnrollments")
     switch (req.method) {
       case "POST":
         if (req.query.type === "multiple") {
