@@ -26,6 +26,11 @@
 
   .back{
     margin: 20px 40px 20px;
+    cursor: pointer;
+    
+    &:active {
+      color: lightgrey;
+    }
   }
   
   .header {
