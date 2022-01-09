@@ -45,11 +45,8 @@ function ViewAssignmentGrade(props) {
         // let subId = reviewReportsRes[0].grade; // submission id is stored in "grade". fix this later.
         // find which group users are in
         let userSubmissions;
-        if (groupSub[0]) { // only if student actually submitted assignment
-          let group = groupSub[0].groupId;
-          if (group == null) group = groupSub[0].submitterId; // if null group, use userId
-          userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
-          if (userSubmissions.length > 1) console.log('student has more than one submission for assignment.')
+        if (groupData[0]) { // only if student actually submitted the assignment
+          userSubmissions = submissionsRes.filter(sub => sub.canvasId == groupData[0].submissionId);
           if (!userSubmissions[0].report.includes('TA Review 1')) setEligibleAppeal(true); // if no TA review, eligible for appeal
 
           // check for existing appeal or if appeal deadline has passed
@@ -90,8 +87,7 @@ function ViewAssignmentGrade(props) {
         } else { // no submission available, skip steps
           userSubmissions = [];
         }
-        console.log({reviewReportRes});
-        console.log({submissionRes});
+
         reviewReportsRes.sort(function(a, b){return a.id-b.id});
         reviewReportsRes.forEach((report,i) => {
             let reportSubmission = submissionsRes.filter(x => x.canvasId == report.grade)
