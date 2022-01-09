@@ -44,7 +44,7 @@ function ViewAssignmentGrade(props) {
         let userSubmissions;
         if (groupSub[0]) { // only if student actually submitted assignment
           let group = groupSub[0].groupId;
-          if (group == null) group = groupSub[0].submitterId; // if null group, use userId 
+          if (group == null) group = groupSub[0].submitterId; // if null group, use userId
           userSubmissions = submissionsRes.filter(x => (x.groupId == group && x.assignmentId == id));
           if (userSubmissions.length > 1) console.log('student has more than one submission for assignment.')
           if (!userSubmissions[0].report.includes('TA Review 1')) setEligibleAppeal(true); // if no TA review, eligible for appeal
@@ -86,6 +86,8 @@ function ViewAssignmentGrade(props) {
         } else { // no submission available, skip steps
           userSubmissions = [];
         }
+        console.log({reviewReportRes});
+        console.log({submissionRes});
         reviewReportsRes.sort(function(a, b){return a.id-b.id});
         reviewReportsRes.forEach((report,i) => {
             let reportSubmission = submissionsRes.filter(x => x.canvasId == report.grade)
@@ -117,7 +119,7 @@ function ViewAssignmentGrade(props) {
      Promise.all([
           axios.post(`/api/peerReviews?type=multiple`,[appealFormat]),
           axios.post(`/api/sendemail?&type=appeals&courseId=${courseId}`, {
-            userId: appealFormat.userId, 
+            userId: appealFormat.userId,
             subject: 'Assigned Appeal',
             message: `New appeal for ${name} has been assigned.`
           })
@@ -129,7 +131,7 @@ function ViewAssignmentGrade(props) {
               setAppealButtonText('Something Went Wrong. Try again');
             }
             }).catch(err => console.log('err:',err))
-    
+
   }
   async function removeAppeal() {
     console.log('removing appeal');
@@ -159,12 +161,12 @@ function ViewAssignmentGrade(props) {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {index === loadSRSubmission ? 
+                    {index === loadSRSubmission ?
                       sub.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}></iframe> : <Typography>{sub.s3Link}</Typography>
                       :
                         <Button onClick={() => setLoadSRSubmission(index)}>Load Submission</Button>
                       }
-                    
+
                       <ReactMarkdown plugins={[gfm]} children={sub.report} />
                       <br />
                       <br />
@@ -183,7 +185,7 @@ function ViewAssignmentGrade(props) {
                         see Canvas for more information on how to do that.
                         </span>
                       </div>}
-                      
+
                     </div>
                 </AccordionDetails>
               </Accordion>
@@ -203,12 +205,12 @@ function ViewAssignmentGrade(props) {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {index === loadRRSubmission ? 
+                    {index === loadRRSubmission ?
                       rev.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev.s3Link}></iframe> : <Typography>{rev.s3Link}</Typography>
                       :
                         <Button onClick={() => setLoadRRSubmission(index)}>Load Submission</Button>
                       }
-                    
+
                       <ReactMarkdown plugins={[gfm]} children={rev.report} />
                     </div>
                 </AccordionDetails>

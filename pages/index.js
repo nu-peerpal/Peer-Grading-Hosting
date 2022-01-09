@@ -39,7 +39,7 @@ function Dashboard(props) {
         // let today = new Date();
         // today.setHours(today.getHours() - 1); // add 1 hour offset
         res = await axios.get(`/api/assignments?courseId=${courseId}`);
-        
+
         resData = res.data;
         const assignments = resData.data;
 
@@ -100,8 +100,8 @@ function Dashboard(props) {
             break;
           default:
             actionItem = 'Assignment Completed'
-            taActionItem = 'Complete' 
-            studentActionItem = 'Grades submitted to Canvas' 
+            taActionItem = 'Complete'
+            studentActionItem = 'Grades submitted to Canvas'
         }
 
 
@@ -109,13 +109,13 @@ function Dashboard(props) {
         if (reviewStatus < 9) {
           toDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: actionItem, reviewStatus:reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"});
           //toDoReviews = toDoReviews.assignmentDueDate.sort((a,b) => {
-          //  return new Date(a).getTime() - 
+          //  return new Date(a).getTime() -
           //      new Date(b).getTime()
         //}).reverse();
           //toDoReviews.sort((a,b) => b.reviewDueDate - a.reviewDueDate).reverse()
           //setToDoReviews(toDoReviews)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
-          
+
           tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
@@ -135,8 +135,8 @@ function Dashboard(props) {
       //   return e.reviewStatus >= 4
       // })
       console.log('ta todos:',taToDoReviews)
-      conosle.log('studentToDoReviews',studentToDoReviews);
-      conosle.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
+      console.log('studentToDoReviews',studentToDoReviews);
+      console.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
@@ -149,7 +149,7 @@ function Dashboard(props) {
   if (props.ISstudent) {
     return (
       <div className="Content">
-        <StudentToDoList 
+        <StudentToDoList
           toDoReviews={studentInProgressReviews}
           ISstudent={props.ISstudent}
           />
@@ -191,7 +191,7 @@ function ToDoList(props) {
       student={props.ISstudent}
       link={props.link}
     />
-  } else { // No items in to do list. 
+  } else { // No items in to do list.
   return <ListContainer
     name="Todos"
     data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
@@ -234,7 +234,7 @@ function CanvasAssignments(props) {
       data={props.assignments}
       link="/assignments/fullassignmentview/fullassignmentview"
     />
-  } else { // No assignments loaded 
+  } else { // No assignments loaded
   return null;
   }
 }
