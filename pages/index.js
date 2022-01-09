@@ -234,8 +234,8 @@ function Dashboard(props) {
       //   return e.reviewStatus >= 4
       // })
       console.log('ta todos:',taToDoReviews)
-      conosle.log('studentToDoReviews',studentToDoReviews);
-      conosle.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
+      console.log('studentToDoReviews',studentToDoReviews);
+      console.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
