@@ -228,7 +228,7 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = tempStudentInProgressReviews.filter(({reviewStatus} => reviewStatus < 4);
+      const studentToDoReviews = tempStudentInProgressReviews.filter(({reviewStatus}) => reviewStatus < 4);
 
       // const studentDoneReviews = toDoReviews.filter(function(e){
       //   return e.reviewStatus >= 4
