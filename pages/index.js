@@ -306,8 +306,8 @@ function Dashboard(props) {
         {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
-        <CanvasAssignments name="Unconfigured Assignments" assignments={canvasAssignments} />
-        <CanvasAssignments name="Finished Assignments" assignments={canvasFinishedAssignments} />
+        <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} />
+        <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
@@ -361,7 +361,7 @@ function TaToDoList(props) {
 function CanvasAssignments(props) {
   if (props.assignments) {
     return <ListContainer
-      name={props.name}
+      name={props.name || "Assignment List"}
       data={props.assignments}
       link="/assignments/fullassignmentview/fullassignmentview"
     />
