@@ -4,11 +4,15 @@ import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
 import StudentViewOutline from '../components/studentViewOutline';
+import CompletedAssignments from "./completedassignments";
+import Grades from "./grades";
+
 const axios = require("axios");
 import _ from "lodash";
 
 function Dashboard(props) {
   const [canvasAssignments, setCanvasAssignments] = useState();
+  const [canvasFinishedAssignments, setCanvasFinishedAssignments] = useState();
   // const [announcements, setAnnouncements] = useState([]);
   const [toDoReviews, setToDoReviews] = useState();
   const [taToDos, setTaToDos] = useState([]);
@@ -122,26 +126,65 @@ function Dashboard(props) {
 
   useEffect(() => {
     (async () => {
-      if (props.ISstudent) {
-        console.log('this is a student')
-      } else {
-        console.log('this is an instructor / TA')
-      }
-      if (!courseId) {
-        console.log("useEffect found no courseId");
-      } else { // don't load anything until userData is available
-        console.log(`useEffect found courseId ${courseId}`);
-        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
-          setCanvasAssignments(response.data.data);
-          console.log({response});
-        });
-        let res, resData;
-        // let today = new Date();
-        // today.setHours(today.getHours() - 1); // add 1 hour offset
-        res = await axios.get(`/api/assignments?courseId=${courseId}`);
 
-        resData = res.data;
-        const assignments = resData.data;
+      if (!courseId) {
+        console.log("useEffect: no courseId");
+        return;
+      }
+
+      if (props.ISstudent) {
+        console.log('useEffect: you are a student')
+      } else {
+        console.log('useEffect: you are an instructor / TA')
+      }
+
+      // don't load anything until userData is available
+      console.log(`useEffect: found courseId ${courseId}`);
+
+      const assignments = (await axios.get(`/api/assignments?courseId=${courseId}`))
+        .data.data;
+
+      // setup canvas courses
+      if (!props.ISstudent && !canvasAssignments)
+      {
+        // get canvas courses
+        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+          const allCanvasAssignments = response.data.data;
+
+          console.log({allCanvasAssignments});
+
+          // let today = new Date();
+          // today.setHours(today.getHours() - 1); // add 1 hour offset
+
+          const finishedAssignmentIds = assignments
+            .filter(({reviewStatus}) => reviewStatus >= 9)
+            .map(({canvasId}) => parseInt(canvasId));
+
+          const inprogressAssignmentIds = assignments
+            .filter(({reviewStatus}) => reviewStatus < 9)
+            .map(({canvasId}) => parseInt(canvasId));
+
+          const reviewAssignmentIds = assignments
+            .map(({reviewCanvasId}) => parseInt(reviewCanvasId));
+
+          const allKnownAssignmentIds = [
+            ...inprogressAssignmentIds,
+            ...finishedAssignmentIds,
+            ...reviewAssignmentIds
+          ];
+
+          // should be in a list of finished assignments
+          const finishedCanvasAssignments = allCanvasAssignments
+            .filter(({canvasId}) => finishedAssignmentIds.includes(parseInt(canvasId)));
+
+          // should be in a list of unconfigured assignments
+          const unconfiguredCanvasAssignments = allCanvasAssignments
+            .filter(({canvasId}) => !allKnownAssignmentIds.includes(parseInt(canvasId)));
+
+          setCanvasAssignments(unconfiguredCanvasAssignments);
+          setCanvasFinishedAssignments(finishedCanvasAssignments);
+        });
+      }
 
       const toDoReviews = [];
       const taToDoReviews = [];
@@ -216,7 +259,7 @@ function Dashboard(props) {
           //setToDoReviews(toDoReviews)
           taToDoReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, actionItem: taActionItem, reviewStatus, link:"/assignments/fullassignmentview/fullassignmentview"})
 
-          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: reviewDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus:reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
+          tempStudentInProgressReviews.push({ canvasId: id, name, assignmentDueDate: assignmentDueDate, reviewDueDate:reviewDueDate, rubricId: rubricId, reviewStatus, actionItem:studentActionItem, link:"/assignments/fullassignmentview/fullassignmentview"});
           //studentInProgressReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate)
           //setStudentInProgressReviews(studentInProgressReviews)
           //ID where duedate and linked are defined
@@ -228,19 +271,19 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = tempStudentInProgressReviews.filter(function(e){
-        return e.reviewStatus < 4
-      })
+      const studentToDoReviews = tempStudentInProgressReviews.filter(({reviewStatus}) => reviewStatus < 4);
+
       // const studentDoneReviews = toDoReviews.filter(function(e){
       //   return e.reviewStatus >= 4
       // })
       console.log('ta todos:',taToDoReviews)
+      console.log('studentToDoReviews',studentToDoReviews);
+      console.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
       setStudentInProgressReviews(studentToDoReviews);
       // setStudentCompletedReviews(studentCompletedReviews);
-    }
     })().catch( e => { console.error(e) });
   }, [props.ISstudent, savedStudentId, userCreated]);
 
@@ -251,6 +294,8 @@ function Dashboard(props) {
           toDoReviews={studentInProgressReviews}
           ISstudent={props.ISstudent}
           />
+        <CompletedAssignments ISstudent={props.ISstudent} />
+        <Grades ISstudent={props.ISstudent} />
         {/* <ListContainer
           name="Todos"
           data={toDoReviews}
@@ -273,7 +318,8 @@ function Dashboard(props) {
         {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
         <ViewAsStudent SetIsStudent={props.SetIsStudent} />
-        <CanvasAssignments assignments={canvasAssignments} />
+        <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} />
+        <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
@@ -299,12 +345,14 @@ function ToDoList(props) {
   }
 }
 function StudentToDoList(props) {
+  console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
-    name="Peer Review Assignments"
-    data={props.toDoReviews}
-    student={props.ISstudent}
-    link="/peer_reviews/selectReview"
+      textIfEmpty="no reviews are currently assigned"
+      name="Submissions to Review"
+      data={props.toDoReviews}
+      student={props.ISstudent}
+      link="/peer_reviews/selectReview"
   />
 
   } else {
@@ -324,10 +372,9 @@ function TaToDoList(props) {
 }
 
 function CanvasAssignments(props) {
-  console.log(props)
   if (props.assignments) {
     return <ListContainer
-      name="Canvas Assignments"
+      name={props.name || "Assignment List"}
       data={props.assignments}
       link="/assignments/fullassignmentview/fullassignmentview"
     />

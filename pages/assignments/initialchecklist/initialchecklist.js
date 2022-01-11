@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import { PanoramaFishEye } from "@material-ui/icons";
 import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
+import SubmitButton from '../../../components/submitButton';
 
 
 const InitialChecklist = (props) => {
@@ -27,6 +28,11 @@ const InitialChecklist = (props) => {
   const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
   const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
   const [fieldsReady, setFieldsReady] = React.useState(false);
+  // new info
+  const [existingDueDate, setExistingDueDate] = React.useState(false);
+  const [submitResponse, setSubmitResponse] = React.useState("");
+  const [submitSuccess, setSubmitSuccess] = React.useState(true)
+  // new info stop
   let localDate = new Date(dueDate);
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
@@ -48,6 +54,12 @@ const InitialChecklist = (props) => {
   }
 
   async function handleSubmit() {
+    // new info
+      setSubmitResponse("Peer Review Assignment Created")
+      setExistingDueDate(true)
+      setSubmitSuccess(true)
+    // new info stop
+    
     var rubric = null;
     var i;
     await uploadRubrics(rubricOptions);
@@ -78,6 +90,13 @@ const InitialChecklist = (props) => {
       assignment["rubricId"] = parseInt(router.query.rubricId);
       assignment["reviewStatus"] = 1;
       axios.post(`/api/assignments`, assignment)
+      // new info
+      // if (assignment.status == 200) {
+      //   setSubmitResponse("Peer Review Assignment Created")
+      //   setExistingDueDate(true)
+      //   setSubmitSuccess(true)
+      // }
+      // new info stop
     });
     console.log({reviewAssignmentRes});
     router.push({
@@ -175,9 +194,12 @@ const InitialChecklist = (props) => {
       </Container>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-      {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
+      {/* {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
           Create Peer Review Assignment
-        </Button>}
+        </Button>} */}
+        {rubricId != -1 && prGroup != -1 && prDueDate && <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"} 
+                submitAlert={submitResponse}
+                submitSuccess={submitSuccess}/>}
       </div>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>

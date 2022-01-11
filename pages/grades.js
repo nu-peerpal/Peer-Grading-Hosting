@@ -19,19 +19,23 @@ function Grades(props) {
     })
   }, [])
 
+  const listContainer = (
+    <ListContainer
+      textIfEmpty="no submissions are graded"
+      name="Graded Submissions"
+      data={gradedAssignments}
+      link="/grades/viewgrades"
+    />
+  );
+
+  if (!props.SetIsStudent)
+    return listContainer;
+
+  // if standalone page
   return (
     <div className="Content">
-      {/* <ListContainer
-        name="Graded Peer Reviews"
-        data={reviewGrades}
-        link="/grades/viewprgrade"
-      /> */}
-      <ListContainer
-        name="Graded Assignments"
-        data={gradedAssignments}
-        link="/grades/viewgrades"
-      />
-      <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
+      {listContainer}
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 }

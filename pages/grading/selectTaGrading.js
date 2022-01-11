@@ -158,9 +158,9 @@ const SelectTaGrading = (props) => {
   function TaToDoList(props) {
     if (props.toDoReviews) {
       return <ListContainer
-      name={"Review reviews to Complete for: " + assignmentName}
-      data={props.toDoReviews}
-      link="/grading/tagrading"
+        name={"Review reviews to Complete for: " + assignmentName}
+        data={props.toDoReviews}
+        link="/grading/tagrading"
     />
     } else {
       return null;
@@ -169,10 +169,10 @@ const SelectTaGrading = (props) => {
   function TaToDoGrades(props) {
     if (props.toDoGrades) {
       return <ListContainer
-      name={"TA reviews to Complete for: " + assignmentName}
-      data={props.toDoGrades}
-      link="/peer_reviews/peerreview"
-    />
+        name={"TA reviews to Complete for: " + assignmentName}
+        data={props.toDoGrades}
+        link="/peer_reviews/peerreview"
+      />
     } else {
       return null;
     }

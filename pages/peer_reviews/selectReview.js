@@ -5,6 +5,7 @@ import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
+import _ from "lodash";
 
 const SelectReview = (props) => {
   const router = useRouter();
@@ -20,19 +21,23 @@ const SelectReview = (props) => {
         peerMatchings.sort(function(a, b){return a.id-b.id})
         console.log({peerMatchings});
 
-        const toDoReviews = [];
-        // toDoReviews.push({ name: name, assignmentDueDate: dueDate, data: peerMatchings });
-        let reviewIndex = 0;
-        for (const peerMatching of peerMatchings) {
-          reviewIndex = reviewIndex + 1;
-          toDoReviews.push({
-              name: "Grade Submission " + reviewIndex,
-              assignmentDueDate: dueDate,
-              rubricId: rubricId,
-              data: peerMatching,
-              submissionAlias: reviewIndex
-          });
+        const reviewReviewText = (reviewReview) => {
+          if (!reviewReview)
+            return "";
+
+          const total = _.sum(reviewReview.reviewBody.map(({points}) => points));
+          const maximum = _.sum(reviewReview.reviewBody.map(({maxPoints}) => maxPoints));
+
+          return ` (Grade ${total}/${maximum})`;
         }
+
+        const toDoReviews = peerMatchings.map((m,i) => ({
+          name: `Submission ${i+1} ${reviewReviewText(m.reviewReview)}`,
+          assignmentDueDate: dueDate,
+          rubricId: rubricId,
+          data: m,
+          submissionAlias: i+1
+        }));
 
       setToDoReviews(toDoReviews)
     })().catch( e => { console.error(e) });
@@ -41,10 +46,11 @@ const SelectReview = (props) => {
   function StudentToDoList(props) {
     if (props.toDoReviews) {
       return <ListContainer
-      name={"Reviews to Complete for: " + name}
-      data={props.toDoReviews}
-      student={props.ISstudent}
-      link="/peer_reviews/peerreview"
+        textIfEmpty="no peer reviews have been assigned"
+        name={"Reviews for " + name}
+        data={props.toDoReviews}
+        student={props.ISstudent}
+        link="/peer_reviews/peerreview"
     />
     } else {
       return null;
@@ -60,4 +66,3 @@ const SelectReview = (props) => {
 };
 
 export default SelectReview;
-

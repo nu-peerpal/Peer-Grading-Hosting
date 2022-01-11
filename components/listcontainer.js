@@ -24,7 +24,7 @@ function ListContainer(props) {
   function getData() {
     var information = props;
     var link = "";
-    if (information.data) {
+    if (information.data && information.data.length) {
       return (
         information.data.map(x => {
           if (!x.data) x.data={};
@@ -35,17 +35,42 @@ function ListContainer(props) {
           let date = '';
           let type = '';
           // console.log({x})
-          if (x.reviewStatus > 1){
-            date = x.reviewDueDate;
-            type = 'Review';
-          }
-          else {
-            date = x.assignmentDueDate;
-            type = 'Assignment';
+
+          switch(x.reviewStatus) {
+            case 1:
+            case 2:
+              date = x.assignmentDueDate;
+              type = 'Assignment';
+              break;
+
+            case 3:
+              date = x.reviewDueDate;
+              type = 'Review';
+              break;
+
+            case 4:
+            case 5:
+            case 6:
+              type = 'Reviewed';
+              date = '';
+              break;
+
+            case 7:
+            case 8:
+              type = 'Graded';
+              date = x.appealsDueDate;
+              break;
+
+            case 9:
+            default:
+              type = 'Completed';
+              date = '';
           }
 
+          console.log({date});
+
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 
@@ -57,7 +82,13 @@ function ListContainer(props) {
         )
       )
     } else {
-      return null;
+      return (
+        <TableRow className={styles.row}>
+          <TableCell className={styles.name}>
+            {props.textIfEmpty || "nothing to see here"}
+            </TableCell>
+        </TableRow>
+      );
     }
   }
 
