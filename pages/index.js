@@ -4,6 +4,9 @@ import Cookies from 'js-cookie';
 import { useUserData } from "../components/storeAPI";
 import ViewAsStudent from "../components/viewAsStudent";
 import StudentViewOutline from '../components/studentViewOutline';
+import CompletedAssignments from "./completedassignments";
+import Grades from "./grades";
+
 const axios = require("axios");
 import _ from "lodash";
 
@@ -138,43 +141,50 @@ function Dashboard(props) {
       // don't load anything until userData is available
       console.log(`useEffect: found courseId ${courseId}`);
 
-      const allCanvasAssignments = (await axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`))
-        .data.data;
-
-      console.log({allCanvasAssignments});
-
-      // let today = new Date();
-      // today.setHours(today.getHours() - 1); // add 1 hour offset
       const assignments = (await axios.get(`/api/assignments?courseId=${courseId}`))
         .data.data;
 
-      const finishedAssignmentIds = assignments
-        .filter(({reviewStatus}) => reviewStatus >= 9)
-        .map(({canvasId}) => parseInt(canvasId));
+      // setup canvas courses
+      if (!props.ISstudent && !canvasAssignments)
+      {
+        // get canvas courses
+        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
+          const allCanvasAssignments = response.data.data;
 
-      const inprogressAssignmentIds = assignments
-        .filter(({reviewStatus}) => reviewStatus < 9)
-        .map(({canvasId}) => parseInt(canvasId));
+          console.log({allCanvasAssignments});
 
-      const reviewAssignmentIds = assignments
-        .map(({reviewCanvasId}) => parseInt(reviewCanvasId));
+          // let today = new Date();
+          // today.setHours(today.getHours() - 1); // add 1 hour offset
 
-      const allKnownAssignmentIds = [
-        ...inprogressAssignmentIds,
-        ...finishedAssignmentIds,
-        ...reviewAssignmentIds
-      ];
+          const finishedAssignmentIds = assignments
+            .filter(({reviewStatus}) => reviewStatus >= 9)
+            .map(({canvasId}) => parseInt(canvasId));
 
-      // should be in a list of finished assignments
-      const finishedCanvasAssignments = allCanvasAssignments
-        .filter(({canvasId}) => finishedAssignmentIds.includes(parseInt(canvasId)));
+          const inprogressAssignmentIds = assignments
+            .filter(({reviewStatus}) => reviewStatus < 9)
+            .map(({canvasId}) => parseInt(canvasId));
 
-      // should be in a list of unconfigured assignments
-      const unconfiguredCanvasAssignments = allCanvasAssignments
-        .filter(({canvasId}) => !allKnownAssignmentIds.includes(parseInt(canvasId)));
+          const reviewAssignmentIds = assignments
+            .map(({reviewCanvasId}) => parseInt(reviewCanvasId));
 
-      setCanvasAssignments(unconfiguredCanvasAssignments);
-      setCanvasFinishedAssignments(finishedCanvasAssignments);
+          const allKnownAssignmentIds = [
+            ...inprogressAssignmentIds,
+            ...finishedAssignmentIds,
+            ...reviewAssignmentIds
+          ];
+
+          // should be in a list of finished assignments
+          const finishedCanvasAssignments = allCanvasAssignments
+            .filter(({canvasId}) => finishedAssignmentIds.includes(parseInt(canvasId)));
+
+          // should be in a list of unconfigured assignments
+          const unconfiguredCanvasAssignments = allCanvasAssignments
+            .filter(({canvasId}) => !allKnownAssignmentIds.includes(parseInt(canvasId)));
+
+          setCanvasAssignments(unconfiguredCanvasAssignments);
+          setCanvasFinishedAssignments(finishedCanvasAssignments);
+        });
+      }
 
       const toDoReviews = [];
       const taToDoReviews = [];
@@ -284,6 +294,8 @@ function Dashboard(props) {
           toDoReviews={studentInProgressReviews}
           ISstudent={props.ISstudent}
           />
+        <CompletedAssignments ISstudent={props.ISstudent} />
+        <Grades ISstudent={props.ISstudent} />
         {/* <ListContainer
           name="Todos"
           data={toDoReviews}
@@ -336,7 +348,7 @@ function StudentToDoList(props) {
   console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
-    name="Peer Review Assignments"
+    name="Submissions to Review"
     data={props.toDoReviews}
     student={props.ISstudent}
     link="/peer_reviews/selectReview"

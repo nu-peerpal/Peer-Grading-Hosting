@@ -32,13 +32,26 @@ const CompletedAssignments = (props) => {
     }
   }, []);
   // const completed = [{ name: "Assignment 1", info: "Completed 11/20/20" }];
+
+  if (route === '/')
+    return null;
+
+  const listContainer = (
+    <ListContainer
+      textIfEmpty="no peer reviews are graded"
+      name="Graded Reviews"
+      data={assignments}
+      link={route}
+    />
+  );
+
+  if (!props.SetIsStudent)
+    return listContainer;
+
+  // if standalone page
   return (
     <div className="Content">
-      <ListContainer
-        name="Completed Peer Review Assignments"
-        data={assignments}
-        link={route}
-      />
+      {listContainer}
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );

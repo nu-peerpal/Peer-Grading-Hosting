@@ -26,7 +26,7 @@ const SelectReview = (props) => {
         for (const peerMatching of peerMatchings) {
           reviewIndex = reviewIndex + 1;
           toDoReviews.push({
-              name: "Grade Submission " + reviewIndex,
+              name: "Submission " + reviewIndex,
               assignmentDueDate: dueDate,
               rubricId: rubricId,
               data: peerMatching,
@@ -41,10 +41,11 @@ const SelectReview = (props) => {
   function StudentToDoList(props) {
     if (props.toDoReviews) {
       return <ListContainer
-      name={"Reviews to Complete for: " + name}
-      data={props.toDoReviews}
-      student={props.ISstudent}
-      link="/peer_reviews/peerreview"
+        textIfEmpty="no peer reviews have been assigned"
+        name={"Reviews for " + name}
+        data={props.toDoReviews}
+        student={props.ISstudent}
+        link="/peer_reviews/peerreview"
     />
     } else {
       return null;
@@ -60,4 +61,3 @@ const SelectReview = (props) => {
 };
 
 export default SelectReview;
-

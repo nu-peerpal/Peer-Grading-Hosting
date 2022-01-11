@@ -192,6 +192,7 @@ function ViewAssignmentGrade(props) {
             )
           }
         </Container>
+        {/*
         <Container name={"Review Reports for " + name}>
         {
             revReports.map((rev, index) =>
@@ -218,6 +219,7 @@ function ViewAssignmentGrade(props) {
             )
           }
         </Container>
+        */}
       <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
     </div>
   );
