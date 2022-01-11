@@ -59,17 +59,25 @@
 }
 
 .comments{
-  color: red ;
+  font-family: monospace;
   font-size: 100%;
+  padding: 5px;
   display: flex;
+  background-color: lightgray;
+  white-space: pre-wrap;
+  align-items: left;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   &__title{
       font-weight: bold;
-      margin: 0 !important;
+      margin: 0px !important;
   }
 }
+
+.grader {
+  color: red;
+}
+
 
 .tagradingcriteria{
   color: red;

@@ -348,10 +348,11 @@ function StudentToDoList(props) {
   console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
-    name="Submissions to Review"
-    data={props.toDoReviews}
-    student={props.ISstudent}
-    link="/peer_reviews/selectReview"
+      textIfEmpty="no reviews are currently assigned"
+      name="Submissions to Review"
+      data={props.toDoReviews}
+      student={props.ISstudent}
+      link="/peer_reviews/selectReview"
   />
 
   } else {

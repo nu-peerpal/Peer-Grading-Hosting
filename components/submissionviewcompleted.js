@@ -22,6 +22,7 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import { palette } from '@material-ui/system';
 const axios = require("axios");
+import _ from "lodash";
 
 class SubmissionCompleted extends React.Component {
   constructor(props) {
@@ -34,6 +35,8 @@ class SubmissionCompleted extends React.Component {
 
     const taReviewReport = this.props.taReviewReview;
 
+    console.log({taReviewReport});
+
     return (
       <div className={styles.sub}>
           <div>Peer Review Due Date: {this.props.dueDate} </div>
@@ -43,131 +46,54 @@ class SubmissionCompleted extends React.Component {
       {taReviewReport ?
         <Box bgcolor="#f73378">
           <br />
-          {taReviewReport ?
               <div className={styles.report}>
                   Your peer review has been assessed as follows:
               </div>
-              :
-              null
-          }
-          {taReviewReport ?
               <br />
-              :
-              null
-          }
-          {taReviewReport ?
             <div className={styles.peerreviewscore}>
-              Review Score: {(taReviewReport["reviewBody"]["0"]["points"] + taReviewReport["reviewBody"]["1"]["points"] + taReviewReport["reviewBody"]["2"]["points"])}
+              Review Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))}
             </div>
-            :
-            <div className={styles.peerreviewscore}>
-              Review Score: Ungraded
-            </div>
-          }
-          {taReviewReport ?
               <br />
-              :
-              null
-          }
-          {taReviewReport ?
           <TableContainer component={Paper}>
               <Table aria-label='spanning table'>
                 <TableHead>
                   <TableRow>
                     <TableCell>Criteria <span className={styles.btw}></span></TableCell>
                     <TableCell align='center'>Comments</TableCell>
-                    <TableCell align='center'>Grade</TableCell>
+                    <TableCell align='center'>Scores</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {gradingrubric.map((row, index) => (
-                    <TableRow key={row["description"]}>
+                  {taReviewReport.reviewBody.map((row, index) => (
+                    <TableRow key={`review-report-${index}`}>
                       {/* cells for criteria */}
                       <TableCell>
-                          {index == 0 && taReviewReport ?
-                              <div className={styles.tagradingcriteria}>
-                                  {taReviewReport["reviewBody"]["0"]["element"]}
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 1 && taReviewReport ?
-                              <div className={styles.tagradingcriteria}>
-                                  {taReviewReport["reviewBody"]["1"]["element"]}
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 2 && taReviewReport ?
-                              <div className={styles.tagradingcriteria}>
-                                  {taReviewReport["reviewBody"]["2"]["element"]}
-                              </div>
-                              :
-                              null
-                          }
+                          <div>
+                            {row.element}
+                          </div>
                       </TableCell>
 
                       {/* row for comments */}
-                      <TableCell align='center' style={{ width: 600 }}>
-                          {index == 0 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["0"]["comment"]} 
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 1 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["1"]["comment"]}  
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 2 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["2"]["comment"]}  
-                              </div>
-                              :
-                              null
-                          }
+                      <TableCell style={{ width: 600 }}>
+                        <div className={`${styles.grader} ${styles.comments}`}>
+                          {row.comment + "this\nis\n    a\ntest"}
+                        </div>
                       </TableCell>
 
                       {/* cells for grades */}
                       <TableCell style={{ width: 100 }} align='center'>
-                          {index == 0 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["0"]["points"]} / {taReviewReport["reviewBody"]["0"]["maxPoints"]} 
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 1 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["1"]["points"]} / {taReviewReport["reviewBody"]["1"]["maxPoints"]}  
-                              </div>
-                              :
-                              null
-                          }
-                          {index == 2 && taReviewReport ?
-                              <div className={styles.comments}>
-                                  {taReviewReport["reviewBody"]["2"]["points"]} / {taReviewReport["reviewBody"]["2"]["maxPoints"]} 
-                              </div>
-                              :
-                              null
-                          }
+                        <div className={styles.grader}>
+                          <nobr>{row.points} / {row.maxPoints}</nobr>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
                 <TableFooter>
                   <TableRow>
-                  {taReviewReport ?
                     <TableCell className={styles.save} style={{ color: "black" }}>
-                      Total Score: {(taReviewReport["reviewBody"]["0"]["points"] + taReviewReport["reviewBody"]["1"]["points"] + taReviewReport["reviewBody"]["2"]["points"])} / {(taReviewReport["reviewBody"]["0"]["maxPoints"] + taReviewReport["reviewBody"]["1"]["maxPoints"] + taReviewReport["reviewBody"]["2"]["maxPoints"])}
+                      <nobr>Total Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))} / {_.sum(taReviewReport.reviewBody.map(({maxPoints}) => maxPoints))}</nobr>
                     </TableCell>
-                    :
-                    null
-                  }
                     <TableCell
                       id='submitted'
                       className={styles.save}
@@ -179,14 +105,9 @@ class SubmissionCompleted extends React.Component {
                 </TableFooter>
               </Table>
             </TableContainer>
-            :
-            null
-          }
         </Box>
         :
-        <div className={styles.ungradedreport}>
-          Peer review has not been graded yet
-        </div>
+        null
       }
       </Container>
       <br />
@@ -202,7 +123,7 @@ class SubmissionCompleted extends React.Component {
         <br />
         <br />
         <div className={styles.peerreviewreport}>
-            Compare your peer review for this submission with the TA's review below:
+            Compare your review for this submission with the TA review below:
         </div>
         <br />
         {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
@@ -285,83 +206,67 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
             <Table aria-label='spanning table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Criteria <span className={styles.btw}>(Hover for details)</span></TableCell>
-                  <TableCell align='center'>Comments</TableCell>
-                  <TableCell align='center'>Grade</TableCell>
+                  <TableCell>Criteria<br /><span className={styles.btw}>(Hover for details)</span></TableCell>
+                  <TableCell align='center'>Comments<br /><span className={`${styles.btw} ${styles.grader}`}>(TA Comments)</span></TableCell>
+                  <TableCell align='center'>Scores<br /><span className={`${styles.btw} ${styles.grader}`}>(TA Scores)</span></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rubric.map((row, index) => (
-                  <TableRow key={row["description"]}>
-                    {/* cells for criteria */}
-                    <TableCell>
-                      <Tooltip title={row["long_description"]} placement="bottom">
-                        <p>{row["description"]}</p>
-                      </Tooltip>
-                    </TableCell>
+                  <React.Fragment key={`review-${index}`}>
+                    <TableRow>
+                      {/* cells for criteria */}
+                      <TableCell>
+                        <Tooltip title={row["long_description"]} placement="bottom">
+                          <div>{row["description"]}</div>
+                        </Tooltip>
+                      </TableCell>
 
-                    {/* row for comments */}
-                    <TableCell align='center' style={{ width: 600 }}>
-                      <div>{initialValues.Comments[index]}</div>
-                      <div className={styles.details}>
-                        <br />
-                        {index == 0 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Comments: {taReviewReport["instructorGrades"]["0"]["comment"]}
-                            </div>
-                            :
-                            null
-                        }
-                        {index == 1 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Comments: {taReviewReport["instructorGrades"]["1"]["comment"]}
-                            </div>
-                            :
-                            null
-                        }
-                        {index == 2 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Comments: {taReviewReport["instructorGrades"]["2"]["comment"]}
-                            </div>
-                            :
-                            null
-                        }
+                      {/* row for comments */}
+                      <TableCell style={{ width: 600 }}>
+                        <div className={styles.comments}>
+                          {initialValues.Comments[index] + "\nthis \n  is\natest"}
                         </div>
-                    </TableCell>
+                      </TableCell>
 
-                    {/* cells for grades */}
-                    <TableCell style={{ width: 100 }} align='center'>
-                      <div>{initialValues.Grades[index]} / {row["points"]}</div>
-                      <br />
-                        {index == 0 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Grade: {taReviewReport["instructorGrades"]["0"]["points"]} / {taReviewReport["instructorGrades"]["0"]["maxPoints"]}
-                            </div>
-                            :
-                            null
-                        }
-                        {index == 1 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Grade: {taReviewReport["instructorGrades"]["1"]["points"]} / {taReviewReport["instructorGrades"]["1"]["maxPoints"]}
-                            </div>
-                            :
-                            null
-                        }
-                        {index == 2 && taReviewReport ?
-                            <div className={styles.comments}>
-                            TA Grade: {taReviewReport["instructorGrades"]["2"]["points"]} / {taReviewReport["instructorGrades"]["2"]["maxPoints"]}
-                            </div>
-                            :
-                            null
-                        }
-                    </TableCell>
-                  </TableRow>
+                      {/* cells for grades */}
+                      <TableCell style={{ width: 100 }} align='center'>
+                        <div className={styles.details} ><nobr>{initialValues.Grades[index]} / {row["points"]}</nobr></div>
+                      </TableCell>
+                    </TableRow>
+                    {
+                      taReviewReport
+                        ? (<TableRow>
+                            <TableCell>
+                              {/*<div className={styles.grader}>
+                                TA Review
+                              </div>
+                              */}
+                            </TableCell>
+
+                            {/* col for comments */}
+                            <TableCell style={{ width: 600 }}>
+                              <div className={`${styles.comments} ${styles.grader}`}>
+                                {taReviewReport.instructorGrades[index].comment}
+                              </div>
+                            </TableCell>
+
+                            {/* cells for grades */}
+                            <TableCell style={{ width: 100 }} align='center'>
+                              <div className={`${styles.details} ${styles.grader}`}>
+                                <nobr>{taReviewReport.instructorGrades.[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
+                              </div>
+                            </TableCell>
+                          </TableRow>)
+                        : null
+                    }
+                  </React.Fragment>
                 ))}
               </TableBody>
               <TableFooter>
                 <TableRow>
                   <TableCell className={styles.save} style={{ color: "black" }}>
-                    Total Score: {getTotalScore(values.Grades)} / {maxScore}
+                    <nobr>Total Score: {getTotalScore(values.Grades)} / {maxScore}</nobr>
                   </TableCell>
                   <TableCell
                     id='submitted'
