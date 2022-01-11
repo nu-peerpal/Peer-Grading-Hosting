@@ -76,7 +76,7 @@ class SubmissionCompleted extends React.Component {
                       {/* row for comments */}
                       <TableCell style={{ width: 600 }}>
                         <div className={`${styles.grader} ${styles.comments}`}>
-                          {row.comment + "this\nis\n    a\ntest"}
+                          {row.comment}
                         </div>
                       </TableCell>
 
@@ -154,21 +154,11 @@ function getInitialValues(rubric, review) {
 }
 
 function getMaxScore(rubric) {
-  var len = rubric.length;
-  var score = 0;
-  for (var i = 0; i < len; i++) {
-    score = score + rubric[i]["points"];
-  }
-  return score;
+  return _.sum(rubric.map(({points}) => points));
 }
 
 function getTotalScore(grades) {
-  var len = grades.length;
-  var score = 0;
-  for (var i = 0; i < len; i++) {
-    score = score + (grades[i] ? grades[i] : 0);
-  }
-  return score;
+  return _.sum(grades.map(s => s ? s : 0));
 }
 
 function getFinalScore(data, rubric) {
@@ -225,7 +215,7 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
                       {/* row for comments */}
                       <TableCell style={{ width: 600 }}>
                         <div className={styles.comments}>
-                          {initialValues.Comments[index] + "\nthis \n  is\natest"}
+                          {initialValues.Comments[index]}
                         </div>
                       </TableCell>
 
