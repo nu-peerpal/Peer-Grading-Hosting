@@ -70,7 +70,7 @@ function ensureSufficientReviews(graders, reviews, matching) {
           //      console.log('response',response.response.additional_matching)
           return response.response.additional_matching;
         } else {
-          console.log("failed alg");
+          // console.log("failed alg");
           return response.log;
         }
       },

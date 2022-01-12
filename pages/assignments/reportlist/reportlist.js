@@ -58,7 +58,7 @@ const ReviewReports = () => {
       grades: userSubGrades
     }
     let res1 = await axios.post(`/api/canvas/grades`,subGradePost).catch(err => console.log({err}))
-    
+
     let assignmentData = await axios.get(`/api/assignments/${assignmentId}`);
     let assignment = assignmentData.data.data;
     let revGradePost = {
@@ -103,37 +103,36 @@ const ReviewReports = () => {
       // check for review_reports
       let dbRevReports = await axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`);
       dbRevReports = dbRevReports.data.data;
-      let review_grades_reports;
-      if (dbRevReports.length > 0) {
-        review_grades_reports = uploadRevReports[1].map(report => {
-          console.log('finding report data:', report[0],report[1])
-          let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId && r.grade == report[1]));
-          if (dbReport.length > 1) console.log('too many matches')
-          return {
-            id: dbReport[0].id,
-            grade: report[1],
-            report: report[2],
-            assignmentId: parseInt(assignmentId),
-            userId: report[0]
-          }
-        });
-        console.log('updating review reports:', review_grades_reports);
-        await axios.patch(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+
+      // create report payload with id if report already exists
+      const review_grades_reports = uploadRevReports[1].map(report => {
+        console.log('finding report data:', report[0],report[1])
+        let dbReport = dbRevReports.filter(r => (r.userId == report[0] && r.assignmentId == assignmentId));
+        if (dbReport.length > 1) console.log('too many matches')
+        return {
+          ...((dbReport[0]) ? {id: dbReport[0].id} : {}), // add old report id if there is one.
+          grade: report[1],
+          report: report[2],
+          assignmentId: parseInt(assignmentId),
+          userId: report[0]
+        }
+      });
+
+      const newReviewReports = review_grades_reports.filter(r => !r.id);
+      const updateReviewReports = review_grades_reports.filter(r => r.id);
+
+      if (updateReviewReports.length > 0) {
+        console.log('updating review reports:', updateReviewReports);
+        await axios.patch('/api/reviewGradesReports?type=multiple', updateReviewReports).then(res => {
           console.log({res})
         }).catch(err => {
           errs.push(err);
           console.log({err})});
-      } else {
-        review_grades_reports = uploadRevReports[1].map(report => {
-          return {
-            grade: report[1],
-            report: report[2],
-            assignmentId: parseInt(assignmentId),
-            userId: report[0]
-          }
-        })
-        console.log('uploading review reports:', review_grades_reports);
-        await axios.post(`/api/reviewGradesReports?type=multiple`, review_grades_reports).then(res => {
+      }
+
+      if (newReviewReports.length > 0) {
+        console.log('uploading review reports:', newReviewReports);
+        await axios.post('/api/reviewGradesReports?type=multiple', newReviewReports).then(res => {
           console.log({res})
         }).catch(err => {
           errs.push(err);
@@ -160,65 +159,36 @@ const ReviewReports = () => {
   }
 
   async function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${assignmentId}`),axios.get(`/api/submissions?assignmentId=${assignmentId}`)])
+    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),
+      reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),
+      axios.get(`/api/submissions?assignmentId=${assignmentId}`),
+      axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)])
     .then(reports => {
       console.log('reports',reports);
       setUploadSubReports(reports[0]);
       setUploadRevReports(reports[1]);
       setRevReportsLog(reports[1][3]);
       setSubReportsLog(reports[0][2])
-      let dbSubs = reports[3].data.data;
+      let dbSubs = reports[2].data.data;
       setDbSubmissions(dbSubs);
-      let submissions = reports[2].data.data;
+      const groupData = reports[3].data.data;
       // Change Submissions to Names for Submission Reports
-      // organize submissions by group
-      let subGroups = {};
-      let bucket;
-      submissions.forEach(submission => { // sort submissions by {groupId: [...userIds]}
-        if (!submission.groupId) {
-          bucket = submission.submitterId;
-        } else {
-          bucket = submission.groupId;
-        }
-        if (subGroups[bucket]) {
-          subGroups[bucket].push(submission.submitterId);
-          subGroups[bucket].sort(function(a, b){return a-b})
-        } else {
-          subGroups[bucket] = [submission.submitterId];
-        }
-      });
-      let tempGroup, tempSub, tempAid;
-      for (let sub in submissions) { // grab group, find lowest group member, get aid
-        if (!submissions[sub]["groupId"]) { // if null group, change to userId
-          tempGroup = submissions[sub].submitterId;
-        } else {
-          tempGroup = submissions[sub]["groupId"];
-        }
-        // tempGroup = submissions[sub]["groupId"];
-        tempSub = submissions.filter(sub => sub.submitterId == subGroups[tempGroup][0]);
-        tempAid = tempSub[0].canvasId;
-        submissions[sub]["canvasId"] = tempAid;
-      }
       let subStudents = {};
       let submissionMap = {};
-      for (let sub in submissions) { // map submissionId: ...userIds
-        let student = users.filter(user => user.canvasId == submissions[sub]["submitterId"])
-        let studentId = student[0].canvasId;
-        student = student[0]["firstName"] + " " + student[0]["lastName"];
-        bucket = submissions[sub]["canvasId"];
-        // if (submissions[sub]["groupId"]) {
-        //   bucket = submissions[sub]["canvasId"];
-        // } else {
-        //   bucket = submissions[sub]["submitterId"]; // if null group, subId = userId in database
-        // }
-        if (subStudents[bucket]) {
-          subStudents[bucket].push(student);
-          submissionMap[bucket].push(studentId);
-        } else {
-          subStudents[bucket] = [student];
-          submissionMap[bucket] = [studentId];
-        }
-      }
+      dbSubs.forEach(submission => { // sort submissionMap by {submissionId: [...userIds]}
+        let groupMatch = groupData.filter(x => x.submissionId == submission.canvasId);
+        let userIds = groupMatch.map(enrollment => enrollment.userId);
+        let students = [];
+        userIds.forEach(id => { // sort subStudents by {submissionId: [...{studentObj}]}
+          let student = users.filter(user => user.canvasId == id);
+          student = student[0]["firstName"] + " " + student[0]["lastName"];
+          students.push(student);
+        })
+        submissionMap[submission.canvasId] = userIds;
+        subStudents[submission.canvasId] = students;
+      });
+
+
       console.log({subStudents})
       console.log({submissionMap})
       setSubmissionMap(submissionMap);
@@ -266,18 +236,17 @@ const ReviewReports = () => {
     });
   }
   useEffect(() => {
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
+    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users`)]).then(dbData => {
       let peerReviews = dbData[0].data.data;
       setPeerMatchings(peerReviews);
-      let users = dbData[1].data.data;
-      let rubric = dbData[2].data.data.rubric;
-      let dbUsers = dbData[3].data.data;
+      let rubric = dbData[1].data.data.rubric;
+      let dbUsers = dbData[2].data.data;
       rubric = rubric.map(section => {
         return [section.points, section.title];
       });
       let reviewRubric = [];
       // console.log({peerReviews})
-      let TAs = users.filter(user => user.enrollment == "TaEnrollment");
+      let TAs = dbUsers.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
       let subReportData, revReportData;
       let graders = [];
       let reviews = [];
@@ -290,7 +259,7 @@ const ReviewReports = () => {
           // console.log('ta id',TAs[ta].canvasId)
           if (TAs[ta].canvasId == pr.userId) {
             // grader = true;
-            if (!graders.includes(pr.userId)) graders.push(pr.userId); 
+            if (!graders.includes(pr.userId)) graders.push(pr.userId);
           }
         }
       })
@@ -306,7 +275,7 @@ const ReviewReports = () => {
           reviewScores = pr.review.reviewBody.scores.map((row,i) => {
             return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]] // convert scores to {0 - 1} scale
           });
-          if (pr.reviewReview) { 
+          if (pr.reviewReview) {
             if (reviewRubric.length === 0) { // construct reviewRubric for alg
               reviewRubric = pr.reviewReview.reviewBody.map(row => [row.maxPoints, row.element])
               // console.log({reviewRubric})
@@ -379,8 +348,8 @@ const ReviewReports = () => {
   },[])
 
   return (
-    <div className="Content"> 
-      {needsLoading ? 
+    <div className="Content">
+      {needsLoading ?
         <Container name={"Generate Reports"}>
           <Button disabled={isLoading} onClick={() => generateReports()}>Generate Reports</Button>
         </Container>
@@ -400,7 +369,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                      {i === loadSRSubmission ? 
+                      {i === loadSRSubmission ?
                       <SubmissionView s3Link={sub[2]}/>
                       :
                         <Button onClick={() => setLoadSRSubmission(i)}>Load Submission</Button>
@@ -426,7 +395,7 @@ const ReviewReports = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
-                    {i === loadRRSubmission ? 
+                    {i === loadRRSubmission ?
                       <SubmissionView s3Link={rev[3]}/>
                       :
                         <Button onClick={() => setLoadRRSubmission(i)}>Load Submission</Button>

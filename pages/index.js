@@ -14,6 +14,7 @@ function Dashboard(props) {
   // const [studentCompletedReviews, setStudentCompletedReviews] = useState([]);
   const [studentInProgressReviews, setStudentInProgressReviews] = useState([]);
   const [userCreated, setUserCreated] = useState(false);
+  const [userLoaded, setUserLoaded] = useState(false);
   const { createUser, userId, courseId, roles, savedStudentId } = useUserData();
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -31,6 +32,7 @@ function Dashboard(props) {
         console.log('this is a student')
       }
       if (courseId!="") { // don't load anything until userData is available
+        setUserLoaded(true);
         axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
           setCanvasAssignments(response.data.data);
           console.log({response});
@@ -128,15 +130,15 @@ function Dashboard(props) {
         // }
       }
 
-      const studentToDoReviews = await tempStudentInProgressReviews.filter(function(e){
+      const studentToDoReviews = tempStudentInProgressReviews.filter(function(e){
         return e.reviewStatus < 4
       })
       // const studentDoneReviews = toDoReviews.filter(function(e){
       //   return e.reviewStatus >= 4
       // })
-      console.log('ta todos:',taToDoReviews)
-      conosle.log('studentToDoReviews',studentToDoReviews);
-      conosle.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
+      // console.log('ta todos:',taToDoReviews)
+      // console.log('studentToDoReviews',studentToDoReviews);
+      // console.log('tempStudentInProgressReviews',tempStudentInProgressReviews);
       //taToDoReviews.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setToDoReviews(taToDoReviews);
       setTaToDos(toDoReviews);
@@ -194,9 +196,9 @@ function ToDoList(props) {
   } else { // No items in to do list. 
   return <ListContainer
     name="Todos"
-    data= {[{name:"Enable your first assignment for Peer Reviews!"}]}
+    data= {[{name:"Enable your first assignment for Peer Reviews under Canvas Assignments!"}]}
     info= "Get Started"
-    link= "/canvas/canvasSelect"
+    link= "/"
   />
   }
 }
@@ -204,7 +206,7 @@ function StudentToDoList(props) {
   console.log('props:',props);
   if (props.toDoReviews) {
     return <ListContainer
-    name="Assignments to Review"
+    name="Peer Review Assignments"
     data={props.toDoReviews}
     student={props.ISstudent}
     link="/peer_reviews/selectReview"

@@ -19,31 +19,31 @@ function StudentViewOutline(props) {
 
     useEffect(() => {
         if (courseId && savedStudentId){
-        axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
-            let users = res.data.data;
-            let peers = users.filter(user => user.enrollment == "StudentEnrollment");
-            let graders = users.filter(user => user.enrollment == "TaEnrollment");
-            let customUsers = [];
-            peers.forEach(obj => {
-                customUsers.push({
-                    name: obj["firstName"] + " " + obj["lastName"],
-                    id: obj["canvasId"]
+            axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
+                let users = res.data.data;
+                let peers = users.filter(user => user.enrollment == "StudentEnrollment");
+                let graders = users.filter(user => user.enrollment == "TaEnrollment");
+                let customUsers = [];
+                peers.forEach(obj => {
+                    customUsers.push({
+                        name: obj["firstName"] + " " + obj["lastName"],
+                        id: obj["canvasId"]
+                    });
                 });
-            });
-            graders.forEach(obj => {
-                customUsers.push({
-                    name: obj["firstName"] + " " + obj["lastName"] + " (TA)",
-                    id: obj["canvasId"],
-                    type: "ta"                    
-                })
-            });
-            // change data (array of objects) to a Map object
-            let dataMap = new Map();
-            for (var student of customUsers){
-                dataMap.set(student.id, student.name)
-            }
-            setCanvasUsers(dataMap);
-        });
+                graders.forEach(obj => {
+                    customUsers.push({
+                        name: obj["firstName"] + " " + obj["lastName"] + " (TA)",
+                        id: obj["canvasId"],
+                        type: "ta"                    
+                    })
+                });
+                // change data (array of objects) to a Map object
+                let dataMap = new Map();
+                for (var student of customUsers){
+                    dataMap.set(student.id, student.name)
+                }
+                setCanvasUsers(dataMap);
+            }).catch(err => console.log('CourseId not loaded.'));
     }
         return () => {
             setCanvasUsers(new Map())

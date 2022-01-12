@@ -72,13 +72,13 @@ function CheckMatching(props) {
       console.log("res", res);
       axios.patch(`/api/assignments/${assignmentId}`, {reviewStatus: 5});
 
-      // Notify TA when additional matches are assigned
-      axios.post(`/api/sendemail?&type=additionalMatches&courseId=${courseId}`, {
-        userId: graders[0],
-        subject: 'Additional Matches',
-        message: `${additionalMatchings.length} additional matches have been assigned.`
-      }).then(res => {console.log('res:',res)
-        setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
+      // // Notify TA when additional matches are assigned
+      // axios.post(`/api/sendemail?&type=additionalMatches&courseId=${courseId}`, {
+      //   userId: graders[0],
+      //   subject: 'Additional Matches',
+      //   message: `${additionalMatchings.length} additional matches have been assigned.`
+      // }).then(res => {console.log('res:',res)
+      //   setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
 
       setResponse('Submitted successfully.')})
     .catch(err => {
@@ -90,14 +90,19 @@ function CheckMatching(props) {
   }
 
   useEffect(() => {
-    Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`)]).then(data => {
+    Promise.all([axios.get(`/api/users?courseId=${courseId}`),
+      axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
+      axios.get(`/api/rubrics/${rubricId}`)])
+    .then(data => {
       // console.log({data});
       const usersRes = data[0].data;
       const completeReviewsRes = data[1].data;
       const allMatchingsRes = data[2].data;
       setAllMatchings(allMatchingsRes.data);
       const rubricRes = data[3].data.data;
-
+      console.log({completeReviewsRes})
+      console.log({allMatchingsRes})
       // find who didn't complete their PRs
       let studentList = [];
       allMatchingsRes.data.forEach(match => {
@@ -108,6 +113,8 @@ function CheckMatching(props) {
             if (!studentList.includes(name)) {
               studentList.push(name);
             }
+          } else { // must be grader
+            if (match.reviewReview) completeReviewsRes.push(match)
           }
         }
       })
@@ -116,14 +123,25 @@ function CheckMatching(props) {
       let tempGraders, tempReviews, tempMatching;
       tempGraders = tempReviews = tempMatching = [];
       if (usersRes && completeReviewsRes && allMatchingsRes) {
-        let justGraders = usersRes.data.filter(user => user.enrollment == "TaEnrollment");
+        console.log({usersRes})
+        let justGraders = usersRes.data.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
+        console.log({justGraders})
         tempGraders = justGraders.map(user => user.canvasId);
         tempReviews = completeReviewsRes.data.map(
-          ({ submissionId, userId, review }) => {
-            let simpleReview = review.reviewBody.scores.map((row, index) => {
-              let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
-              return [percent, row[1]]
-            });
+          ({ submissionId, userId, review, reviewReview }) => {
+            let simpleReview;
+            if (review) { // student review
+              simpleReview = review.reviewBody.scores.map((row, index) => {
+                let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
+                return [percent, row[1]]
+              });
+            } else { // TA review
+              simpleReview = reviewReview.instructorGrades.map(row => {
+                let percent = Math.round((row.points/row.maxPoints)*100)/100;
+                return [percent, row.comment]
+              })
+            }
+            
 
             return [userId, submissionId, simpleReview]} // format as algorithm input
         );
@@ -156,32 +174,35 @@ function CheckMatching(props) {
   const [additionalMatchings, setAdditionalMatchings] = useState([]);
   useEffect(() => {
     (async () => {
-      // console.log('alg inputs:')
-      // console.log({graders}, {reviews}, {matching})
-      const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
-        graders,
-        reviews,
-        matching
-      );
-      if (matchings) {
-        let newMatchings = [];
-        console.log({allMatchings})
-        matchings.forEach(match => {
-          newMatchings.push({
-            assignmentId: assignmentId,
-            assignmentSubmissionId: null,
-            matchingType: "additional",
-            review: null,
-            reviewReview: null,
-            submissionId: match[1],
-            userId: match[0]
-          });
-          setPeerReviews(newMatchings);
-          setAdditionalMatchings(newMatchings);
-          console.log({matchings});
-        })
+      console.log('alg inputs:')
+      console.log({graders}, {reviews}, {matching})
+      if (graders.length!=0) {
+        const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
+          graders,
+          reviews,
+          matching
+        );
+        if (matchings) {
+          let newMatchings = [];
+          console.log({allMatchings})
+          matchings.forEach(match => {
+            newMatchings.push({
+              assignmentId: assignmentId,
+              assignmentSubmissionId: null,
+              matchingType: "additional",
+              review: null,
+              reviewReview: null,
+              submissionId: match[1],
+              userId: match[0]
+            });
+            setPeerReviews(newMatchings);
+            setAdditionalMatchings(newMatchings);
+            console.log({matchings});
+          })
+        } 
+      } else {
+        console.log('No additional matches found.')
       }
-
       //   // find all submission PRs assigned. could be used for detecting who didn't submit
       //   matchings.forEach(match => {
       //     let subMatched = allMatchings.filter(x => (x.assignmentId == assignmentId && x.submissionId == match[1]));

@@ -31,7 +31,6 @@ const ReviewDisplayTable = ({
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
   const classes = useStyles();
-
   const reviewAverages = assignmentRubric.map(({ element }) => {
     const totalPoints = peerMatchings.reduce((acc, { review }) => {
       const section = review.find(section => section.element === element);
@@ -127,7 +126,11 @@ const ReviewDisplayTable = ({
                   {section.points}
                   <Tooltip
                     classes={{ tooltip: classes.tooltip }}
-                    title={section.comment}
+                    title={
+                      <div style={{whiteSpace: "pre-wrap"}}>
+                        {section.comment}
+                      </div>
+                    }
                     arrow
                   >
                     <CopyToClipboard text={section.comment} onCopy={onCopyText}>
