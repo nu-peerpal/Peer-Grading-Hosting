@@ -17,9 +17,6 @@ const axios = require("axios");
 
 function ViewAsStudent(props) {
     const [currentUserId, setCurrentUserId] = useState('');
-    const [isTA, setIsTA] = useState(false);
-    const [tas, setTas] = useState([]);
-    const [canvasUsers, setCanvasUsers] = useState([]);
     const { userId, courseId, courseName, assignment, actAsStudent, revertFromStudent, savedStudentId } = useUserData();
 
 
@@ -27,55 +24,32 @@ function ViewAsStudent(props) {
     // view as student OR TA
     const handleSubmit = () => {
         actAsStudent(currentUserId);
-        if (!isTA) props.SetIsStudent(true);
+        if (!taIds.includes(currentUserId))
+          props.SetIsStudent(true);
     }
+
     // change function for the dropdown
     const handleChange = (event) => {
-        if (tas.filter(ta => ta.canvasId == event.target.value).length > 0) {
-            setIsTA(true);
-        } else {
-            setIsTA(false);
-        }
         setCurrentUserId(event.target.value);
     };
 
+    if (!props.canvasUsers) {
+      console.log("viewAsStudent: canvasUsers not set");
+      return null;
+    }
 
-    console.log(`courseId ${courseId}`);
 
-    useEffect(() => {
-        if (!courseId) {
-          console.log("courseId not set");
-          return;
-        }
-        axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
-            let users = res.data.data;
-            // console.log({users})
-            let peers = users.filter(user => user.enrollment == "StudentEnrollment");
-            let graders = users.filter(user => user.enrollment == "TaEnrollment");
-            setTas(graders);
-            let customUsers = [];
-            peers.forEach(obj => {
-                customUsers.push({
-                    name: obj["firstName"] + " " + obj["lastName"],
-                    id: obj["canvasId"],
-                    type: "student"
-                });
-            });
-            graders.forEach(obj => {
-                customUsers.push({
-                    name: obj["firstName"] + " " + obj["lastName"] + " (TA)",
-                    id: obj["canvasId"],
-                    type: "ta"
-                })
-            });
-            // console.log('custom users:',customUsers);
-            setCanvasUsers(customUsers)});
-    }, [courseId])
+    const canvasUsers = props.canvasUsers
+      .filter(({enrollment}) => ["StudentEnrollment","TaEnrollment"].includes(enrollment))
+      .map(u => ({
+        name: `${u.firstName} ${u.lastName}${(u.enrollment==="StudentEnrollment") ? "" : " (TA)"}` ,
+        id: u.canvasId,
+        type: (u.enrollment === "StudentEnrollment") ? "student" : "ta"
+      }));
 
-    // useEffect(() => {
-    //     console.log('user id is now:', userId);
-    //     console.log('saved id: ', savedStudentId);
-    // }, [userId])
+    const taIds = canvasUsers
+      .filter(({type}) => type === "ta")
+      .map(({id}) => id);
 
     return (
         <div>
