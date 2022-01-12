@@ -331,11 +331,11 @@ function Dashboard(props) {
   } else { // TA or Instructor View
     return (
       <div className="Content">
-        <CanvasAPICheck canvasAvailable={canvasAvailable} statusMessage={canvasStatusMessage} />
+        {canvasAvailable || <CanvasAPICheck canvasAvailable={canvasAvailable} statusMessage={canvasStatusMessage} />}
         <ToDoList data={taToDos}/>
         {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
-        <ViewAsStudent SetIsStudent={props.SetIsStudent} canvasUsers={canvasUsers} />
+        {!canvasUsers || <ViewAsStudent SetIsStudent={props.SetIsStudent} canvasUsers={canvasUsers} />}
         <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} />
         <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
