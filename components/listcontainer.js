@@ -57,7 +57,7 @@ function ListContainer(props) {
 
             case 7:
             case 8:
-              type = 'Graded';
+              type = 'Appeal';
               date = x.appealsDueDate;
               break;
 
@@ -66,8 +66,6 @@ function ListContainer(props) {
               type = 'Completed';
               date = '';
           }
-
-          console.log({date});
 
           return (
             <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
