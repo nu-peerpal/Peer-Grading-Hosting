@@ -96,7 +96,7 @@ function ListContainer(props) {
 
   return (
     <Table className={styles.tables}>
-      <TableHead className={styles.header}>
+      <TableHead className={props.alert ? styles.alertheader : styles.header}>
         <TableRow>
           <TableCell className={styles.hcell}>{props.name}</TableCell>
           <TableCell></TableCell>

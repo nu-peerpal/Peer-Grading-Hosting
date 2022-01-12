@@ -20,6 +20,11 @@ function Dashboard(props) {
   const [studentInProgressReviews, setStudentInProgressReviews] = useState([]);
   const [userCreated, setUserCreated] = useState(false);
   const { createUser, userId, courseId, roles, courseName, savedStudentId } = useUserData();
+  const [canvasAvailable,setCanvasAvailable] = useState(false);
+  const [canvasUsers,setCanvasUsers] = useState(null);
+  var canvasStatusMessage = "";
+
+
   useEffect(() => {
     if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
       console.log('creating user data');
@@ -62,7 +67,7 @@ function Dashboard(props) {
             }
           }
 
-          const [canvasUsers,dbUsers,dbEnrollments] = (await Promise.all([
+          const [theCanvasUsers,dbUsers,dbEnrollments] = (await Promise.all([
             axios.get(`/api/canvas/users?courseId=${courseId}`),
           //  axios.get(`/api/users`),
             axios.get(`/api/users?courseId=${courseId}`),
@@ -72,12 +77,12 @@ function Dashboard(props) {
 
           // find users that need to be added to db
           const dbUserLookup = _.keyBy(dbUsers,({canvasId}) => canvasId);
-          const newUsers = canvasUsers
+          const newUsers = theCanvasUsers
             .filter(({canvasId}) => !dbUserLookup[canvasId]);
 
           // find new enrollments that need to be added to db.
           const dbEnrollmentLookup = _.keyBy(dbEnrollments,({userId,enrollment}) => [userId,enrollment]);
-          const newEnrollments = canvasUsers
+          const newEnrollments = theCanvasUsers
             .filter(({canvasId,enrollment}) => !dbEnrollmentLookup[[canvasId,enrollment]]);
 
           if (newEnrollments.length) {
@@ -111,9 +116,15 @@ function Dashboard(props) {
           }
 
 
-        } catch (err){
+          console.log("setting canvasAvaiable to true");
+          setCanvasAvailable(true);
+          setCanvasUsers(theCanvasUsers);
+
+        } catch (err) {
           console.log("errors getting canvasUsers, dbUsers, or dbCourseEnrollments");
           console.log(err);
+          canvasStatusMessage += "Errors loading Canvas users.  "
+          setCanvasAvailable(false);
         }
       })();
 
@@ -148,41 +159,47 @@ function Dashboard(props) {
       if (!props.ISstudent && !canvasAssignments)
       {
         // get canvas courses
-        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`).then(response => {
-          const allCanvasAssignments = response.data.data;
+        axios.get(`/api/canvas/assignments?type=multiple&courseId=${courseId}`)
+          .then(response => {
+            const allCanvasAssignments = response.data.data;
 
-          console.log({allCanvasAssignments});
+            console.log({allCanvasAssignments});
 
-          // let today = new Date();
-          // today.setHours(today.getHours() - 1); // add 1 hour offset
+            // let today = new Date();
+            // today.setHours(today.getHours() - 1); // add 1 hour offset
 
-          const finishedAssignmentIds = assignments
-            .filter(({reviewStatus}) => reviewStatus >= 9)
-            .map(({canvasId}) => parseInt(canvasId));
+            const finishedAssignmentIds = assignments
+              .filter(({reviewStatus}) => reviewStatus >= 9)
+              .map(({canvasId}) => parseInt(canvasId));
 
-          const inprogressAssignmentIds = assignments
-            .filter(({reviewStatus}) => reviewStatus < 9)
-            .map(({canvasId}) => parseInt(canvasId));
+            const inprogressAssignmentIds = assignments
+              .filter(({reviewStatus}) => reviewStatus < 9)
+              .map(({canvasId}) => parseInt(canvasId));
 
-          const reviewAssignmentIds = assignments
-            .map(({reviewCanvasId}) => parseInt(reviewCanvasId));
+            const reviewAssignmentIds = assignments
+              .map(({reviewCanvasId}) => parseInt(reviewCanvasId));
 
-          const allKnownAssignmentIds = [
-            ...inprogressAssignmentIds,
-            ...finishedAssignmentIds,
-            ...reviewAssignmentIds
-          ];
+            const allKnownAssignmentIds = [
+              ...inprogressAssignmentIds,
+              ...finishedAssignmentIds,
+              ...reviewAssignmentIds
+            ];
 
-          // should be in a list of finished assignments
-          const finishedCanvasAssignments = allCanvasAssignments
-            .filter(({canvasId}) => finishedAssignmentIds.includes(parseInt(canvasId)));
+            // should be in a list of finished assignments
+            const finishedCanvasAssignments = allCanvasAssignments
+              .filter(({canvasId}) => finishedAssignmentIds.includes(parseInt(canvasId)));
 
-          // should be in a list of unconfigured assignments
-          const unconfiguredCanvasAssignments = allCanvasAssignments
-            .filter(({canvasId}) => !allKnownAssignmentIds.includes(parseInt(canvasId)));
+            // should be in a list of unconfigured assignments
+            const unconfiguredCanvasAssignments = allCanvasAssignments
+              .filter(({canvasId}) => !allKnownAssignmentIds.includes(parseInt(canvasId)));
 
-          setCanvasAssignments(unconfiguredCanvasAssignments);
-          setCanvasFinishedAssignments(finishedCanvasAssignments);
+            setCanvasAssignments(unconfiguredCanvasAssignments);
+            setCanvasFinishedAssignments(finishedCanvasAssignments);
+          })
+        .catch(err => {
+          console.log('error reading canvas assignments',{err});
+          canvasStatusMessage += "Errors loading Canvas assignments.  "
+          setCanvasAvailable(false);
         });
       }
 
@@ -314,16 +331,32 @@ function Dashboard(props) {
   } else { // TA or Instructor View
     return (
       <div className="Content">
+        <CanvasAPICheck canvasAvailable={canvasAvailable} statusMessage={canvasStatusMessage} />
         <ToDoList data={taToDos}/>
         {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
-        <ViewAsStudent SetIsStudent={props.SetIsStudent} />
+        <ViewAsStudent SetIsStudent={props.SetIsStudent} canvasUsers={canvasUsers} />
         <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} />
         <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
   }
+}
+
+
+function CanvasAPICheck(props) {
+  if (props.canvasAvailable)
+    return null;
+
+  return <ListContainer
+    alert={!props.canvasAvaliable}
+    name="Canvas API Status"
+    textIfEmpty={props.statusMessage || "Attempting to connect to Canvas API"}
+    data={[]}
+    student={props.ISstudent}
+    link={props.link}
+  />
 }
 
 function ToDoList(props) {
