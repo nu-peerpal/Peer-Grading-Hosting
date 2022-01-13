@@ -82,18 +82,21 @@ app
             req.userData = userData;
           } else {
             console.log('Error Occured in LTI: ', JSON.stringify(err));
+            res.cookie('userData', "{}");
+            req.userData = {};
           }
         });
         //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
-        if (Object.keys(userData).length > 0) {
-          req.userData = userData;
-        }
+//        if (Object.keys(userData).length > 0) {
+        req.userData = userData;
+//        }
         console.log("DOING NEXT");
         return handle(req, res);
     } catch(err) {
-      console.log(err);
+      console.log('POST',{err});
     }
     });
+
     server.get("*", async (req, res) => {
       var userData = {};
       if (req.cookies && req.cookies.authToken){
@@ -104,6 +107,7 @@ app
         }
       }
       var data  = await req.userData;
+      console.log("GET",{userData});
       return handle(req, res);
 
     });
