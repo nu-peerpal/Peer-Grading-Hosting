@@ -39,9 +39,6 @@ class SubmissionCompleted extends React.Component {
 
     return (
       <div className={styles.sub}>
-          <div>Peer Review Due Date: {this.props.dueDate} </div>
-          <br />
-          <br />
       <Container>
       { (taReviewReport && taReviewReport.reviewBody) ?
         <Box bgcolor="#f73378">
@@ -114,7 +111,7 @@ class SubmissionCompleted extends React.Component {
       <br />
       <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Submission {this.props.subId} (click to show submission)
+            Submission {this.props.subId} (click to show/hide submission)
           </AccordionSummary>
           <AccordionDetails>
             {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
@@ -123,7 +120,10 @@ class SubmissionCompleted extends React.Component {
         <br />
         <br />
         <div className={styles.peerreviewreport}>
-            Compare your review for this submission with the TA review below:
+          { (taReviewReport && taReviewReport.instructorGrades)
+            ? "Compare your review for this submission with the TA review below:"
+            : "Your Review"
+          }
         </div>
         <br />
         {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
@@ -197,8 +197,16 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
               <TableHead>
                 <TableRow>
                   <TableCell>Criteria<br /><span className={styles.btw}>(Hover for details)</span></TableCell>
-                  <TableCell align='center'>Comments<br /><span className={`${styles.btw} ${styles.grader}`}>(TA Comments)</span></TableCell>
-                  <TableCell align='center'>Scores<br /><span className={`${styles.btw} ${styles.grader}`}>(TA Scores)</span></TableCell>
+                  <TableCell align='center'>
+                    Comments
+                    <br />
+                    {taReviewReport && taReviewReport.instructorGrades && <span className={`${styles.btw} ${styles.grader}`}>(TA Comments)</span>}
+                  </TableCell>
+                  <TableCell align='center'>
+                    Scores
+                    <br />
+                    {taReviewReport && taReviewReport.instructorGrades && <span className={`${styles.btw} ${styles.grader}`}>(TA Scores)</span>}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -225,7 +233,7 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
                       </TableCell>
                     </TableRow>
                     {
-                      taReviewReport
+                      taReviewReport && taReviewReport.instructorGrades
                         ? (<TableRow>
                             <TableCell>
                               {/*<div className={styles.grader}>

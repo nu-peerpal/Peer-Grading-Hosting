@@ -33,7 +33,7 @@ class Submission extends React.Component {
       <div className={styles.sub}>
         <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Submission {this.props.subId} (click to show submission)
+            Submission {this.props.subId} (click to show/hide submission)
           </AccordionSummary>
           <AccordionDetails>
             {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}

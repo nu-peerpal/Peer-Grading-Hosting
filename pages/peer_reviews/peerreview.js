@@ -50,10 +50,7 @@ const PeerReview = (props) => {
 
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
 
-  // keep reviews open for an hour after due date.
-  const reviewDueDatePlusOneHour = new Date(dueDate);
-  reviewDueDatePlusOneHour.setHours(reviewDueDate.getHours() + 1);
-  const assignmentCompleted = currentDate > reviewDueDatePlusOneHour;
+  const assignmentCompleted = isDisabledRaw();
 
 
   useEffect(() => {
@@ -95,12 +92,20 @@ const PeerReview = (props) => {
     if (roles.includes("ta") || roles.includes("instructor")) {
       return false;
     }
-    // return false;
+
+    return isDisabledRaw();
+  }
+
+  function isDisabledRaw() {
+    if (!dueDate)
+      return true;
+
     const dueDateObj = new Date(dueDate);
     const ONE_HOUR = 60 * 60 * 1000;
     console.log('dates:',(new Date),dueDateObj)
     return ((new Date) - dueDateObj) > ONE_HOUR;
   }
+
 
   // function isInstructor() {
   //   if (roles.includes("instructor")) {
