@@ -43,7 +43,7 @@ class SubmissionCompleted extends React.Component {
           <br />
           <br />
       <Container>
-      {taReviewReport ?
+      { (taReviewReport && taReviewReport.reviewBody) ?
         <Box bgcolor="#f73378">
           <br />
               <div className={styles.report}>

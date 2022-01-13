@@ -125,7 +125,7 @@ function Grading(rubric, matching, review, disabled) {
             <Table aria-label='spanning table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Criteria <span className={styles.btw}>(Hover for details)</span></TableCell>
+                  <TableCell>Criteria</TableCell>
                   <TableCell align='center'>Comments</TableCell>
                   <TableCell align='center'>Grade</TableCell>
                 </TableRow>
@@ -136,7 +136,7 @@ function Grading(rubric, matching, review, disabled) {
                     {/* cells for criteria */}
                     <TableCell>
                       <Tooltip title={row["long_description"]} placement="bottom">
-                        <p>{row["description"]}</p>
+                        <p>{row["description"]}<br /><span className={styles.btw}>(Hover for details)</span></p>
                       </Tooltip>
                     </TableCell>
 

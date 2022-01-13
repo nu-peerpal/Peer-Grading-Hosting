@@ -46,6 +46,7 @@ function ListContainer(props) {
             case 3:
               date = x.reviewDueDate;
               type = 'Review';
+              console.log("listing as review");
               break;
 
             case 4:
@@ -67,8 +68,11 @@ function ListContainer(props) {
               date = '';
           }
 
+//        if (date)
+//          console.log(`found date ${new Date(date)}`);
+
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 

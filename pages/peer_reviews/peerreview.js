@@ -24,13 +24,11 @@ const PeerReview = (props) => {
   const [rubric, setRubric] = useState([]);
   const [isDocument, setIsDocument] = useState(false);
   const [review, setReview] = useState();
-  const [assignmentCompleted, setAssignmentCompleted] = useState(false);
-  const [peerReviewDueDate, setPeerReviewDueDate] = useState("");
   const [taReviewReview, setTaReviewReview] = useState({});
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
   const router = useRouter()
-  let { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
+  const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
 
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);
@@ -38,17 +36,25 @@ const PeerReview = (props) => {
   // const current = new Date();
   // const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
 
-  var currentDate = new Date();
-  var currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
+  const currentDate = new Date();
+  const currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
   // const newCurrentDate = "Current Date and Time: "+date;
   // console.log('currentDateFormatted:',currentDateFormatted);
   // console.log('currentDate.getTime():',currentDate.getTime());
 
-  var reviewDueDate = new Date(dueDate);
+
+  const reviewDueDate = new Date(dueDate);
+
   // console.log('reviewDueDate:',reviewDueDate)
   // console.log('reviewDueDate.getTime():',reviewDueDate.getTime());
 
-  var reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
+  const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
+
+  // keep reviews open for an hour after due date.
+  const reviewDueDatePlusOneHour = new Date(dueDate);
+  reviewDueDatePlusOneHour.setHours(reviewDueDate.getHours() + 1);
+  const assignmentCompleted = currentDate > reviewDueDatePlusOneHour;
+
 
   useEffect(() => {
     (async () => {
@@ -72,15 +78,9 @@ const PeerReview = (props) => {
       if (matchingData.review) {
         setReview(matchingData.review.reviewBody);
       }
-      // test dates and add grace period
-      if (currentDate.getTime() > (reviewDueDate.getTime() + 1 * 60 * 60 * 1000)) {
-        setAssignmentCompleted(true)
-      }
-
 
       setSubmission(submission);
       setRubric(rubricData.rubric);
-      setPeerReviewDueDate(reviewDueDateFormatted)
 
       if (roles.includes('instructor')) {
         setInstructor(true);
@@ -142,10 +142,10 @@ const PeerReview = (props) => {
           :
           null
           } */}
-        {assignmentCompleted ? 
-          <SubmissionCompleted instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={peerReviewDueDate} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} /> 
-          : 
-          <Submission instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={peerReviewDueDate} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
+        {assignmentCompleted ?
+          <SubmissionCompleted instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
+          :
+          <Submission instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
         }
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />

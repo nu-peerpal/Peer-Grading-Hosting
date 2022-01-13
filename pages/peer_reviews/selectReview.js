@@ -11,13 +11,12 @@ const SelectReview = (props) => {
   const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
-  const { name, id, dueDate, rubricId } = router.query;
+  const { name, id, dueDate, rubricId, reviewStatus } = router.query;
   useEffect(() => {
     (async () => {
         let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
         // console.log({resData})
         const peerMatchings = res.data.data;
-        console.log({peerMatchings});
         peerMatchings.sort(function(a, b){return a.id-b.id})
         console.log({peerMatchings});
 
@@ -33,9 +32,10 @@ const SelectReview = (props) => {
 
         const toDoReviews = peerMatchings.map((m,i) => ({
           name: `Submission ${i+1} ${reviewReviewText(m.reviewReview)}`,
-          assignmentDueDate: dueDate,
-          rubricId: rubricId,
+          reviewDueDate: dueDate,
+          rubricId,
           data: m,
+          reviewStatus: parseInt(reviewStatus),
           submissionAlias: i+1
         }));
 
