@@ -59,8 +59,10 @@ const SelectReview = (props) => {
 
   return (
     <div className="Content">
+      <Container name="Select Review">
         <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
+      </Container>
     </div>
   );
 };

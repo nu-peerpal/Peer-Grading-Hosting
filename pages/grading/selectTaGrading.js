@@ -222,6 +222,7 @@ const SelectTaGrading = (props) => {
 
   return (
     <div className="Content">
+       <Container name="Select TA Grading">
         <TaToDoList toDoReviews={toDoReviews} />
         <TaToDoGrades toDoGrades={toDoGrades} />
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
@@ -240,6 +241,7 @@ const SelectTaGrading = (props) => {
             </div> : <div>Grading not yet completed.</div>
           }
         </div>
+        </Container>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
           {reviewStatusSet}
         </div>
