@@ -11,6 +11,7 @@ import StudentViewOutline from '../../components/studentViewOutline';
 import ReloadMatchings from "../../components/reloadMatchings";
 import canvasSubs from "../../sample_data/submissions";
 const axios = require("axios");
+import _ from "lodash";
 
 function CheckMatching(props) {
   const { userId, courseId, courseName, assignment } = useUserData();
@@ -64,6 +65,7 @@ function CheckMatching(props) {
         setResponse('Successfully incremented step')}).catch(err => console.log('err:',err))
 
   }
+
   async function handleSubmit() {
     // post peer matchings
     console.log("POST peer matchings", additionalMatchings);
@@ -90,119 +92,146 @@ function CheckMatching(props) {
   }
 
   useEffect(() => {
+    if (!courseId) {
+      console.log("checkmatching: courseId not set");
+      return;
+    }
+
     Promise.all([axios.get(`/api/users?courseId=${courseId}`),
       axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),
       axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
       axios.get(`/api/rubrics/${rubricId}`)])
     .then(data => {
       // console.log({data});
+
+      // phase these out.
       const usersRes = data[0].data;
       const completeReviewsRes = data[1].data;
       const allMatchingsRes = data[2].data;
-      setAllMatchings(allMatchingsRes.data);
       const rubricRes = data[3].data.data;
+
+      // use these instead
+      const users = data[0].data.data;
+      const completeReviews = data[1].data.data;
+      const allMatchings = data[2].data.data;
+      const rubric = data[3].data.data;
+
+      setAllMatchings(allMatchings);
+
       console.log({completeReviewsRes})
       console.log({allMatchingsRes})
       // find who didn't complete their PRs
-      let studentList = [];
-      allMatchingsRes.data.forEach(match => {
-        if (!match.review) { // if match doesn't exist, find the user and add to list
-          let foundUser = usersRes.data.find(user => user.canvasId == match.userId);
-          if (foundUser && foundUser.enrollment == "StudentEnrollment") {
-            let name = foundUser.firstName + " " + foundUser.lastName;
-            if (!studentList.includes(name)) {
-              studentList.push(name);
-            }
-          } else { // must be grader
-            if (match.reviewReview) completeReviewsRes.push(match)
+
+      const userLookup = _.keyBy(users, ({id}) => id);
+
+      // find students with missing reviews
+      const studentsWithMissingReviews = allMatchings
+        .filter(({review}) => !review)
+        .map(({userId}) => userLookup[userId])
+        .filter(u => u && u.enrollment === "StudentEnrollment")
+        .map(({firstName,lastName}) => `${firstName} ${lastName}`);
+
+      const countMissing = _.countBy(studentsWithMissingReviews,name => name)
+      const missing = Object.entries(countMissing)
+        .map(([name,count]) => `${name} (${count})`);
+
+
+      setStudents(missing);
+
+
+      // find graders in the matching
+      const matchedGraders = allMatchings
+        .map(({userId}) => userLookup[userId])
+        .filter(u => u && ["TaEnrollment","InstructorEnrollment"].includes(u.enrollment))
+        .map(({id}) => id);
+
+      const allGraders = users
+        .filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"))
+        .map(({id}) => id);
+
+      // this should always be matchedGraders
+      const gradersForAdditionalMatching = matchedGraders.length ? matchedGraders : allGraders;
+      if (!matchedGraders.length)
+        console.log("warning, no matched graders");
+
+      console.log({matchedGraders});
+
+      setGraders(gradersForAdditionalMatching);
+
+
+      // construct reviews
+      const tempReviews = completeReviews
+        .map(({ submissionId, userId, review, reviewReview }) => {
+          let simpleReview;
+          if (review) { // student review
+            simpleReview = review.reviewBody.scores.map((row, index) => {
+              let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
+              return [percent, row[1]]
+            });
+          } else { // TA review
+            simpleReview = reviewReview.instructorGrades.map(row => {
+              let percent = Math.round((row.points/row.maxPoints)*100)/100;
+              return [percent, row.comment]
+            })
           }
-        }
-      })
-      setStudents(studentList);
 
-      let tempGraders, tempReviews, tempMatching;
-      tempGraders = tempReviews = tempMatching = [];
-      if (usersRes && completeReviewsRes && allMatchingsRes) {
-        console.log({usersRes})
-        let justGraders = usersRes.data.filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"));
-        console.log({justGraders})
-        tempGraders = justGraders.map(user => user.canvasId);
-        tempReviews = completeReviewsRes.data.map(
-          ({ submissionId, userId, review, reviewReview }) => {
-            let simpleReview;
-            if (review) { // student review
-              simpleReview = review.reviewBody.scores.map((row, index) => {
-                let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
-                return [percent, row[1]]
-              });
-            } else { // TA review
-              simpleReview = reviewReview.instructorGrades.map(row => {
-                let percent = Math.round((row.points/row.maxPoints)*100)/100;
-                return [percent, row.comment]
-              })
-            }
-            
+          return [userId, submissionId, simpleReview]} // format as algorithm input
+      );
 
-            return [userId, submissionId, simpleReview]} // format as algorithm input
-        );
-        tempMatching = allMatchingsRes.data.map(({ submissionId, userId }) => [
+
+      // construct matching.
+      const tempMatching = allMatchings
+        .map(({ submissionId, userId }) => [
           userId,
           submissionId
         ]); // format as algorithm input
-      }
-      tempGraders.sort(function(a, b){return a-b});
-      tempReviews.sort(function(a, b){return a[0]-b[0]})
-      // sort first by userid, then by submission id
-      let cmp = function(a,b) {
-        if (a>b) return +1;
-        if (a<b) return -1;
-        return 0;
-      }
-      tempMatching.sort(function(a, b){return cmp(a[0],b[0]) || cmp(a[1],b[1])})
-      setGraders(tempGraders);
+
+
       setReviews(tempReviews);
       setMatching(tempMatching);
-      return () => { // if component isn't mounted
-        setGraders([]);
-        setReviews([]);
-        setMatching([]);
-      };
-    })
-  }, []);
 
-  
+    });
+
+    return;
+  }, [courseId]);
+
+
   const [additionalMatchings, setAdditionalMatchings] = useState([]);
+
   useEffect(() => {
     (async () => {
       console.log('alg inputs:')
       console.log({graders}, {reviews}, {matching})
-      if (graders.length!=0) {
-        const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
-          graders,
-          reviews,
-          matching
-        );
-        if (matchings) {
-          let newMatchings = [];
-          console.log({allMatchings})
-          matchings.forEach(match => {
-            newMatchings.push({
-              assignmentId: assignmentId,
-              assignmentSubmissionId: null,
-              matchingType: "additional",
-              review: null,
-              reviewReview: null,
-              submissionId: match[1],
-              userId: match[0]
-            });
-            setPeerReviews(newMatchings);
-            setAdditionalMatchings(newMatchings);
-            console.log({matchings});
-          })
-        } 
-      } else {
-        console.log('No additional matches found.')
+      if (graders.length===0 || matching.length==0)
+        return;
+
+      const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
+        graders,
+        reviews,
+        matching
+      );
+
+      if (!matchings) {
+        console.log('No additional matches found.');
+        return;
       }
+
+      console.log({allMatchings})
+      let newMatchings = matchings
+        .map(match => ({
+          assignmentId: assignmentId,
+          assignmentSubmissionId: null,
+          matchingType: "additional",
+          review: null,
+          reviewReview: null,
+          submissionId: match[1],
+          userId: match[0]
+        }));
+
+      setPeerReviews(newMatchings);
+      setAdditionalMatchings(newMatchings);
+      console.log({matchings});
+
       //   // find all submission PRs assigned. could be used for detecting who didn't submit
       //   matchings.forEach(match => {
       //     let subMatched = allMatchings.filter(x => (x.assignmentId == assignmentId && x.submissionId == match[1]));
@@ -215,15 +244,15 @@ function CheckMatching(props) {
       //   console.log({matchings});
       // }
     })();
-  }, [graders, reviews, matching]);
+  },[graders, reviews, matching]);
 
   return (
     <div className="Content">
       <Container name="Additional Matches">
         {/* <Tree response={additionalMatchings} /> */}
         <div className={styles.matching}>
-          Students that haven't submitted Peer Reviews: 
-          <div>{String(students)}</div>
+          Students that haven't submitted Peer Reviews:
+          <div><ol>{students.map(name => <li>{name}</li>)}</ol></div>
           <br />
           <br />
           <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>
@@ -237,7 +266,7 @@ function CheckMatching(props) {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
-          {additionalMatchings.length == 0 ? 
+          {additionalMatchings.length == 0 ?
             <Button onClick={incrementStep}>confirm no new matchings needed</Button>
             : <Button disabled={additionalMatchings.length == 0} onClick={() => handleSubmit()}>Create Additional Reviews</Button>
           }
