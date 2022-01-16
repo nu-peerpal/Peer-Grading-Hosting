@@ -89,6 +89,10 @@ const PeerReview = (props) => {
   }, []);
 
   function isDisabled() {
+    if (props.ISstudent) {
+      return isDisabledRaw();
+    }
+
     if (roles.includes("ta") || roles.includes("instructor")) {
       return false;
     }
