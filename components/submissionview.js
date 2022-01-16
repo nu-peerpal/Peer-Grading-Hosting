@@ -162,14 +162,14 @@ function Grading(rubric, matching, review, disabled) {
                       <Field
                         name={"Grades[" + index + "]"}
                         type='number'
-                        value={values.Grades[index] || 0}
+                        value={values.Grades[index]}
                         onKeyUp={handleChange}
                         InputProps={{
-                          inputProps: { min: 0, max: row["points"], step: 1 },
+                          inputProps: { min: 0, max: row["points"], step: 0.1 },
                         }}
                         id='outlined-basic'
                         variant='outlined'
-                        required={false}
+                        required={true}
                         as={TextField}
                         className={styles.pms}
                         disabled={disabled}
