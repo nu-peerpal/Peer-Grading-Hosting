@@ -50,7 +50,7 @@ const PeerReview = (props) => {
 
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
 
-  const assignmentCompleted = isDisabledRaw();
+  const assignmentCompleted = isDisabled();
 
 
   useEffect(() => {
