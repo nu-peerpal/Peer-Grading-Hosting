@@ -26,6 +26,14 @@ exports.response400 = (res, err) => {
   return res;
 };
 
+exports.response401 = (res, err) => {
+  res.status(401).json({
+    status: "fail",
+    message: err.message || "unauthorized access",
+  });
+  return res;
+};
+
 exports.response500 = (res, err) => {
   res.status(500).json({
     status: "fail",
