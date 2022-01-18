@@ -205,11 +205,18 @@ function CheckMatching(props) {
       if (graders.length===0 || matching.length==0)
         return;
 
-      const matchings = await ensureSufficientReviews( // returns [TA_id, submission_id]
+      const algOutput = await ensureSufficientReviews( // returns [TA_id, submission_id]
         graders,
         reviews,
         matching
       );
+
+      if (!algOutput.success) {
+        console.log('error running algorithm')
+        return;
+      }
+
+      const matchings = algOutput.additionalMatching
 
       if (!matchings) {
         console.log('No additional matches found.');
