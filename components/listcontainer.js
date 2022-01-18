@@ -76,7 +76,7 @@ function ListContainer(props) {
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 
-                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
+                <Info dueDate={props.hideDueDate ? "" : date} info={x.info} actionItem={x.actionItem} type={type} />
               </TableRow>
             </Link>
           )

@@ -42,6 +42,7 @@ const CompletedAssignments = (props) => {
       name="Graded Reviews"
       data={assignments}
       link={route}
+      hideDueDate={true}
     />
   );
 
