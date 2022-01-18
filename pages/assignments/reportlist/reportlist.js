@@ -159,16 +159,24 @@ const ReviewReports = () => {
   }
 
   async function generateReports() {
-    Promise.all([submissionReports(subData.graders,subData.reviews,subData.rubric),
+    Promise.all([
+      submissionReports(subData.graders,subData.reviews,subData.rubric),
       reviewReports(revData.graders,revData.reviews,revData.rubric, revData.reviewRubric),
       axios.get(`/api/submissions?assignmentId=${assignmentId}`),
       axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)])
     .then(reports => {
+
       console.log('reports',reports);
-      setUploadSubReports(reports[0]);
-      setUploadRevReports(reports[1]);
-      setRevReportsLog(reports[1][3]);
-      setSubReportsLog(reports[0][2])
+      setUploadSubReports(["submissionGrades","submissionReports","log"]
+        .map(out => reports[0][out]));
+      setSubReportsLog(reports[0].log);
+      const submissionReports = reports[0].submissionReports;
+
+      setUploadRevReports(["reviewGrades", "reviewReports", "gradeMatrices", "log"]
+        .map(out => reports[1][out]));
+      setRevReportsLog(reports[1].log);
+      const reviewReports = reports[1].reviewReports;
+
       let dbSubs = reports[2].data.data;
       setDbSubmissions(dbSubs);
       const groupData = reports[3].data.data;
@@ -193,17 +201,17 @@ const ReviewReports = () => {
       console.log({submissionMap})
       setSubmissionMap(submissionMap);
       let newSubReport = [];
-      for (let subRep in reports[0][1]) { // get users per submission
-        let subId = reports[0][1][subRep][0];
+      for (let subRep in submissionReports) { // get users per submission
+        let subId = submissionReports[subRep][0];
         let j = dbSubs.findIndex(x => x.canvasId == subId);
         let subGrade;
-        if (reports[0][1][subRep][1].includes("(Ungraded)")) {
+        if (submissionReports[subRep][1].includes("(Ungraded)")) {
           subGrade = ["Ungraded"];
         } else {
-          subGrade = reports[0][1][subRep][1].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;}); // grab every float from string
+          subGrade = submissionReports[subRep][1].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;}); // grab every float from string
         }// console.log('grade:',subGrade[0])
         newSubReport[subRep] = [String(subStudents[subId])];
-        newSubReport[subRep].push(reports[0][1][subRep][1]);
+        newSubReport[subRep].push(submissionReports[subRep][1]);
         newSubReport[subRep].push(dbSubs[j].s3Link);
         newSubReport[subRep].push(subGrade[0]);
       }
@@ -211,19 +219,19 @@ const ReviewReports = () => {
       setSubReports(newSubReport);
       // Change User ID to User Name for Review Reports
       let newReviewReport = [];
-      for (let revRep in reports[1][1]) {
+      for (let revRep in reviewReports) {
         console.log('reports:',reports)
-        let i = users.findIndex(x => x.canvasId == reports[1][1][revRep][0]);
-        let j = dbSubs.findIndex(x => x.canvasId == reports[1][1][revRep][1]);
+        let i = users.findIndex(x => x.canvasId == reviewReports[revRep][0]);
+        let j = dbSubs.findIndex(x => x.canvasId == reviewReports[revRep][1]);
         let revGrade;
-        if (reports[1][1][revRep][2].includes("(Ungraded)")) {
+        if (reviewReports[revRep][2].includes("(Ungraded)")) {
           revGrade = ["Ungraded"];
         } else {
-          revGrade = reports[1][1][revRep][2].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
+          revGrade = reviewReports[revRep][2].match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
         }
         newReviewReport[revRep] = [users[i]["firstName"] + " "+ users[i]["lastName"]];
-        newReviewReport[revRep].push(String(subStudents[reports[1][1][revRep][1]]));
-        newReviewReport[revRep].push(reports[1][1][revRep][2]);
+        newReviewReport[revRep].push(String(subStudents[reviewReports[revRep][1]]));
+        newReviewReport[revRep].push(reviewReports[revRep][2]);
         newReviewReport[revRep].push(dbSubs[j].s3Link);
         newReviewReport[revRep].push(revGrade[0]);
       }
@@ -253,7 +261,6 @@ const ReviewReports = () => {
         .map(({id}) => id);
       let subReportData, revReportData;
       let reviews = [];
-      let revReviews = [];
       console.log({graders})
       console.log({peerReviews})
       // console.log({rubric})
@@ -265,7 +272,7 @@ const ReviewReports = () => {
         let assessment =[];
         let grade;
 
-        if (pr.review) { // ignore blank reviews
+        if (pr.review && pr.review.reviewBody.scores.length) { // ignore blank reviews
           reviewScores = pr.review.reviewBody.scores.map((row,i) => {
             return [Math.round((row[0]/rubric[i][0])*100)/100,row[1]] // convert scores to {0 - 1} scale
           });
@@ -299,7 +306,6 @@ const ReviewReports = () => {
               comments: []
             }
             reviews.push([pr.userId, pr.submissionId, adjustedReview]) // push review + reviewreview
-            revReviews.push([pr.userId, pr.submissionId, adjustedReview])
             // check to see if we already pushed the grader's manual review
             let foundReview = false;
             for (let rev in reviews) {
@@ -307,7 +313,6 @@ const ReviewReports = () => {
             }
             if (!foundReview) { // if grader review of this submission doesn't exist yet, push it
               reviews.push([graders[0], pr.submissionId, graderReview]) // grader review
-              revReviews.push([graders[0], pr.submissionId, graderReview])
             }
           } else {
             adjustedReview = {
@@ -315,7 +320,6 @@ const ReviewReports = () => {
               comments: []
             }
             reviews.push([pr.userId, pr.submissionId, adjustedReview])
-            revReviews.push([pr.userId, pr.submissionId, adjustedReview])
           }
         }});
 
@@ -326,7 +330,7 @@ const ReviewReports = () => {
       }
       revReportData = {
         graders: graders,
-        reviews: revReviews,
+        reviews: reviews,
         rubric: rubric,
         reviewRubric: reviewRubric
       }
@@ -350,7 +354,6 @@ const ReviewReports = () => {
       :
         <div>
         <Container name={"Submission Reports for " + assignmentName} >
-        {subReportsLog && <div className={styles.logs}>Algorithm log: {subReportsLog}</div>}
           {
             subReports.map((sub,i) =>
               <Accordion key={sub[0]+i}>
@@ -374,10 +377,10 @@ const ReviewReports = () => {
               </Accordion>
             )
           }
+          {subReportsLog && <ReactMarkdown plugins={[gfm]} children={subReportsLog} />}
         </Container>
         <Container name={"Review Reports for " + assignmentName}>
-          {revReportsLog && <div className={styles.logs}>Algorithm log: {revReportsLog}</div>}
-        {
+          {
             revReports.map((rev,i) =>
               <Accordion key={rev[0]+rev[1]+i}>
                 <AccordionSummary
@@ -400,6 +403,7 @@ const ReviewReports = () => {
               </Accordion>
             )
           }
+          {revReportsLog && <ReactMarkdown plugins={[gfm]} children={revReportsLog} />}
         </Container>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
             <Button onClick={handleSubmit}>
