@@ -11,13 +11,18 @@ function Grades(props) {
   const [reviewGrades, setReviewGrades] = useState([]);
 
   useEffect(() => {
+    if (!courseId) {
+      console.log("waiting for courseId");
+      return;
+    }
+
     axios.get(`/api/assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
       let unsorted_Assignments = assignmentData.data.data
       unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setGradedAssignments(unsorted_Assignments);
 
     })
-  }, [])
+  }, [courseId]);
 
   const listContainer = (
     <ListContainer
