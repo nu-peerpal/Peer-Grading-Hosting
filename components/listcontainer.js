@@ -36,7 +36,8 @@ function ListContainer(props) {
           let type = '';
           // console.log({x})
 
-          switch(x.reviewStatus) {
+          // note: new assignments have no reviewStatus and should be stage 1 (enable for peer pal)
+          switch(x.reviewStatus || 1) {
             case 1:
             case 2:
               date = x.assignmentDueDate;
