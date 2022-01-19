@@ -26,7 +26,7 @@ const InitialChecklist = (props) => {
   const [rubricId, setRubricId] = React.useState(-1); // selecting rubric ID for PR assignment
   const { userId, courseId, assignment } = useUserData(); // data from LTI launch
   const { assignmentId, assignmentName, dueDate } = router.query; // currently selected assignment from dashboard
-  const [prName, setPrName] = React.useState(assignmentName + " Peer Review"); //PR assignment name
+  const [prName, setPrName] = React.useState("Peer Review Assignment Name"); //PR assignment name
   const [fieldsReady, setFieldsReady] = React.useState(false);
   // new info
   const [existingDueDate, setExistingDueDate] = React.useState(false);
@@ -38,6 +38,8 @@ const InitialChecklist = (props) => {
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
   // console.log({rubricOptions});
+
+
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
     var rubrics = rawRubrics.map(rubricObj => {
@@ -50,7 +52,7 @@ const InitialChecklist = (props) => {
     });
     console.log({rubrics});
     const res = await axios.post(`/api/rubrics?type=multiple`, rubrics).catch(err => console.log('no new rubrics posted.'));
-    console.log(res);
+    console.log({res});
   }
 
   async function handleSubmit() {
@@ -59,11 +61,11 @@ const InitialChecklist = (props) => {
       setExistingDueDate(true)
       setSubmitSuccess(true)
     // new info stop
-    
+
     var rubric = null;
     var i;
     await uploadRubrics(rubricOptions);
-    
+
     for (i = 0; i < rubricOptions.length; i++) {
       if (rubricOptions[i].id == rubricId) {
         rubric = rubricOptions[i];
@@ -105,16 +107,54 @@ const InitialChecklist = (props) => {
   }
 
   useEffect(() => {
+    if (!courseId) {
+      console.log("waiting for courseId");
+      return;
+    }
+
+    // set prName to something reasonable
+    const [assignmentType] = ["Problem","Assignment","Exercise","Project", "Lab","Homework"]
+      .filter(s => assignmentName.includes(s));
+    setPrName(
+      (assignmentType)
+        ? assignmentName.replace(assignmentType,"Peer Review")
+        : assignmentName + " " + "Peer Review"
+    );
+
     axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
       // console.log('rubrics: ', response.data.data)
       setRubricOptions(response.data.data);
+
+      // set default peer review assignment group
+      const [defaultRubricId] = [
+        ...(response.data.data
+          .filter(({title}) => title.includes("Peer Review"))
+          .map(({id}) => id)),
+        -1
+      ];
+      setRubricId(defaultRubricId);
+
     });
     axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
       setPrGroupOptions(response.data.data);
+
+
+      // set default peer review assignment group
+      const [defaultPrGroup] = [
+        ...(response.data.data
+          .filter(({name}) => name.includes("Peer Review"))
+          .map(({id}) => id)),
+        -1
+      ];
+      setPrGroup(defaultPrGroup);
+
     });
     // setDueDate(null)
-    
-  }, []);
+
+  }, [courseId]);
+
+  if (!courseId)
+    return null;
 
   return (
     <div className="Content">
@@ -197,7 +237,7 @@ const InitialChecklist = (props) => {
       {/* {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
           Create Peer Review Assignment
         </Button>} */}
-        {rubricId != -1 && prGroup != -1 && prDueDate && <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"} 
+        {rubricId != -1 && prGroup != -1 && prDueDate && <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"}
                 submitAlert={submitResponse}
                 submitSuccess={submitSuccess}/>}
       </div>
