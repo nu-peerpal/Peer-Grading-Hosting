@@ -26,10 +26,10 @@ exports.response400 = (res, err) => {
   return res;
 };
 
-exports.response401 = (res, err) => {
+exports.response401 = (res, msg) => {
   res.status(401).json({
     status: "fail",
-    message: err.message || "unauthorized access",
+    message: msg || "unauthorized access",
   });
   return res;
 };
