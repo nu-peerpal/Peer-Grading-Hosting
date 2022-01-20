@@ -202,7 +202,9 @@ const InitialChecklist = (props) => {
                   id="datetime-local"
                   type="datetime-local"
                   defaultValue={"2021-05-24T11:59:50Z"}
-                  onChange={e => setPrDueDate(e.target.value+":59-05:00")} // hardcode CT, might have to change with time shift
+                  onChange={e => {
+                    setPrDueDate(new Date(e.target.value).toISOString());
+                  }} 
                   InputLabelProps={{
                     shrink: true,
                   }}

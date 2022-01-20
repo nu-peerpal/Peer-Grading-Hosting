@@ -153,7 +153,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
           Number(data.graderLoad)
         );
 
-        const matchings = algOutput.matchings;
+        const matchings = algOutput.matching;
         errHandle = algOutput.log;
 
         if (!algOutput.success) {
@@ -163,7 +163,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         }
 
         console.log({matchings});
-        
+
         let matched_users = {};
         let submissionBuckets = {};
         let prProgress = {};
