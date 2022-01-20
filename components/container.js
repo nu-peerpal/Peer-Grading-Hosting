@@ -20,8 +20,8 @@ class Container extends React.Component {
     return (
         <div className={styles.containers}>
           <h1 className={styles.header}>{this.props.name}</h1>
-          <div className={styles.back} onClick={() => Router.back()}>
-            <KeyboardBackspaceIcon />
+          <div>
+            <KeyboardBackspaceIcon className={styles.back} onClick={() => Router.back()} />
           </div>
           {this.props.children}
         </div>
