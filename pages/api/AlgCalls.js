@@ -46,7 +46,7 @@ async function callAlg(algName,algInput) {
 }
 
 async function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
-  return await callAlg("peerMatch",{graders,peers,submissions,peerLoad,GraderLoad});
+  return await callAlg("peerMatch",{graders,peers,submissions,peerLoad,graderLoad});
 }
 
 async function ensureSufficientReviews(graders, reviews, matching) {
