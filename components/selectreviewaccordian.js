@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles/listcontainer.module.scss';
+import styles from './styles/selectreviewaccordian.module.scss';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -26,7 +26,7 @@ function Info(props) { // Display list item description
   }
 }
 
-function ListContainer(props) {
+function SelectReviewAccordian(props) {
   function getData() {
     var information = props;
     var link = "";
@@ -80,16 +80,41 @@ function ListContainer(props) {
           // console.log(x.name);
           // console.log(x.canvasID);
           return (
-              <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
-                <TableRow className={styles.row}>
-                  <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
-                  <Info dueDate={props.hideDueDate ? "" : date} info={x.info} actionItem={x.actionItem} type={type} />
-                </TableRow>
-              </Link>
+            <Accordion key={JSON.stringify(x)} className={styles.accordion}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
+                {/* <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}> */}
+                <div className={styles.name}>{x.name}</div>
+                {/* </Link> */}
+                <div className={styles.actionItem}>{x.actionItem}</div>
+                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
+
+                {/* <TableRow className={styles.row}>
+                    {/* <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell> */}
+
+                    
+                {/* </TableRow> */}
+                </AccordionSummary>
+                <AccordionDetails>
+                <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
+                </AccordionDetails>
+            </Accordion>
             )
           }
           )
         )
+            // <Accordion>
+            //   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            //     <Typography>"Test"</Typography>
+            //   </AccordionSummary>
+            //   <AccordionDetails>
+            //     <Typography>"Inner test"</Typography>
+            //   </AccordionDetails>
+            // </Accordion>
+            // <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
+
+            
+            
+            // {/* </Link> */}
     } else {
       return (
         <TableRow className={styles.row}>
@@ -120,4 +145,4 @@ function ListContainer(props) {
 }
 
 
-export default ListContainer;
+export default SelectReviewAccordian;

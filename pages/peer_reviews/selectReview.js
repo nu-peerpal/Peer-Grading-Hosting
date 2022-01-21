@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
-import ListContainer from "../../components/listcontainer";
+// import ListContainer from "../../components/listcontainer";
+import SelectReviewAccordian from "../../components/selectreviewaccordian";
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
@@ -45,7 +46,7 @@ const SelectReview = (props) => {
 
   function StudentToDoList(props) {
     if (props.toDoReviews) {
-      return <ListContainer
+      return <SelectReviewAccordian
         textIfEmpty="no peer reviews have been assigned"
         name={"Reviews for " + name}
         data={props.toDoReviews}

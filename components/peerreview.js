@@ -4,7 +4,6 @@ import Submission from "../../components/submissionview";
 import SubmissionCompleted from "../../components/submissionviewcompleted"
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
-import { useRouter } from 'next/router';
 import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { FormatColorResetTwoTone } from "@material-ui/icons";
@@ -18,7 +17,7 @@ const getData = async url => {
   return resData.data;
 };
 
-const PeerReview = (props) => {
+const PeerReview = (props, {submissionId, id, rubricId, matchingId, subId, dueDate}) => {
   const { userId, courseId, courseName, assignment, roles } = useUserData();
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
@@ -27,15 +26,6 @@ const PeerReview = (props) => {
   const [taReviewReview, setTaReviewReview] = useState({});
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
-  const router = useRouter()
-  const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
-
-  // const submissionId = props.submissionId;
-  // const id = props.id;
-  // const rubricId = props.rubricId;
-  // const matchingId = props.matchingId;
-  // const subId = props.subId;
-  // const dueDate = props.dueDate;
 
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);
