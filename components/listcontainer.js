@@ -6,6 +6,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
+import { Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Typography from '@material-ui/core/Typography';
+import PeerReview from '../pages/peer_reviews/peerreview';
 
 function Info(props) { // Display list item description
   const dueDate = props.dueDate;
@@ -13,10 +17,12 @@ function Info(props) { // Display list item description
   if (dueDate) {
     let newDate = new Date(dueDate);
     let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    return <TableCell className={styles.info} > {dateText} </TableCell>
+    // return <TableCell className={styles.info} > {dateText} </TableCell>
+    return <div className={styles.info}>{dateText}</div>
   }
   else {
-    return <TableCell className={styles.info}>{info}</TableCell>;
+    // return <TableCell className={styles.info}>{info}</TableCell>;
+    return <div className={styles.info}>{info}</div>
   }
 }
 
@@ -70,15 +76,39 @@ function ListContainer(props) {
 
 //        if (date)
 //          console.log(`found date ${new Date(date)}`);
-
+          // console.log(x.name);
+          // console.log(x.canvasID);
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
-              <TableRow className={styles.row}>
-                <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
+            // <Accordion>
+            //   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            //     <Typography>"Test"</Typography>
+            //   </AccordionSummary>
+            //   <AccordionDetails>
+            //     <Typography>"Inner test"</Typography>
+            //   </AccordionDetails>
+            // </Accordion>
+            // <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
 
+            <Accordion className={styles.accordion}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
+                {/* <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}> */}
+                <div className={styles.name}>{x.name}</div>
+                {/* </Link> */}
+                <div className={styles.actionItem}>{x.actionItem}</div>
                 <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
-              </TableRow>
-            </Link>
+
+                {/* <TableRow className={styles.row}>
+                  {/* <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell> */}
+
+                  
+                {/* </TableRow> */}
+              </AccordionSummary>
+              <AccordionDetails>
+                <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
+              </AccordionDetails>
+            </Accordion>
+            
+            // {/* </Link> */}
           )
         }
         )
@@ -105,9 +135,9 @@ function ListContainer(props) {
         </TableRow>
       </TableHead>
 
-      <TableBody>
+      {/* <TableBody> */}
         {getData()}
-      </TableBody>
+      {/* </TableBody> */}
     </Table>
   )
 }
