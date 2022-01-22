@@ -28,12 +28,12 @@ class Submission extends React.Component {
   render() {
     var gradingrubric = [];
     this.props.rubric.map((x) => gradingrubric.push(x));
-    
+
     return (
       <div className={styles.sub}>
         <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Submission {this.props.subId}
+            Submission {this.props.subId} (click to show/hide submission)
           </AccordionSummary>
           <AccordionDetails>
             {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
@@ -108,7 +108,7 @@ function Grading(rubric, matching, review, disabled) {
         axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
           // setSubmitting(false);
-          if (res.status === 200) {
+          if (res.status === 201) {
             document.getElementById("submitted").innerHTML = "Submitted";
             document.getElementById("submitted").style.display = "";
           }
@@ -125,7 +125,7 @@ function Grading(rubric, matching, review, disabled) {
             <Table aria-label='spanning table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Criteria <span className={styles.btw}>(Hover for details)</span></TableCell>
+                  <TableCell>Criteria</TableCell>
                   <TableCell align='center'>Comments</TableCell>
                   <TableCell align='center'>Grade</TableCell>
                 </TableRow>
@@ -136,7 +136,7 @@ function Grading(rubric, matching, review, disabled) {
                     {/* cells for criteria */}
                     <TableCell>
                       <Tooltip title={row["long_description"]} placement="bottom">
-                        <p>{row["description"]}</p>
+                        <p>{row["description"]}<br /><span className={styles.btw}>(Hover for details)</span></p>
                       </Tooltip>
                     </TableCell>
 
@@ -162,14 +162,14 @@ function Grading(rubric, matching, review, disabled) {
                       <Field
                         name={"Grades[" + index + "]"}
                         type='number'
-                        value={values.Grades[index] || 0}
+                        value={values.Grades[index]}
                         onKeyUp={handleChange}
                         InputProps={{
-                          inputProps: { min: 0, max: row["points"], step: 1 },
+                          inputProps: { min: 0, max: row["points"], step: 0.1 },
                         }}
                         id='outlined-basic'
                         variant='outlined'
-                        required={false}
+                        required={true}
                         as={TextField}
                         className={styles.pms}
                         disabled={disabled}

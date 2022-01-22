@@ -102,8 +102,8 @@ const PeerReviewMatrix = ({
           setSubmitting(true);
           peerMatchings.forEach(async matching => {
             await axios.patch(`/api/peerReviews/${matching.matchingId}`,{reviewReview: {reviewBody: values[matching.userId], instructorGrades: values.instructorGrades}}).then(res => {
-              console.log('rubric post:', res);
-              if (res.status === 200) {
+              console.log('review post:', res);
+              if (res.status === 201) {
                 document.getElementById("submitted").innerHTML = "Submitted";
                 document.getElementById("submitted").style.display = "";
               } else {
@@ -113,7 +113,7 @@ const PeerReviewMatrix = ({
             });
           });
           setSubmitting(false);
-          
+
         }}
       >
         {({ errors, values, setValues }) => (
@@ -123,8 +123,8 @@ const PeerReviewMatrix = ({
                 <TableHead>
                   <TableRow>
                     <TableCell>Rubric Element</TableCell>
-                    {assignmentRubric.map(({ element }) => (
-                      <TableCell>{element}</TableCell>
+                    {assignmentRubric.map(({ element },i) => (
+                      <TableCell key={`rubric-element-${i}`}>{element}</TableCell>
                     ))}
                     <TableCell>Total</TableCell>
                   </TableRow>
@@ -147,7 +147,7 @@ const PeerReviewMatrix = ({
                       Instructor Grades
                     </TableCell>
                     {assignmentRubric.map(({ element, maxPoints }, i) => (
-                      <TableCell style={{ position: "relative" }}>
+                      <TableCell style={{ position: "relative" }} key={`instructur-grades-${i}`}>
                         <Field
                           as={TextField}
                           type="number"

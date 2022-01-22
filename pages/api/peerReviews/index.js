@@ -1,6 +1,9 @@
 const db = require("../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../utils/responseHandler");
+const requestHandler = require("../utils/requestHandler");
+
+
 export const config = {
   api: {
     bodyParser: false,
@@ -39,17 +42,8 @@ export default async (req, res) => {
         );
         break;
       case "POST":
-        if (req.query.type === "multiple") {
-          await Promise.all(
-            req.body.map(matching => db.peer_matchings.create(matching)),
-          );
-        } else {
-          await db.peer_matchings.create(req.body);
-        }
-        responseHandler.msgResponse201(
-          res,
-          "Successfully created database entries.",
-        );
+        await requestHandler.post(req,res, {table: "peer_matchings"});
+
         break;
 
       default:

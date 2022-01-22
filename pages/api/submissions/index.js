@@ -1,5 +1,8 @@
 const db = require("../../../models/index.js");
 const responseHandler = require("../utils/responseHandler");
+const requestHandler = require("../utils/requestHandler");
+
+
 export const config = {
   api: {
     bodyParser: false,
@@ -41,19 +44,7 @@ const submissionsHandler = async (req, res) => {
         break;
 
       case "POST":
-        if (req.query.type === "multiple") {
-          await Promise.all(
-            req.body.map(submission =>
-              db.assignment_submissions.create(submission),
-            ),
-          );
-        } else {
-          await db.assignment_submissions.create(req.body);
-        }
-        responseHandler.msgResponse201(
-          res,
-          "Successfully created database entries.",
-        );
+        await requestHandler.post(req,res, {table: "assignment_submissions"});
         break;
 
       case "PATCH":
@@ -66,7 +57,7 @@ const submissionsHandler = async (req, res) => {
               }),
             ),
           );
-          responseHandler.msgResponse200(
+            responseHandler.msgResponse201(
             res,
             "Successfully updated database entries.",
           );

@@ -10,7 +10,11 @@ const CompletedAssignments = (props) => {
   const [route,setRoute] = useState('/');
 
   useEffect(() => {
-    if (props.ISstudent){
+      if (!courseId) {
+        console.log("wainting for courseId");
+        return;
+      }
+//    if (props.ISstudent){
       axios.get(`/api/assignments?courseId=${courseId}&graded=true`).then(assignmentData => {
         console.log({assignmentData});
         let unsorted_Assignments = assignmentData.data.data
@@ -19,7 +23,8 @@ const CompletedAssignments = (props) => {
         console.log(unsorted_Assignments)
         setRoute('/peer_reviews/selectReview')
       });
-    }
+//    }
+/*
     else {
       axios.get(`/api/assignments?courseId=${courseId}&reviewStatus=9`).then(assignmentData => {
         console.log({assignmentData});
@@ -30,15 +35,30 @@ const CompletedAssignments = (props) => {
         setRoute('/assignments/fullassignmentview/fullassignmentview')
       });
     }
-  }, []);
+*/
+}, [courseId]);
   // const completed = [{ name: "Assignment 1", info: "Completed 11/20/20" }];
+
+  if (route === '/')
+    return null;
+
+  const listContainer = (
+    <ListContainer
+      textIfEmpty="no peer reviews are graded"
+      name="Graded Reviews"
+      data={assignments}
+      link={route}
+      hideDueDate={true}
+    />
+  );
+
+  if (!props.SetIsStudent)
+    return listContainer;
+
+  // if standalone page
   return (
     <div className="Content">
-      <ListContainer
-        name="Completed Peer Review Assignments"
-        data={assignments}
-        link={route}
-      />
+      {listContainer}
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );

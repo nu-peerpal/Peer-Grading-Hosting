@@ -54,20 +54,18 @@ const SelectTaGrading = (props) => {
         let graded = false;
         let allGraded = [];
         revMatches.forEach(match => {
-          if (match.reviewReview && match.userId != userId) { // if reviewReview exists then you already completed it
+          if (match.reviewReview && match.userId !== userId) { // if reviewReview exists then you already completed it
             graded = true;
             if (match.reviewReview.reviewBody[0].points === ""){
               allGraded.push(false); // if empty review (not even 0) then it must not be graded
+              console.log('grading not complete at',{match});
             } else {
               allGraded.push(true);
             }
           }
         });
-        if (allGraded.includes(false)) {
-          allGraded = false;
-        } else {
-          allGraded = true;
-        }
+        allGraded = !allGraded.includes(false);
+
         // subMatch = subMatch.filter(submission => submission.assignmentId == assignmentId);
         reviewReviews.push({
           type: match.matchingType,
@@ -76,7 +74,7 @@ const SelectTaGrading = (props) => {
           submission: subMatch[0]
         });
       });
-      reviewReviews.sort(function(a, b){return a.matchingId-b.matchingId}) 
+      reviewReviews.sort(function(a, b){return a.matchingId-b.matchingId})
 
       const toDoReviews = [];
       const toDoGrades = []
@@ -87,10 +85,10 @@ const SelectTaGrading = (props) => {
         let groupMembers = groupData.filter(x => parseInt(sub.submission.canvasId) == x.submissionId);
         if (sub.type == 'additional' || sub.type == 'appeal') {
           if (sub.done[0]) {
-            finished = " (completed)"; // if anything was submitted, algo has data to run
+            finished = "(completed)"; // if anything was submitted, algo has data to run
           }
           toDoGrades.push({
-            name: "Grade group " + sub.submission.canvasId + "'s submission" + finished,
+            name: `Grade group ${sub.submission.canvasId}'s submission ${finished}`,
             canvasId: assignmentId,
             rubricId: rubricId,
             // matchingId: sub.matchingId,
@@ -99,13 +97,13 @@ const SelectTaGrading = (props) => {
         } else {
           if (sub.done[1]) {
             if (sub.done[2]) { // if all done
-              finished = " (completed)";
+              finished = "(completed)";
             } else { // just submitted
-              finished = " (submitted)";
+              finished = "(submitted)";
             }
           }
           toDoReviews.push({
-              name: "Grade group " + sub.submission.canvasId + "'s reviews" + finished,
+              name: `Grade group ${sub.submission.canvasId}'s submission ${finished}`,
               canvasId: assignmentId,
               data: {submissionId: sub.submission.canvasId},
           });
@@ -160,9 +158,9 @@ const SelectTaGrading = (props) => {
   function TaToDoList(props) {
     if (props.toDoReviews) {
       return <ListContainer
-      name={"Review reviews to Complete for: " + assignmentName}
-      data={props.toDoReviews}
-      link="/grading/tagrading"
+        name={"Review reviews to Complete for: " + assignmentName}
+        data={props.toDoReviews}
+        link="/grading/tagrading"
     />
     } else {
       return null;
@@ -171,10 +169,10 @@ const SelectTaGrading = (props) => {
   function TaToDoGrades(props) {
     if (props.toDoGrades) {
       return <ListContainer
-      name={"TA reviews to Complete for: " + assignmentName}
-      data={props.toDoGrades}
-      link="/peer_reviews/peerreview"
-    />
+        name={"TA reviews to Complete for: " + assignmentName}
+        data={props.toDoGrades}
+        link="/peer_reviews/peerreview"
+      />
     } else {
       return null;
     }
@@ -202,7 +200,7 @@ const SelectTaGrading = (props) => {
       // console.log('instructors:',instructors);
       //   Promise.all([
       //     axios.post(`/api/sendemail?type=appealsComplete&courseId=${courseId}`, {
-      //       userId: instructors.data.data[0].id, 
+      //       userId: instructors.data.data[0].id,
       //       subject: subject,
       //       message: notif
       //     })
@@ -250,4 +248,3 @@ const SelectTaGrading = (props) => {
 };
 
 export default SelectTaGrading;
-

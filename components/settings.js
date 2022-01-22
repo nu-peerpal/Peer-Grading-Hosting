@@ -143,16 +143,27 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
       algGraders = algGraders.sort(function(a, b){return a-b});
       setGrader(algGraders);
       let errHandle = "";
+
       try {
-        const matchings = await peerMatch(
+        const algOutput = await peerMatch(
           algGraders,
           peers,
           submissions,
           Number(data.peerLoad),
           Number(data.graderLoad)
         );
-        errHandle = matchings;
-        console.log({matchings})
+
+        const matchings = algOutput.matching;
+        errHandle = algOutput.log;
+
+        if (!algOutput.success) {
+          console.log('algo failed',{log:errHandle})
+          alert('Algorithm failed! Error Message: ' + errHandle);
+          return;
+        }
+
+        console.log({matchings});
+
         let matched_users = {};
         let submissionBuckets = {};
         let prProgress = {};

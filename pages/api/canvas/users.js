@@ -6,6 +6,13 @@ const token = process.env.CANVAS_TOKEN;
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {
+
+  if (req.userData.student)
+    return response401(res,"students are not not authorized");
+
+  if (req.userData.context_id !== req.query.courseId)
+    return response401(res,"cannot course id does not match authentication");
+
   try {
     switch (req.method) {
       case "GET":

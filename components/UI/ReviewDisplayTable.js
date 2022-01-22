@@ -87,7 +87,7 @@ const ReviewDisplayTable = ({
         }
 
         return (
-          <ExpandingTableRow
+          <ExpandingTableRow key={`review-${firstName}-${lastName}-${userId}`}
             key={`grade-row-${userId}`}
             numCols={review.length + 2}
             details={
@@ -115,7 +115,7 @@ const ReviewDisplayTable = ({
             </TableCell>
 
             {/* show points per section */}
-            {assignmentRubric.map(({ element }) => {
+            {assignmentRubric.map(({ element },i) => {
               const section = review.find(
                 section => section.element === element
               );
@@ -150,7 +150,7 @@ const ReviewDisplayTable = ({
                 }, 1500);
               };
               return (
-                <TableCell>
+                <TableCell key={`grade-cell-${userId}-${i}`}>
                   {section.points}
                   <Tooltip
                     classes={{ tooltip: classes.tooltip }}
@@ -190,8 +190,8 @@ const ReviewDisplayTable = ({
 
       <TableRow>
         <TableCell style={{ fontWeight: 500 }}>Average</TableCell>
-        {reviewAverages.map(avg => (
-          <TableCell style={{ fontWeight: 500 }}>{avg}</TableCell>
+        {reviewAverages.map((avg,i) => (
+          <TableCell style={{ fontWeight: 500 }} key={`average-${i}`} >{avg}</TableCell>
         ))}
         <TableCell style={{ fontWeight: 500 }}>{totalPointsAvg}</TableCell>
       </TableRow>

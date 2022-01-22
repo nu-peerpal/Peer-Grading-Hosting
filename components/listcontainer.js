@@ -24,7 +24,7 @@ function ListContainer(props) {
   function getData() {
     var information = props;
     var link = "";
-    if (information.data) {
+    if (information.data && information.data.length) {
       return (
         information.data.map(x => {
           if (!x.data) x.data={};
@@ -35,21 +35,49 @@ function ListContainer(props) {
           let date = '';
           let type = '';
           // console.log({x})
-          if (x.reviewStatus > 1){
-            date = x.reviewDueDate;
-            type = 'Review';
-          }
-          else {
-            date = x.assignmentDueDate;
-            type = 'Assignment';
+
+          // note: new assignments have no reviewStatus and should be stage 1 (enable for peer pal)
+          switch(x.reviewStatus || 1) {
+            case 1:
+            case 2:
+              date = x.assignmentDueDate;
+              type = 'Assignment';
+              break;
+
+            case 3:
+              date = x.reviewDueDate;
+              type = 'Review';
+              console.log("listing as review");
+              break;
+
+            case 4:
+            case 5:
+            case 6:
+              type = 'Reviewed';
+              date = '';
+              break;
+
+            case 7:
+            case 8:
+              type = 'Appeal';
+              date = x.appealsDueDate;
+              break;
+
+            case 9:
+            default:
+              type = 'Completed';
+              date = '';
           }
 
+//        if (date)
+//          console.log(`found date ${new Date(date)}`);
+
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: x.assignmentDueDate, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias }}} className={styles.hov}>
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 
-                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
+                <Info dueDate={props.hideDueDate ? "" : date} info={x.info} actionItem={x.actionItem} type={type} />
               </TableRow>
             </Link>
           )
@@ -57,7 +85,13 @@ function ListContainer(props) {
         )
       )
     } else {
-      return null;
+      return (
+        <TableRow className={styles.row}>
+          <TableCell className={styles.name}>
+            {props.textIfEmpty || "nothing to see here"}
+            </TableCell>
+        </TableRow>
+      );
     }
   }
 
@@ -65,7 +99,7 @@ function ListContainer(props) {
 
   return (
     <Table className={styles.tables}>
-      <TableHead className={styles.header}>
+      <TableHead className={props.alert ? styles.alertheader : styles.header}>
         <TableRow>
           <TableCell className={styles.hcell}>{props.name}</TableCell>
           <TableCell></TableCell>

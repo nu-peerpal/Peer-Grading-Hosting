@@ -20,6 +20,11 @@ const FullAssignment = (props) => {
   const { userId, courseId, courseName, assignment } = useUserData();
   const router = useRouter()
 
+  if (!router) {
+    console.log("no router");
+    return null;
+  }
+
   return (
     <div className="Content">
       <Container name={"Assignment Details: " + router.query.name}>

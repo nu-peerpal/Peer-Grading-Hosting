@@ -16,9 +16,18 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "POST":
+
+        if (req.userData.student)
+          return response401(res,"students are not not authorized");
+
+        if (req.userData.context_id !== req.body.courseId)
+          return response401(res,"cannot course id does not match authentication");
+
+
+
         const { courseId, assignmentName, prName, prDueDate, prGroup, rubric } = req.body
         const data = {
-          assignment: { 
+          assignment: {
             name: prName,
             due_at: prDueDate, //"2021-05-01T11:59:00Z"
             description: "Peer Review Assignment for " + assignmentName,

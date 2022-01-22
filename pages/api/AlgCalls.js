@@ -3,151 +3,63 @@ const axios = require("axios");
 // ToDo: change input from json to parameters and form json
 //       create filters to replace tuples with arrays
 
-function formJson(params) {
-  var len = params.length;
-  var j = {};
-  for (var i = 0; i < len; i++) {
-    j[params[i][0]] = params[i][1];
+
+// algName: String
+// algInput: object with parameters correctly named
+async function callAlg(algName,algInput) {
+
+  // convert camelCase to snakeCase
+  const alg_input = _.mapKeys(algInput,(v,k) => _.snakeCase(k))
+
+  console.log(`calling ${algName}${Object.keys(alg_input)}`);
+
+  const response = await axios
+    .post(
+      `https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/${algName}`,
+      alg_input
+    )
+    .catch(error => {
+      console.log({error});
+      return {
+        success:false,
+        log:'alg call failed'
+      };
+    })
+
+  if (response.status !== 200) {
+    console.log("failed call");
+    return {
+      success:false,
+      log:response.status
+    };
   }
-  return j;
+
+  const alg_output = response.data.response;
+
+  if (!alg_output.success) {
+    console.log("failed alg");
+    console.log(alg_output.log);
+  }
+
+  // convert snakeCase back to camelCase
+  return _.mapKeys(alg_output,(v,k) => _.camelCase(k));
 }
 
-function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
-  var json = formJson([
-    ["graders", graders],
-    ["peers", peers],
-    ["submissions", submissions],
-    ["peer_load", peerLoad],
-    ["grader_load", graderLoad]
-  ]);
-  return axios
-    .post(
-      "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/peerMatch",
-      json
-    )
-    .then(
-      response => {
-        //console.log(response)
-        if (response.status !== 200) {
-          console.log("failed call");
-          return response.status;
-        }
-        response = response.data;
-        if (response.response.success) {
-          //          console.log('response',response.response.matching)
-          return response.response.matching;
-        } else {
-          console.log("failed alg");
-          return response.log;
-        }
-      },
-      error => {
-        console.log(error);
-      }
-    );
+async function peerMatch(graders, peers, submissions, peerLoad, graderLoad) {
+  return await callAlg("peerMatch",{graders,peers,submissions,peerLoad,graderLoad});
 }
 
-function ensureSufficientReviews(graders, reviews, matching) {
-  var json = formJson([
-    ["graders", graders],
-    ["reviews", reviews],
-    ["matching", matching]
-  ]);
-  return axios
-    .post(
-      "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/ensureSufficientReviews",
-      json
-    )
-    .then(
-      response => {
-        // console.log(response);
-        if (response.status !== 200) {
-          console.log("failed call");
-          return response.status;
-        }
-        response = response.data;
-        if (response.response.success) {
-          //      console.log('response',response.response.additional_matching)
-          return response.response.additional_matching;
-        } else {
-          // console.log("failed alg");
-          return response.log;
-        }
-      },
-      error => {
-        console.log(error);
-      }
-    );
+async function ensureSufficientReviews(graders, reviews, matching) {
+  return await callAlg("ensureSufficientReviews",{graders,reviews,matching});
 }
 
-function submissionReports(
-  graders,
-  reviews,
-  rubric,
-  num_rounds = 20,
-  bonus = 1.5
-) {
-  var json = formJson([
-    ["graders", graders],
-    ["reviews", reviews],
-    ["rubric", rubric],
-    ["num_rounds", num_rounds],
-    ["bonus", bonus]
-  ]);
-  return axios
-    .post(
-      "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/submissionReports",
-      json
-    )
-    .then(
-      response => {
-        console.log(response);
-        if (response.status !== 200) {
-          console.log("failed call");
-          return response.status;
-        }
-        response = response.data;
-        if (response.response.success) {
-          //        console.log("response", [response.response.submission_grades, response.response.submission_reports])
-          return [
-            response.response.submission_grades,
-            response.response.submission_reports,
-            response.log
-          ];
-        } else {
-          console.log("failed alg");
-          return response.log;
-        }
-      },
-      error => {
-        console.log(error);
-      }
-    );
+async function submissionReports(graders, reviews, rubric, numRounds = 20, bonus = 1.5) {
+  return await callAlg("submissionReports",{graders,reviews,rubric,numRounds,bonus});
 }
+
 
 async function reviewReports(graders, reviews, rubric, reviewRubric) {
-  const json = formJson([
-    ["graders", graders],
-    ["reviews", reviews],
-    ["rubric", rubric],
-    ["review_rubric", reviewRubric]
-  ]);
-  const res = await axios.post(
-    "https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/reviewReports",
-    json
-  ).catch(err => console.log('failed reports alg:', err));
-  console.log(res);
-  if (res.status !== 200) {
-    console.log("Failed call");
-    return res.status;
-  }
-
-  const resData = res.data;
-  if (resData.response.success) {
-    return [resData.response.review_grades, resData.response.review_reports, resData.response.grade_matrices, resData.log];
-  } else {
-    return resData.log;
-  }
+  return await callAlg("reviewReports",{graders,reviews,rubric,reviewRubric});
 }
 
 module.exports = {

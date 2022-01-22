@@ -11,27 +11,36 @@ function Grades(props) {
   const [reviewGrades, setReviewGrades] = useState([]);
 
   useEffect(() => {
+    if (!courseId) {
+      console.log("waiting for courseId");
+      return;
+    }
+
     axios.get(`/api/assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
       let unsorted_Assignments = assignmentData.data.data
       unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setGradedAssignments(unsorted_Assignments);
 
     })
-  }, [])
+  }, [courseId]);
 
+  const listContainer = (
+    <ListContainer
+      textIfEmpty="no submissions are graded"
+      name="Graded Submissions"
+      data={gradedAssignments}
+      link="/grades/viewgrades"
+    />
+  );
+
+  if (!props.SetIsStudent)
+    return listContainer;
+
+  // if standalone page
   return (
     <div className="Content">
-      {/* <ListContainer
-        name="Graded Peer Reviews"
-        data={reviewGrades}
-        link="/grades/viewprgrade"
-      /> */}
-      <ListContainer
-        name="Graded Assignments"
-        data={gradedAssignments}
-        link="/grades/viewgrades"
-      />
-      <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
+      {listContainer}
+      <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 }
