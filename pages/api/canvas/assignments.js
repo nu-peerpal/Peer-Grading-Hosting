@@ -15,7 +15,7 @@ export default async (req, res) => {
           let response, assignments;
           if (req.query.type === "multiple") {
             response = await axios.get(canvas + "courses/" + req.query.courseId + "/assignments?per_page=80", {
-              headers: { 'Authorization': `Bearer ${token}` } 
+              headers: { 'Authorization': `Bearer ${token}` }
             });
             assignments = response.data.map(assignment => {
               let rubricId = null;
@@ -57,4 +57,3 @@ export default async (req, res) => {
       responseHandler.response400(res, err);
     }
   };
-  

@@ -6,7 +6,7 @@ export const useUserData = () => {
   return {
     userId: state.user_id,
     courseId: state.context_id,
-    courseName: state.context_name,
+    courseName: state.context_name, // this is not courseName, this is the assignment name.
     roles: state.roles,
     assignment: state.assignment,
     savedStudentId: state.saved_user_id,

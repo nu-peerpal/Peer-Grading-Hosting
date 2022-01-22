@@ -25,6 +25,7 @@ function StudentView() {
       {/* <Link href={"/assignedreviews"}>
         <a>Assigned Peer Reviews</a>
       </Link> */}
+      {/*}
       <Link href={"/grades"}>
         <a>Grades</a>
       </Link>
@@ -32,6 +33,7 @@ function StudentView() {
       <Link href={"/completedassignments"}>
         <a>Completed Reviews</a>
       </Link>
+      */}
       {/* <Link href={"/peer_reviews/peerreview"}>
         <a>Peer Reviewing</a>
       </Link> */}

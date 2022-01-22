@@ -6,6 +6,14 @@ const token = process.env.CANVAS_TOKEN;
 const responseHandler = require("../utils/responseHandler");
 
 export default async (req, res) => {
+
+    if (req.userData.student)
+      return response401(res,"students are not not authorized");
+
+    if (req.userData.context_id !== req.query.courseId)
+      return response401(res,"cannot course id does not match authentication");
+
+
     try {
       switch (req.method) {
         case "GET":
@@ -24,7 +32,7 @@ export default async (req, res) => {
             return (submission.workflow_state == 'submitted' || submission.workflow_state == 'graded');
           })
           // console.log('filtered submissions: ',filteredSubmissions);
-          
+
           const submissions = filteredSubmissions.map(submission => {
             var submissionBody = submission.body
             if (submission.submission_type == 'online_upload') {
@@ -52,4 +60,3 @@ export default async (req, res) => {
       responseHandler.response400(res, err);
     }
   };
-  

@@ -66,6 +66,10 @@ function assignmentchecklist(props) {
   let rubricId = props.rubricId;
   const steps = getSteps();
 
+  if (!assignmentId) {
+    console.log("no assignmentId");
+    return null;
+  }
 
   useEffect(() => {
     axios.get(`/api/assignments/${assignmentId}`).then(res => {

@@ -77,7 +77,7 @@ function PeerpalSettings(props) {
     let data = await Promise.all([axios.get(`/api/users?courseId=${course}&enrollment=StudentEnrollment`),
           axios.get(`/api/canvas/submissions?courseId=${course}&assignmentId=${assignment}`),
           axios.get(`/api/submissions?assignmentId=${assignment}`)]);
-    let users = data[0].data.data;
+    let users = data[0].data;
     console.log({users})
     let canvasSubs = data[1].data.data;
     let dbSubs = data[2].data.data;
@@ -106,7 +106,7 @@ function PeerpalSettings(props) {
     })
     console.log({enrollments});
 
-    
+
     // users.forEach(user => {
     //   let matches = canvasSubs.filter(sub => sub.submitterId == user.id);
     //   if (matches.length > 1) alert(`user ${user.id} submitted ${String(matches)}`); // user connected to more than one submission
@@ -133,7 +133,7 @@ function PeerpalSettings(props) {
     //   enrollments.push(enrollment);
     // })
 
-    
+
     // console.log({enrollments});
     //// post to db
     // let res = await axios.post(`/api/groupEnrollments?type=multiple`,enrollments);
@@ -179,11 +179,11 @@ function PeerpalSettings(props) {
                 onChange={e => setAssignmentInput(e.target.value)}
               />
           </form>
-          <SubmitButton onClick={handleSubmit} title={"Submit"} 
+          <SubmitButton onClick={handleSubmit} title={"Submit"}
             submitAlert={submitResponse}
             submitSuccess={submitSuccess}/>
         </div>
-      
+
       </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
     </div>

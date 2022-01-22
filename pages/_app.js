@@ -18,8 +18,10 @@ export default function MyApp({ Component, pageProps }) {
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    if (Cookies.get('userData')) {
+    let userDataCookie = Cookies.get('userData')
+    if (userDataCookie && userDataCookie !== "{}") {
       const userData = JSON.parse(Cookies.get('userData'));
+      console.log('_app',{userData});
       setIsAuth(true);
       // console.log('appjs user data: ', userData);
       if (userData.ta || userData.instructor) {

@@ -11,7 +11,7 @@ const fetcher = url => fetch(url).then(res => res.json());
 
 const transformRubric = rubric =>
   rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
-const transformMatchings = (matchings, assignmentRubric, users) => 
+const transformMatchings = (matchings, assignmentRubric, users) =>
   matchings.map(matching => {
     const { firstName, lastName } = users.find(
       user => user.canvasId == matching.userId
@@ -61,7 +61,7 @@ const TAGrading = (props) => {
 
   useEffect(() => {
     var assignmentRes, matchingsRes, usersRes;
-    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/users`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`)]).then(async (data) => {
+    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/users?courseId=${courseId}`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`)]).then(async (data) => {
       console.log({data})
       assignmentRes = data[0].data;
       matchingsRes = data[2].data;
@@ -70,7 +70,7 @@ const TAGrading = (props) => {
       if (data[3].data.data.s3Link.includes('http')){
         setIsDocument(true);
       }
-      
+
       let rawRubric, tempRubric, tempReviewRubric;
       if (assignmentRes) {
         const [rubricRes, reviewRubricRes] = await Promise.all(

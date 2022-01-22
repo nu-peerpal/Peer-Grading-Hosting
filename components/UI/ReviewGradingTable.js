@@ -135,7 +135,7 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
   )};
 
   function Presets(props) {
-      return props.presetComments.map( comment => {
+      return props.presetComments.map( (comment,i) => {
         let commentAlias;
         if (comment.length < 30) {
           commentAlias = comment;
@@ -145,6 +145,7 @@ const ReviewGradingTable = ({ values, errors, reviewRubric, userId, setIsRowOpen
 
         return (
         <Button
+          key={`present-${i}`}
         onClick={()=>props.setComment(comment)}
         style={{background: "lightgray",
           color: "darkgray",

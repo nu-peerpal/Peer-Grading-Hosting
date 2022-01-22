@@ -59,11 +59,17 @@ function AssignedReviews() {
   return (
     <div className="Content">
       <ListContainer
+        textIfEmpty="no peer reviews are due"
         name="Peer Reviews Due"
         data={toDoReviews}
         link="/peer_reviews/peerreview"
       />
-      <ListContainer name="Past Peer Reviews" data={pastReviews} link="" />
+      <ListContainer
+        textIfEmpty="no peer reviews are completed"
+        name="Past Peer Reviews"
+        data={pastReviews}
+        link=""
+        />
       <StudentViewOutline />
     </div>
   );
