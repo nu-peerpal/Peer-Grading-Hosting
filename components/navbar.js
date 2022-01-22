@@ -62,6 +62,9 @@ function TeacherView() {
       <Link href={"/grading/selectAssignment"}>
         <a>TA Grading</a>
       </Link>
+      <Link href={"/grading/download"}>
+        <a>Download Data</a>
+      </Link>
       {/* <Link href={"/peerpal/peerpalsettings"}>
         <a>PeerPal Settings</a>
       </Link> */}
