@@ -7,6 +7,7 @@ import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 import _ from "lodash";
+import PeerReviewComponent from "../../components/peerreviewcomponent";
 
 const SelectReview = (props) => {
   const router = useRouter();
@@ -52,6 +53,7 @@ const SelectReview = (props) => {
         data={props.toDoReviews}
         student={props.ISstudent}
         link="/peer_reviews/peerreview"
+        children={PeerReviewComponent}
     />
     } else {
       return null;

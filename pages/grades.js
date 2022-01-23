@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import StudentViewOutline from '../components/studentViewOutline';
 import { useUserData } from "../components/storeAPI";
+import SelectReviewAccordian from "../components/selectreviewaccordian";
+import ViewAssignmentGradeComponent from "../components/viewgradescomponent";
 const axios = require("axios");
 
 function Grades(props) {
@@ -25,11 +27,12 @@ function Grades(props) {
   }, [courseId]);
 
   const listContainer = (
-    <ListContainer
+    <SelectReviewAccordian
       textIfEmpty="no submissions are graded"
       name="Graded Submissions"
       data={gradedAssignments}
       link="/grades/viewgrades"
+      children={ViewAssignmentGradeComponent}
     />
   );
 

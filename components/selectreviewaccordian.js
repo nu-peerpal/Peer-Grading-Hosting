@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cloneElement } from 'react';
 import styles from './styles/selectreviewaccordian.module.scss';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -79,6 +79,7 @@ function SelectReviewAccordian(props) {
 //          console.log(`found date ${new Date(date)}`);
           // console.log(x.name);
           // console.log(x.canvasID);
+          console.log("matching id", x.data.id)
           return (
             <Accordion key={JSON.stringify(x)} className={styles.accordion}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
@@ -95,7 +96,7 @@ function SelectReviewAccordian(props) {
                 {/* </TableRow> */}
                 </AccordionSummary>
                 <AccordionDetails>
-                <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
+                  <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
                 </AccordionDetails>
             </Accordion>
             )
