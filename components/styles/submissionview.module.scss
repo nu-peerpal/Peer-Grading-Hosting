@@ -26,39 +26,41 @@
 .right {
   float: right;
   width: 300px;
-  border: 3px solid #73AD21;
+  border: 3px solid #73ad21;
   padding: 10px;
 }
 
-.report{
+.report {
   color: black;
-  font-size: 110%;
+  font-size: 100%;
   // text-decoration: underline;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  padding-left: 3%;
+  &__title {
+    font-weight: bold;
+    //margin: 0 !important;
   }
 }
 
-.peerreviewreport{
+.peerreviewreport {
   color: black;
-  font-size: 120%;
+  font-size: 100%;
   // text-decoration: underline;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  padding-left: 3%;
+  &__title {
+    font-weight: bold;
+    //margin: 0 !important;
   }
 }
 
-.comments{
+.comments {
   font-family: monospace;
   font-size: 100%;
   padding: 5px;
@@ -68,9 +70,9 @@
   align-items: left;
   flex-direction: column;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0px !important;
+  &__title {
+    font-weight: bold;
+    margin: 0px !important;
   }
 }
 
@@ -78,45 +80,44 @@
   color: red;
 }
 
-
-.tagradingcriteria{
+.tagradingcriteria {
   color: red;
   font-size: 100%;
   display: flex;
   flex-direction: column;
   align-items: left;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  &__title {
+    font-weight: bold;
+    margin: 0 !important;
   }
 }
 
-.details{
+.details {
   display: flex;
   font-size: 100;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  &__title {
+    font-weight: bold;
+    margin: 0 !important;
   }
 }
 
-.peerreviewscore{
+.peerreviewscore {
   display: flex;
   font-size: 120%;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  &__title {
+    font-weight: bold;
+    margin: 0 !important;
   }
 }
 
-.ungradedreport{
+.ungradedreport {
   color: red;
   font-size: 130%;
   // text-decoration: underline;
@@ -124,13 +125,13 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  &__title {
+    font-weight: bold;
+    margin: 0 !important;
   }
 }
 
-.comparestatement{
+.comparestatement {
   color: blue;
   font-size: 110%;
   // text-decoration: underline;
@@ -138,8 +139,8 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  &__title{
-      font-weight: bold;
-      margin: 0 !important;
+  &__title {
+    font-weight: bold;
+    margin: 0 !important;
   }
 }

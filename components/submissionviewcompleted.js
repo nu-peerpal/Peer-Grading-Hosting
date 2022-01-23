@@ -39,18 +39,18 @@ class SubmissionCompleted extends React.Component {
 
     return (
       <div className={styles.sub}>
-      <Container>
+      {/*<Container>}*/}
       { (taReviewReport && taReviewReport.reviewBody) ?
-        <Box bgcolor="#f73378">
+        <Box bgcolor="#E5E5E5">
           <br />
               <div className={styles.report}>
                   Your peer review has been assessed as follows:
               </div>
               <br />
-            <div className={styles.peerreviewscore}>
+            {/*<div className={styles.peerreviewscore}>
               Review Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))}
-            </div>
-              <br />
+      </div>*/}
+              
           <TableContainer component={Paper}>
               <Table aria-label='spanning table'>
                 <TableHead>
@@ -71,14 +71,14 @@ class SubmissionCompleted extends React.Component {
                       </TableCell>
 
                       {/* row for comments */}
-                      <TableCell style={{ width: 600 }}>
+                      <TableCell style={{ width: "100%"}}>
                         <div className={`${styles.grader} ${styles.comments}`}>
                           {row.comment}
                         </div>
                       </TableCell>
 
                       {/* cells for grades */}
-                      <TableCell style={{ width: 100 }} align='center'>
+                      <TableCell style={{ width: "100%" }} align='center'>
                         <div className={styles.grader}>
                           <nobr>{row.points} / {row.maxPoints}</nobr>
                         </div>
@@ -106,28 +106,35 @@ class SubmissionCompleted extends React.Component {
         :
         null
       }
-      </Container>
+      {/*</Container>*/}
       <br />
       <br />
-      <Accordion defaultExpanded={true} className={styles.acc}>
+      
+        <Box bgcolor="#E5E5E5">
+          <br />
+          <div className={styles.peerreviewreport}>
+            { (taReviewReport && taReviewReport.instructorGrades)
+              ? "Compare your review for this submission with the TA review below:"
+              : "Your Review"
+            }
+          </div>
+          
+          <br />
+            {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
+          </Box>
+
+          <br />
+          <br />
+        <Accordion defaultExpanded={true} className={styles.acc}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             Submission {this.props.subId} (click to show/hide submission)
           </AccordionSummary>
           <AccordionDetails>
             {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
           </AccordionDetails>
-      </Accordion>
-        <br />
-        <br />
-        <div className={styles.peerreviewreport}>
-          { (taReviewReport && taReviewReport.instructorGrades)
-            ? "Compare your review for this submission with the TA review below:"
-            : "Your Review"
-          }
-        </div>
-        <br />
-        {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
+        </Accordion>
       </div>
+      
     );
   }
 }
