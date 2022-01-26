@@ -22,7 +22,7 @@ function CheckMatching(props) {
   const [peerReviews, setPeerReviews] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [response, setResponse] = useState();
-  const [students, setStudents] = useState();
+  const [students, setStudents] = useState(null);
   const router = useRouter();
   const { assignmentId, rubricId, assignmentName } = router.query;
 
@@ -98,28 +98,18 @@ function CheckMatching(props) {
     }
 
     Promise.all([axios.get(`/api/users?courseId=${courseId}`),
-      axios.get(`/api/peerReviews?done=true&assignmentId=${assignmentId}`),
       axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
       axios.get(`/api/rubrics/${rubricId}`)])
-    .then(data => {
+    .then(responses => {
       // console.log({data});
 
-      // phase these out.
-      const usersRes = data[0].data;
-      const completeReviewsRes = data[1].data;
-      const allMatchingsRes = data[2].data;
-      const rubricRes = data[3].data.data;
+      const [users,allMatchings,rubric] = responses.map(res => res.data.data);
 
-      // use these instead
-      const users = data[0].data.data;
-      const completeReviews = data[1].data.data;
-      const allMatchings = data[2].data.data;
-      const rubric = data[3].data.data;
+      const completeReviews = allMatchings
+        .filter(({review}) => review && review.reviewBody.scores.length);
 
       setAllMatchings(allMatchings);
 
-      console.log({completeReviewsRes})
-      console.log({allMatchingsRes})
       // find who didn't complete their PRs
 
       const userLookup = _.keyBy(users, ({id}) => id);
@@ -140,10 +130,11 @@ function CheckMatching(props) {
 
 
       // find graders in the matching
-      const matchedGraders = allMatchings
+      const matchedGraders = _.uniq(allMatchings
         .map(({userId}) => userLookup[userId])
         .filter(u => u && ["TaEnrollment","InstructorEnrollment"].includes(u.enrollment))
-        .map(({id}) => id);
+        .map(({id}) => id)
+      );
 
       const allGraders = users
         .filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"))
@@ -165,7 +156,7 @@ function CheckMatching(props) {
           let simpleReview;
           if (review) { // student review
             simpleReview = review.reviewBody.scores.map((row, index) => {
-              let percent = Math.round((row[0]/rubricRes.rubric[index]["points"])*100)/100;
+              let percent = Math.round((row[0]/rubric.rubric[index]["points"])*100)/100;
               return [percent, row[1]]
             });
           } else { // TA review
@@ -252,6 +243,11 @@ function CheckMatching(props) {
       // }
     })();
   },[graders, reviews, matching]);
+
+  if (!students || !additionalMatchings) {
+    console.log("not ready to render");
+    return null;
+  }
 
   return (
     <div className="Content">
