@@ -27,6 +27,7 @@ function Info(props) { // Display list item description
 }
 
 function SelectReviewAccordian(props) {
+  console.log("props", props);
   function getData() {
     var information = props;
     var link = "";
@@ -79,7 +80,8 @@ function SelectReviewAccordian(props) {
 //          console.log(`found date ${new Date(date)}`);
           // console.log(x.name);
           // console.log(x.canvasID);
-          console.log("matching id", x.data.id)
+          console.log("canvas matching id", x.canvasId);
+          console.log("should render", !!x.data.id);
           return (
             <Accordion key={JSON.stringify(x)} className={styles.accordion}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
@@ -96,7 +98,9 @@ function SelectReviewAccordian(props) {
                 {/* </TableRow> */}
                 </AccordionSummary>
                 <AccordionDetails>
-                  <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
+                  {!!x.data.id && !!x.canvasId && <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>}
+                  {/* <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/> */}
+
                 </AccordionDetails>
             </Accordion>
             )

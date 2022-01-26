@@ -17,7 +17,7 @@ const getData = async url => {
   return resData.data;
 };
 
-const PeerReviewComponent = (props, {submissionId, id, rubricId, matchingId, subId, dueDate}) => {
+const PeerReviewComponent = (props) => {
   const { userId, courseId, courseName, assignment, roles } = useUserData();
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
@@ -26,7 +26,15 @@ const PeerReviewComponent = (props, {submissionId, id, rubricId, matchingId, sub
   const [taReviewReview, setTaReviewReview] = useState({});
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
+  const {submissionId, id, rubricId, matchingId, subId, dueDate} = props;
+  console.log("props", props);
   console.log("matching id", matchingId);
+  console.log("submission id", submissionId);
+  console.log(" id", id);
+  console.log("rubric id", rubricId);
+  console.log("sub id", subId);
+  console.log("due date", dueDate);
+
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);
 

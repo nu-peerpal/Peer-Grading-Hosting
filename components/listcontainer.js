@@ -80,7 +80,6 @@ function ListContainer(props) {
           // console.log(x.name);
           // console.log(x.canvasID);
           return (
-<<<<<<< HEAD
               <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
                 <TableRow className={styles.row}>
                   <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
@@ -89,38 +88,6 @@ function ListContainer(props) {
               </Link>
             )
           }
-=======
-            // <Accordion>
-            //   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            //     <Typography>"Test"</Typography>
-            //   </AccordionSummary>
-            //   <AccordionDetails>
-            //     <Typography>"Inner test"</Typography>
-            //   </AccordionDetails>
-            // </Accordion>
-            // <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
-
-            <Accordion className={styles.accordion}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
-                {/* <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}> */}
-                <div className={styles.name}>{x.name}</div>
-                {/* </Link> */}
-                <div className={styles.actionItem}>{x.actionItem}</div>
-                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
-
-                {/* <TableRow className={styles.row}>
-                  {/* <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell> */}
-
-                  
-                {/* </TableRow> */}
-              </AccordionSummary>
-              <AccordionDetails>
-                <PeerReview isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>
-              </AccordionDetails>
-            </Accordion>
-            
-            // {/* </Link> */}
->>>>>>> d332ac4970a1b4241032a0f7d8a81d464d4f70de
           )
         )
     } else {
