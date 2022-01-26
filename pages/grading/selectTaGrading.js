@@ -7,6 +7,7 @@ import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Button from "@material-ui/core/Button";
+import _ from "lodash";
 
 const axios = require("axios");
 
@@ -149,8 +150,8 @@ const SelectTaGrading = (props) => {
       }
     }
 
-    setToDoReviews(toDoReviews)
-    setToDoGrades(toDoGrades)
+    setToDoReviews(toDoReviews);
+    setToDoGrades(_.uniqBy(toDoGrades,(tdg) => tdg.data.submissionId));
 
   });
   }, [userDataUpdated]);
