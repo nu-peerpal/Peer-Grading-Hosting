@@ -373,7 +373,7 @@ function Dashboard(props) {
     return (
       <div className="Content">
         <CompletedAssignments ISstudent={props.ISstudent} />
-        <Grades ISstudent={props.ISstudent} />
+        {/*<Grades ISstudent={props.ISstudent} />*/}
         <StudentToDoList
           toDoReviews={studentInProgressReviews}
           ISstudent={props.ISstudent}

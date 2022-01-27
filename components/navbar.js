@@ -4,24 +4,25 @@ import styles from "./styles/navbar.module.scss";
 
 function NavControl(props) {
   const isStudent = props.ISstudent;
-    let nav;
+  let nav;
 
-    // return student or TA navigation view
-    if (isStudent) {
-      nav = <StudentView />;
-    } else {
-      nav = <TeacherView />;
-    }
+  // return student or TA navigation view
+  if (isStudent) {
+    nav = <StudentView />;
+  } else {
+    nav = <TeacherView />;
+  }
 
-    return <div>{nav}</div>;
+  return <div>{nav}</div>;
 }
 
 function StudentView() {
   return (
     <div className={styles.nav}>
       <Link href={"/"}>
-        <a>Home</a>
+        <a className={styles.linkbar}>Home</a>
       </Link>
+
       {/* <Link href={"/assignedreviews"}>
         <a>Assigned Peer Reviews</a>
       </Link> */}
@@ -51,16 +52,16 @@ function TeacherView() {
   return (
     <div className={styles.nav}>
       <Link href={"/"}>
-        <a>Home</a>
+        <a className={styles.linkbar}>Home</a>
       </Link>
       <Link href={"/progressassignments"}>
-        <a>In Progress Assignments</a>
+        <a className={styles.linkbar}>In Progress Assignments</a>
       </Link>
       <Link href={"/completedassignments"}>
-        <a>Completed Assignments</a>
+        <a className={styles.linkbar}>Completed Assignments</a>
       </Link>
       <Link href={"/grading/selectAssignment"}>
-        <a>TA Grading</a>
+        <a className={styles.linkbar}>TA Grading</a>
       </Link>
       {/* <Link href={"/peerpal/peerpalsettings"}>
         <a>PeerPal Settings</a>
@@ -73,7 +74,9 @@ export function NotAuthenticated() {
   return (
     <div className={styles.nav}>
       <p>
-      You are not authenticated via Canvas.  To access the PeerPal application, log in to Canvas, navigate to your peer review assignments in Canvas, and click to open the peer review assignment in a new tab.
+        You are not authenticated via Canvas. To access the PeerPal application,
+        log in to Canvas, navigate to your peer review assignments in Canvas,
+        and click to open the peer review assignment in a new tab.
       </p>
     </div>
   );
