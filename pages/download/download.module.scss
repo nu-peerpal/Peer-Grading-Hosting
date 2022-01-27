@@ -1,3 +1,5 @@
+@import "../../global_styles/colors.scss";
+
 .containers {
 
     width: 90%;
@@ -47,8 +49,8 @@
 
         li {
             font-weight: bold;
-            padding: 1rem;
-            border-bottom: 1px dotten black;
+            margin: 1rem;
+            border-bottom: 1px dotted black;
             display: inline-block;
             position: relative;
             display: flex;
@@ -59,7 +61,7 @@
                 visibility: hidden;
                 width: 200px;
                 
-                background-color: rgba(146, 25, 188, 0.34);
+                background-color: $primary_color;
                 color: #000;
                 text-align: center;
                 padding: 5px 0;
@@ -68,18 +70,19 @@
                 // Position the tooltip text
                 position: absolute;
                 z-index: 1;
-                top: 205%;
+                top: 480%;
             }
 
             // make toolip visible on hover
             &:hover {
-                color: rgba(146, 25, 188, 0.34);
+                color: $primary_color;
+                cursor: pointer;
+                border-bottom: 1px dotted $primary_color;
 
                 .tooltipText {
                     visibility: visible;
                 }
             }
-
             
         }
     }
