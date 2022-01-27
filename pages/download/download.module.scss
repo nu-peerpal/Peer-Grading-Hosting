@@ -1,0 +1,87 @@
+.containers {
+
+    width: 90%;
+    margin: auto;
+    border: 2px solid #e5e5e5;
+    border-spacing: 10px;
+    margin-top: 150px;
+
+    & > h1 {
+        text-align: center;
+    }
+  
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: horizontal;
+    justify-content: center;
+
+    .button {
+        margin: 1.5rem;
+        border-radius: 0.5rem;
+        border: 2px solid black;
+    }
+}
+
+.infoContainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h2 {
+        padding-top: 2rem;
+        width: 45%;
+        border-top: 2px dashed black;
+    }
+
+    ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 1rem;
+        border: 2px solid black;
+        border-radius: 1rem;
+
+        li {
+            font-weight: bold;
+            padding: 1rem;
+            border-bottom: 1px dotten black;
+            display: inline-block;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .tooltipText {
+                visibility: hidden;
+                width: 200px;
+                
+                background-color: rgba(146, 25, 188, 0.34);
+                color: #000;
+                text-align: center;
+                padding: 5px 0;
+                border-radius: 6px;
+                
+                // Position the tooltip text
+                position: absolute;
+                z-index: 1;
+                top: 205%;
+            }
+
+            // make toolip visible on hover
+            &:hover {
+                color: rgba(146, 25, 188, 0.34);
+
+                .tooltipText {
+                    visibility: visible;
+                }
+            }
+
+            
+        }
+    }
+
+}
