@@ -6,10 +6,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
-import { Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Typography from '@material-ui/core/Typography';
-import PeerReview from '../pages/peer_reviews/peerreview';
 
 function Info(props) { // Display list item description
   const dueDate = props.dueDate;
@@ -17,12 +13,10 @@ function Info(props) { // Display list item description
   if (dueDate) {
     let newDate = new Date(dueDate);
     let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
-    // return <TableCell className={styles.info} > {dateText} </TableCell>
-    return <div className={styles.info}>{dateText}</div>
+    return <TableCell className={styles.info} > {dateText} </TableCell>
   }
   else {
-    // return <TableCell className={styles.info}>{info}</TableCell>;
-    return <div className={styles.info}>{info}</div>
+    return <TableCell className={styles.info}>{info}</TableCell>;
   }
 }
 
@@ -77,19 +71,20 @@ function ListContainer(props) {
 
 //        if (date)
 //          console.log(`found date ${new Date(date)}`);
-          // console.log(x.name);
-          // console.log(x.canvasID);
+          console.log("the canvasId", x.canvasId)
+          console.log("the id", x.data.id);
           return (
-              <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
-                <TableRow className={styles.row}>
-                  <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
-                  <Info dueDate={props.hideDueDate ? "" : date} info={x.info} actionItem={x.actionItem} type={type} />
-                </TableRow>
-              </Link>
-            )
-          }
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov} prefetch={true}>
+              <TableRow className={styles.row}>
+                <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
+
+                <Info dueDate={props.hideDueDate ? "" : date} info={x.info} actionItem={x.actionItem} type={type} />
+              </TableRow>
+            </Link>
           )
+        }
         )
+      )
     } else {
       return (
         <TableRow className={styles.row}>
@@ -112,9 +107,9 @@ function ListContainer(props) {
         </TableRow>
       </TableHead>
 
-      {/* <TableBody> */}
+      <TableBody>
         {getData()}
-      {/* </TableBody> */}
+      </TableBody>
     </Table>
   )
 }

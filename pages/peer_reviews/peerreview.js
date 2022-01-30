@@ -28,21 +28,10 @@ const PeerReview = (props) => {
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
   const router = useRouter()
-  // const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
-
-  const submissionId = props.submissionId;
-  const id = props.id;
-  const rubricId = props.rubricId;
-  const matchingId = props.matchingId;
-  const subId = props.subId;
-  const dueDate = props.dueDate;
-
-  // const submissionId = props.submissionId;
-  // const id = props.id;
-  // const rubricId = props.rubricId;
-  // const matchingId = props.matchingId;
-  // const subId = props.subId;
-  // const dueDate = props.dueDate;
+  const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
+  console.log("peer review submission id", submissionId);
+  console.log("peer review id", id);
+  console.log("peer review matching id", matchingId)
 
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);

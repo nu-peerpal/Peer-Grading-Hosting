@@ -98,7 +98,7 @@ function SelectReviewAccordian(props) {
                 {/* </TableRow> */}
                 </AccordionSummary>
                 <AccordionDetails>
-                  {!!x.data.id && !!x.canvasId && <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>}
+                  {!!x.data.id && <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>}
                   {/* <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/> */}
 
                 </AccordionDetails>

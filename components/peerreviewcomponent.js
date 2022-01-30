@@ -26,14 +26,23 @@ const PeerReviewComponent = (props) => {
   const [taReviewReview, setTaReviewReview] = useState({});
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
-  const {submissionId, id, rubricId, matchingId, subId, dueDate} = props;
-  console.log("props", props);
-  console.log("matching id", matchingId);
-  console.log("submission id", submissionId);
-  console.log(" id", id);
-  console.log("rubric id", rubricId);
-  console.log("sub id", subId);
-  console.log("due date", dueDate);
+  let {submissionId, id, rubricId, matchingId, subId, dueDate} = props;
+
+  // props = Object.keys(props).map(key => key == undefined ? props.key = "" : props.key = props.key);
+  // console.log("fixed props", props);
+
+  if (id == undefined) {
+    id = "";
+  }
+
+
+  // console.log("props", props);
+  // console.log("matching id", matchingId);
+  // console.log("submission id", submissionId);
+  // console.log(" id", id);
+  // console.log("rubric id", rubricId);
+  // console.log("sub id", subId);
+  // console.log("due date", dueDate);
 
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);
