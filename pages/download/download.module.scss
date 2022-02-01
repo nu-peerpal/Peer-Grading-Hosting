@@ -14,11 +14,17 @@
   
 }
 
+.filterContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .buttonContainer {
     display: flex;
     flex-direction: horizontal;
     justify-content: center;
-
+    
     .button {
         margin: 1.5rem;
         border-radius: 0.5rem;
@@ -33,9 +39,9 @@
     align-items: center;
 
     h2 {
-        padding-top: 2rem;
-        width: 45%;
         border-top: 2px dashed black;
+        padding-top: 1rem;
+        width: 45%;
     }
 
     ul {
@@ -50,7 +56,6 @@
         li {
             font-weight: bold;
             margin: 1rem;
-            border-bottom: 1px dotted black;
             display: inline-block;
             position: relative;
             display: flex;
@@ -69,7 +74,6 @@
                 
                 // Position the tooltip text
                 position: absolute;
-                z-index: 1;
                 top: 480%;
             }
 

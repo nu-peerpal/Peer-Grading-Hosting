@@ -6,13 +6,28 @@ import Router from "next/router";
 import downloadStyles from "./download.module.scss";
 import containerStyles from "../../components/styles/container.module.scss";
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import { FormControl } from '@material-ui/core';
+import { InputLabel } from '@material-ui/core';
+import { Select } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 
 import { useUserData } from "../../components/storeAPI";
 // import Cookies from 'js-cookie';
 
 const axios = require("axios");
 
-const download = () => {
+const download = (props) => {
+
+  const [currentUserId, setCurrentUserId] = useState('');
+  const [canvasUsers, setCanvasUsers] = useState()
+
+  // const canvasUsers = props.canvasUsers
+  //   .filter(({enrollment}) => ["StudentEnrollment","TaEnrollment"].includes(enrollment))
+  //   .map(u => ({
+  //     name: `${u.firstName} ${u.lastName}${(u.enrollment==="StudentEnrollment") ? "" : " (TA)"}` ,
+  //     id: u.canvasId,
+  //     type: (u.enrollment === "StudentEnrollment") ? "student" : "ta"
+  // }));
 
   const { courseId } = useUserData();
   const [ peerGradingData, setPeerGradingData ] = useState()
@@ -27,16 +42,33 @@ const download = () => {
   // }, []);
 
   useEffect(() => {
+
     if (!courseId) {
       console.log("waiting for courseId");
       return;
     }
 
-    axios.get(`/api/courseReviews/${courseId}`).then(data => {
-      setPeerGradingData(data)
+    // get peer grading data
+    axios.get(`/api/courseReviews/${courseId}`).then(res => {
+      setPeerGradingData(res)
     });
+
+    // get list of canvas users to filter by
+    axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
+      
+      const users = res.data.data
+        .filter(({enrollment}) => ["StudentEnrollment"].includes(enrollment))
+        .map(u => ({
+          name: `${u.firstName} ${u.lastName}` ,
+          id: u.canvasId
+      }));
+
+      setCanvasUsers(users)
+    });
+
   }, [courseId]);
 
+  console.log('canvasUsers is', canvasUsers)
   console.log(peerGradingData)
 
   const JSONToCSV = (jsonData) => {
@@ -86,6 +118,57 @@ const download = () => {
       <KeyboardBackspaceIcon className={containerStyles.back} onClick={() => Router.back()} />
 
       <h1><span>Download Peer Grading Data</span></h1>
+      
+      <div className={downloadStyles.buttonContainer}>
+        <div className={downloadStyles.button}>
+        
+            <Link href="#" passHref>
+              <Button onClick={handleJSONSubmit} 
+                      variant="contained" 
+                      color="primary"
+                      disabled={!peerGradingData}>
+                Download JSON
+              </Button>
+            </Link>
+
+        </div>
+        <div className={downloadStyles.button}>
+
+            <Link href="#" passHref>
+              <Button onClick={handleCSVSubmit} 
+                      variant="contained" 
+                      color="primary" 
+                      disabled={!peerGradingData}>
+                Download CSV
+              </Button>
+            </Link>
+
+        </div>
+      </div>
+
+      <h1><span>Filter Data by User</span></h1>
+
+      {canvasUsers 
+      ?
+        <div className={downloadStyles.filterContainer}>
+          <FormControl variant="outlined" className = {downloadStyles.formControl} style={{marginLeft: '15px'}}>
+              <InputLabel >Student</InputLabel>
+              <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  style={{ width: '200px'}}
+                  value={currentUserId}
+                  label="UserID"
+              >
+                {canvasUsers.map(student =>
+                    <MenuItem key={JSON.stringify(student)} value={student.id}>{student.name}</MenuItem>
+                )}
+              </Select>
+          </FormControl>
+        </div>
+      : 
+        <div className={downloadStyles.filterContainer}></div>
+      }
       
       <div className={downloadStyles.buttonContainer}>
         <div className={downloadStyles.button}>
