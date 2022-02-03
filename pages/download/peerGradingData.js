@@ -20,17 +20,9 @@ const download = (props) => {
 
   const [currentUserId, setCurrentUserId] = useState('');
   const [canvasUsers, setCanvasUsers] = useState()
-
-  // const canvasUsers = props.canvasUsers
-  //   .filter(({enrollment}) => ["StudentEnrollment","TaEnrollment"].includes(enrollment))
-  //   .map(u => ({
-  //     name: `${u.firstName} ${u.lastName}${(u.enrollment==="StudentEnrollment") ? "" : " (TA)"}` ,
-  //     id: u.canvasId,
-  //     type: (u.enrollment === "StudentEnrollment") ? "student" : "ta"
-  // }));
+  const [ peerGradingData, setPeerGradingData ] = useState()
 
   const { courseId } = useUserData();
-  const [ peerGradingData, setPeerGradingData ] = useState()
   const tooltip = "Example tooltip to demonstrate how this feature would work"
 
   // useEffect(() => {
@@ -43,6 +35,7 @@ const download = (props) => {
 
   useEffect(() => {
 
+    // do not render if courseId is null
     if (!courseId) {
       console.log("waiting for courseId");
       return;
@@ -53,7 +46,7 @@ const download = (props) => {
       setPeerGradingData(res)
     });
 
-    // get list of canvas users to filter by
+    // get list of (student) canvas users from which to filter
     axios.get(`/api/canvas/users?courseId=${courseId}`).then(res => {
       
       const users = res.data.data
@@ -66,34 +59,49 @@ const download = (props) => {
       setCanvasUsers(users)
     });
 
-  }, [courseId]);
+  }, [courseId, currentUserId]);
 
-  console.log('canvasUsers is', canvasUsers)
-  console.log(peerGradingData)
-
+  /* HELPER FUNCTIONS */
   const JSONToCSV = (jsonData) => {
-    const data = jsonData.data.data;
+    const data = jsonData;
     console.log(data);
     const replacer = (key, value) => value === null ? '' : value;
-    const header = Object.keys(data[0]);
+    const header = Object.keys(jsonData[0]);
     const csv = [
         header.join(','), // header row first
-        ...data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+        ...jsonData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
     ].join('\r\n');
 
     console.log(csv);
     return csv;
   }
 
+  const filterByUser = (data, userId) => {
+    if (userId !== '') {
+      return data.filter(review => review.userId === userId)
+    }
+
+    return data
+  }
+
+  /* HANDLE BUTTON CLICKS */
   const handleJSONSubmit = () => {
       const fileName = "PeerGradingData";
+
+      // obtain reviews and filter by user if specified
+      let reviews = peerGradingData.data.data
       console.log(peerGradingData.data.data)
-      const json = JSON.stringify(peerGradingData.data.data);
+      reviews = filterByUser(reviews, currentUserId);
+
+      // creates a downloadable JSON file
+      const json = JSON.stringify(reviews);
       const blob = new Blob([json],{type:'application/json'});
       const href = URL.createObjectURL(blob);
       const link = document.createElement('a');       
       link.href = href;
       link.download = fileName + ".json";
+
+      // temporary HTML element to add the download JSON link
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -101,15 +109,30 @@ const download = (props) => {
 
   const handleCSVSubmit = () => {
       const fileName = "PeerGradingData";
-      const csv = JSONToCSV(peerGradingData);
+
+      // obtain reviews and filter by user if specified
+      let reviews = peerGradingData.data.data;
+      reviews = filterByUser(reviews, currentUserId);
+
+      // convert to JSON to CSV
+      const csv = JSONToCSV(reviews);
+
+      //creates a downloadable CSV file
       const blob = new Blob([csv],{type:'text/csv'});
       const href = URL.createObjectURL(blob);
       const link = document.createElement('a');       
       link.href = href;
       link.download = fileName + ".csv";
+
+      // temporary HTML element to add the download CSV link
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+  }
+
+  /* Change state when user input is modified */
+  const handleUserChange = (event) => {
+    setCurrentUserId(event.target.value);
   }
 
   // can easily switch line 86 to Container
@@ -158,6 +181,7 @@ const download = (props) => {
                   id="demo-simple-select-outlined"
                   style={{ width: '200px'}}
                   value={currentUserId}
+                  onChange={handleUserChange}
                   label="UserID"
               >
                 {canvasUsers.map(student =>
@@ -178,7 +202,7 @@ const download = (props) => {
                       variant="contained" 
                       color="primary"
                       disabled={!peerGradingData}>
-                Download JSON
+                Download Filtered JSON
               </Button>
             </Link>
 
@@ -190,7 +214,7 @@ const download = (props) => {
                       variant="contained" 
                       color="primary" 
                       disabled={!peerGradingData}>
-                Download CSV
+                Download Filtered CSV
               </Button>
             </Link>
 
