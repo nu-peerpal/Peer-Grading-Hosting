@@ -72,29 +72,40 @@
 
 // export default SelectReview;
 import React, { useState, useEffect } from "react";
-import Container from "../../components/container";
-import ListContainer from "../../components/listcontainer";
-import StudentViewOutline from '../../components/studentViewOutline';
-import AccordionContainer from "../../components/accordioncontainer";
-import PeerReviewSubmission from "../../components/peerreviewsubmission";
-import { useUserData } from "../../components/storeAPI";
-import { useRouter } from 'next/router';
+import Container from "./container";
+import ListContainer from "./listcontainer";
+import StudentViewOutline from './studentViewOutline';
+import AccordionContainer from "./accordioncontainer";
+import PeerReviewSubmission from "./peerreviewsubmission";
+import { useUserData } from "./storeAPI";
 const axios = require("axios");
 import _ from "lodash";
 
-const SelectReview = (props) => {
-  const router = useRouter();
+const getData = async url => {
+  const res = await fetch(url);
+  const resData = await res.json();
+  return resData.data;
+};
+
+const SelectAssignment = (props) => {
+//   const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
-  const { name, id, dueDate, rubricId, reviewStatus } = router.query;
+  let {isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
+
+  if (id == undefined) {
+    id = "";
+  }
+
+  console.log("HELLO", props.textIfEmpty + " " + JSON.stringify(props));
   useEffect(() => {
     (async () => {
-        let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
-        // console.log({resData})
+        // let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
+        let res = await Promise(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
         console.log("RES DATA", props.textIfEmpty + " " + JSON.stringify(res));
         const peerMatchings = res.data.data;
         peerMatchings.sort(function(a, b){return a.id-b.id})
-        console.log({peerMatchings});
+        console.log("PEER MATCHINGS", props.textIfEmpty + " " + JSON.stringify(peerMatchings));
 
         const reviewReviewText = (reviewReview) => {
           if (!reviewReview)
@@ -114,7 +125,8 @@ const SelectReview = (props) => {
           reviewStatus: parseInt(reviewStatus),
           submissionAlias: i+1
         }));
-
+      
+        console.log("TO DO REVIEWS", props.textIfEmpty + " " + JSON.stringify(toDoReviews))
       setToDoReviews(toDoReviews)
     })().catch( e => { console.error(e) });
   }, []);
@@ -134,7 +146,7 @@ const SelectReview = (props) => {
       return null;
     }
   }
-  console.log("TO DO REVIEWS", props.textIfEmpty + " " + JSON.stringify(toDoReviews))
+
   return (
     <div className="Content">
         <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
@@ -143,4 +155,4 @@ const SelectReview = (props) => {
   );
 };
 
-export default SelectReview;
+export default SelectAssignment;

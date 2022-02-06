@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
+import AccordionContainer from "../components/accordioncontainer";
+import SelectAssignment from "../components/selectassignment";
 import { useUserData } from "../components/storeAPI";
 import StudentViewOutline from '../components/studentViewOutline';
 const axios = require("axios");
@@ -41,24 +43,51 @@ const CompletedAssignments = (props) => {
 
   if (route === '/')
     return null;
+  console.log("completed assignment props", assignments);
 
-  const listContainer = (
-    <ListContainer
+  // function SelectReview(props) {
+  //   // return <ListContainer
+  //   return <SelectReviewComponent
+  //     textIfEmpty="no peer reviews are graded"
+  //     name="Graded Reviews"
+  //     data={props.a}
+  //     link={props.r}
+  //     hideDueDate={true}
+  //     children={SelectReviewComponent}
+  //   />
+  // }
+  // const listContainer = (
+  //   // <SelectReviewAccordian
+  //   <ListContainer
+  //     textIfEmpty="no peer reviews are graded"
+  //     name="Graded Reviews"
+  //     data={assignments}
+  //     link={route}
+  //     hideDueDate={true}
+  //     children={SelectReviewComponent}
+  //   />
+  // );
+
+  function SelectReviewFunc(props) {
+    return <ListContainer
+    // return <AccordionContainer
       textIfEmpty="no peer reviews are graded"
       name="Graded Reviews"
-      data={assignments}
-      link={route}
+      data={props.assignments}
+      link={props.route}
       hideDueDate={true}
+      children={SelectAssignment}
     />
-  );
+  }
 
   if (!props.SetIsStudent)
-    return listContainer;
+    // return listContainer;
+    return (<SelectReviewFunc assignments={assignments} route={route}/>);
 
   // if standalone page
   return (
     <div className="Content">
-      {listContainer}
+      <SelectReviewFunc assignments={assignments} route={route}/>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );

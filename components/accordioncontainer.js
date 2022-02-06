@@ -1,12 +1,12 @@
 import React, { cloneElement } from 'react';
-import styles from './styles/selectreviewaccordian.module.scss';
+import styles from './styles/accordioncontainer.module.scss';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
-import { Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
+import {Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from '@material-ui/core/Typography';
 import PeerReview from '../pages/peer_reviews/peerreview';
@@ -26,11 +26,14 @@ function Info(props) { // Display list item description
   }
 }
 
-function SelectReviewAccordian(props) {
-  console.log("props", props);
+function AccordionContainer(props) {
   function getData() {
     var information = props;
     var link = "";
+    // console.log("list container info data", props.textIfEmpty + JSON.stringify(props));
+
+    // console.log("list container data length", props.textIfEmpty + JSON.stringify(props.data.length));
+    // console.log("should be true?", props.textIfEmpty + " " + (information.data && information.data.length));
     if (information.data && information.data.length) {
       return (
         information.data.map(x => {
@@ -80,11 +83,25 @@ function SelectReviewAccordian(props) {
 //          console.log(`found date ${new Date(date)}`);
           // console.log(x.name);
           // console.log(x.canvasID);
-          console.log("canvas matching id", x.canvasId);
-          console.log("should render", !!x.data.id);
+          // console.log("canvas matching id", x.canvasId);
+          // console.log("the props", props);
+          // console.log("the x", x)
+          // console.log("should render", !!x.data.id);
+          // console.log("accordion is student", information.student);
+          
           return (
-            <Accordion key={JSON.stringify(x)} className={styles.accordion}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} disableGutters="true">
+            <Accordion key={JSON.stringify(x)} className={styles.accordion} disableGutters
+                elevation={0}
+                sx={{
+                  border: `10px solid #ff0000`,
+                  '&:not(:last-child)': {
+                    borderBottom: 0,
+                  },
+                  '&:before': {
+                    display: 'none',
+                  },
+                }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} className={styles.accordionsummary}>
                 {/* <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}> */}
                 <div className={styles.name}>{x.name}</div>
                 {/* </Link> */}
@@ -97,8 +114,8 @@ function SelectReviewAccordian(props) {
                     
                 {/* </TableRow> */}
                 </AccordionSummary>
-                <AccordionDetails>
-                  {!!x.data.id && <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>}
+                <AccordionDetails className={styles.accordiondetails}>
+                  {<props.children isStudent={information.student} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/>}
                   {/* <props.children isStudent={x.isStudent} name={x.name} id={x.canvasId} dueDate={date} rubricId={x.rubricId} submissionId={x.data.submissionId} matchingId={x.data.id} subId={x.submissionAlias} reviewStatus={x.reviewStatus}/> */}
 
                 </AccordionDetails>
@@ -121,6 +138,9 @@ function SelectReviewAccordian(props) {
             
             // {/* </Link> */}
     } else {
+      // console.log("branch 2", props.textIfEmpty);
+      // console.log("info data", props.textIfEmpty + information.data);
+      // console.log("info data length", props.textIfEmpty + information.data.length)
       return (
         <TableRow className={styles.row}>
           <TableCell className={styles.name}>
@@ -134,20 +154,23 @@ function SelectReviewAccordian(props) {
 
 
   return (
+    // <div>
+    //   {getData()}
+    // </div>
+    
     <Table className={styles.tables}>
       <TableHead className={props.alert ? styles.alertheader : styles.header}>
         <TableRow>
           <TableCell className={styles.hcell}>{props.name}</TableCell>
-          <TableCell></TableCell>
         </TableRow>
       </TableHead>
 
       {/* <TableBody> */}
-        {getData()}
+      {getData()}
       {/* </TableBody> */}
     </Table>
   )
 }
 
 
-export default SelectReviewAccordian;
+export default AccordionContainer;

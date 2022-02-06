@@ -4,6 +4,7 @@ import Submission from "./submissionview";
 import SubmissionCompleted from "./submissionviewcompleted";
 import StudentViewOutline from './studentViewOutline';
 import { useUserData } from "./storeAPI";
+import styles from "./styles/peerreviewsubmissions.module.scss"
 // import Button from "@material-ui/core/Button";
 // import Box from '@material-ui/core/Box';
 // import { FormatColorResetTwoTone } from "@material-ui/icons";
@@ -17,7 +18,7 @@ const getData = async url => {
   return resData.data;
 };
 
-const PeerReviewComponent = (props) => {
+const PeerReviewSubmission = (props) => {
   const { userId, courseId, courseName, assignment, roles } = useUserData();
   const [submission, setSubmission] = useState("");
   const [rubric, setRubric] = useState([]);
@@ -26,7 +27,7 @@ const PeerReviewComponent = (props) => {
   const [taReviewReview, setTaReviewReview] = useState({});
   const [viewPeerReviewAssessment, setViewPeerReviewAssessment] = useState(true);
   const [instructor, setInstructor] = useState(false);
-  let {submissionId, id, rubricId, matchingId, subId, dueDate} = props;
+  let {isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
 
   // props = Object.keys(props).map(key => key == undefined ? props.key = "" : props.key = props.key);
   // console.log("fixed props", props);
@@ -65,6 +66,7 @@ const PeerReviewComponent = (props) => {
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
 
   const assignmentCompleted = isDisabled();
+  console.log("peer review assignment completed", assignmentCompleted);
 
 
   useEffect(() => {
@@ -75,8 +77,8 @@ const PeerReviewComponent = (props) => {
         getData(`/api/rubrics/${rubricId}`),
         // getData(`/api/assignments/${assignmentName}`),
       ]);
-      console.log('submission:',submission);
-      console.log('rubric data:',rubricData);
+      console.log('submission:',props.textIfEmpty + submission);
+      console.log('rubric data:',props.textIfEmpty + JSON.stringify(rubricData));
       console.log('matching data:',matchingData);
 
       const reviewReview = matchingData["reviewReview"];
@@ -103,7 +105,8 @@ const PeerReviewComponent = (props) => {
   }, []);
 
   function isDisabled() {
-    if (props.ISstudent) {
+    console.log("peer review is student", isStudent);
+    if (isStudent) {
       return isDisabledRaw();
     }
 
@@ -142,8 +145,7 @@ const PeerReviewComponent = (props) => {
 
 
   return (
-    <div className="Content">
-      <Container name={"Grade Submission " + subId}>
+    <div className={styles.mydiv}>
         {/* {instructor == false ?
           <Box textAlign='center'>
             {/* <Button variant="contained" color="primary" onClick={handleClickSubmit}>
@@ -170,7 +172,6 @@ const PeerReviewComponent = (props) => {
           :
           <Submission instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
         }
-      </Container>
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
   );
@@ -179,4 +180,4 @@ const PeerReviewComponent = (props) => {
 
 
 
-export default PeerReviewComponent;
+export default PeerReviewSubmission;

@@ -21,10 +21,14 @@ function Info(props) { // Display list item description
 }
 
 function ListContainer(props) {
+
   function getData() {
     var information = props;
     var link = "";
+    // console.log("list container info data", props.textIfEmpty + JSON.stringify(props));
+
     if (information.data && information.data.length) {
+      console.log("branch 1", props.textIfEmpty);
       return (
         information.data.map(x => {
           if (!x.data) x.data={};
@@ -71,10 +75,11 @@ function ListContainer(props) {
 
 //        if (date)
 //          console.log(`found date ${new Date(date)}`);
-          console.log("the canvasId", x.canvasId)
-          console.log("the id", x.data.id);
+          // console.log("the canvasId", x.canvasId)
+          // console.log("the id", x.data.id);
+          // console.log("list container is student", x.isStudent);
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov} prefetch={true}>
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 
@@ -86,6 +91,7 @@ function ListContainer(props) {
         )
       )
     } else {
+      console.log("here", props.textIfEmpty);
       return (
         <TableRow className={styles.row}>
           <TableCell className={styles.name}>

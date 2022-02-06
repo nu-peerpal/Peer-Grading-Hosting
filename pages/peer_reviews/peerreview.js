@@ -29,9 +29,8 @@ const PeerReview = (props) => {
   const [instructor, setInstructor] = useState(false);
   const router = useRouter()
   const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
-  console.log("peer review submission id", submissionId);
-  console.log("peer review id", id);
-  console.log("peer review matching id", matchingId)
+  console.log("peer review page props", props);
+
 
   // let presetComments = ReviewGradingTable;
   // console.log('presetComments:',presetComments);
@@ -54,7 +53,7 @@ const PeerReview = (props) => {
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
 
   const assignmentCompleted = isDisabled();
-
+  console.log("assignemnt completed", assignmentCompleted);
 
   useEffect(() => {
     (async () => {
@@ -66,6 +65,8 @@ const PeerReview = (props) => {
       ]);
       console.log('submission:',submission);
       console.log('rubric data:',rubricData);
+      console.log('rubric data:',props.textIfEmpty + JSON.stringify(rubricData));
+
       console.log('matching data:',matchingData);
 
       const reviewReview = matchingData["reviewReview"];
@@ -104,6 +105,7 @@ const PeerReview = (props) => {
   }
 
   function isDisabledRaw() {
+    console.log("due date", !dueDate);
     if (!dueDate)
       return true;
 
