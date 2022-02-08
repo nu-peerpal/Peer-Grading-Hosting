@@ -103,9 +103,9 @@ function AccordionContainer(props) {
                 }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={styles.accordionsummary}>
                 {/* <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}> */}
-                <div className={styles.name}>{x.name}</div>
-                {/* </Link> */}
-                <div className={styles.actionItem}>{x.actionItem}</div>
+                  <div className={styles.name}>{x.name}</div>
+                  {/* </Link> */}
+                  <div className={styles.actionItem}>{x.actionItem}</div>
                 <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
 
                 {/* <TableRow className={styles.row}>
