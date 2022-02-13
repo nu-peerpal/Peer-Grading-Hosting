@@ -23,7 +23,12 @@ const download = (props) => {
   const [ peerGradingData, setPeerGradingData ] = useState()
 
   const { courseId } = useUserData();
-  const tooltip = "Example tooltip to demonstrate how this feature would work"
+  const review_tooltip = "Reviews and scores given by peers. Presented as a JSON object"
+  const reviewReview_tooltip = "Reviews and scores given by TA's. Presented as a JSON object"
+  const assignmentId_tooltip = "ID of the assignment"
+  const userId_tooltip = "ID of the user"
+  const submissionId_tooltip = "ID of the submission"
+  const matchingType_tooltip = "The stage where the review was matched. Either 'initial', 'additional', or 'TA'"
 
   // useEffect(() => {
   //   if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
@@ -229,12 +234,12 @@ const download = (props) => {
         : <div className={downloadStyles.infoContainer}>
             <h2>Data Categories</h2>
             <ul>
-              <li>review<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
-              <li>reviewReview<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
-              <li>assignmentId<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
-              <li>userId<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
-              <li>submissionId<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
-              <li>matchingType<span className={downloadStyles.tooltipText}>{tooltip}</span></li>
+              <li>review<span className={downloadStyles.tooltipText}>{review_tooltip}</span></li>
+              <li>reviewReview<span className={downloadStyles.tooltipText}>{reviewReview_tooltip}</span></li>
+              <li>assignmentId<span className={downloadStyles.tooltipText}>{assignmentId_tooltip}</span></li>
+              <li>userId<span className={downloadStyles.tooltipText}>{userId_tooltip}</span></li>
+              <li>submissionId<span className={downloadStyles.tooltipText}>{submissionId_tooltip}</span></li>
+              <li>matchingType<span className={downloadStyles.tooltipText}>{matchingType_tooltip}</span></li>
             </ul>
           </div>
         }
