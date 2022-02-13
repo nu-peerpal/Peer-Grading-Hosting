@@ -21,6 +21,7 @@ const download = (props) => {
   const [currentUserId, setCurrentUserId] = useState('');
   const [canvasUsers, setCanvasUsers] = useState()
   const [ peerGradingData, setPeerGradingData ] = useState()
+  const [ filteredPeerGradingData, setFilteredPeerGradingData ] = useState()
 
   const { courseId } = useUserData();
   const review_tooltip = "Reviews and scores given by peers. Presented as a JSON object"
@@ -30,6 +31,7 @@ const download = (props) => {
   const submissionId_tooltip = "ID of the submission"
   const matchingType_tooltip = "The stage where the review was matched. Either 'initial', 'additional', or 'TA'"
 
+  // Can obtain data from cookies instead of needing to navigate back Home
   // useEffect(() => {
   //   if (Cookies.get('userData') && !savedStudentId) { // create new user if not viewing as student and cookie is set
   //     console.log('creating user data');
@@ -49,6 +51,10 @@ const download = (props) => {
     // get peer grading data
     axios.get(`/api/courseReviews/${courseId}`).then(res => {
       setPeerGradingData(res)
+    });
+
+    axios.get(`/api/courseReviews/${courseId}?userId=${currentUserId}`).then(res => {
+      setFilteredPeerGradingData(res)
     });
 
     // get list of (student) canvas users from which to filter
@@ -81,22 +87,14 @@ const download = (props) => {
     return csv;
   }
 
-  const filterByUser = (data, userId) => {
-    if (userId !== '') {
-      return data.filter(review => review.userId === userId)
-    }
-
-    return data
-  }
-
   /* HANDLE BUTTON CLICKS */
-  const handleJSONSubmit = () => {
+  const handleJSONSubmit = (id='') => {
       const fileName = "PeerGradingData";
 
       // obtain reviews and filter by user if specified
       let reviews = peerGradingData.data.data
+      if (id !== '') reviews = filteredPeerGradingData.data.data
       console.log(peerGradingData.data.data)
-      reviews = filterByUser(reviews, currentUserId);
 
       // creates a downloadable JSON file
       const json = JSON.stringify(reviews);
@@ -112,12 +110,12 @@ const download = (props) => {
       document.body.removeChild(link);
   }
 
-  const handleCSVSubmit = () => {
+  const handleCSVSubmit = (id='') => {
       const fileName = "PeerGradingData";
 
       // obtain reviews and filter by user if specified
       let reviews = peerGradingData.data.data;
-      reviews = filterByUser(reviews, currentUserId);
+      if (id !== '') reviews = filteredPeerGradingData.data.data;
 
       // convert to JSON to CSV
       const csv = JSONToCSV(reviews);
@@ -151,7 +149,7 @@ const download = (props) => {
         <div className={downloadStyles.button}>
         
             <Link href="#" passHref>
-              <Button onClick={handleJSONSubmit} 
+              <Button onClick={() => handleJSONSubmit()} 
                       variant="contained" 
                       color="primary"
                       disabled={!peerGradingData}>
@@ -163,7 +161,7 @@ const download = (props) => {
         <div className={downloadStyles.button}>
 
             <Link href="#" passHref>
-              <Button onClick={handleCSVSubmit} 
+              <Button onClick={() =>  handleCSVSubmit()} 
                       variant="contained" 
                       color="primary" 
                       disabled={!peerGradingData}>
@@ -203,7 +201,7 @@ const download = (props) => {
         <div className={downloadStyles.button}>
         
             <Link href="#" passHref>
-              <Button onClick={handleJSONSubmit} 
+              <Button onClick={() => handleJSONSubmit(currentUserId)} 
                       variant="contained" 
                       color="primary"
                       disabled={!peerGradingData}>
@@ -215,7 +213,7 @@ const download = (props) => {
         <div className={downloadStyles.button}>
 
             <Link href="#" passHref>
-              <Button onClick={handleCSVSubmit} 
+              <Button onClick={() => handleCSVSubmit(currentUserId)} 
                       variant="contained" 
                       color="primary" 
                       disabled={!peerGradingData}>
