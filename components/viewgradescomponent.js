@@ -14,7 +14,7 @@ const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm')
 const axios = require("axios");
 
-function ViewAssignmentGradeComponent(props, {submissionId, id, rubricId, matchingId, subId, dueDate}) {
+function ViewAssignmentGradeComponent(props) {
     const router = useRouter();
     const { userId, courseId } = useUserData();
     const [subReports, setSubReports] = useState([]);
@@ -29,6 +29,11 @@ function ViewAssignmentGradeComponent(props, {submissionId, id, rubricId, matchi
   const [assignment, setAssignment] = useState({});
   const [submissions, setSubmissions] = useState([]);
 //   let { id, name } = router.query;
+  let {id, name} = props;
+
+  if (id == undefined) {
+    id = "";
+  }
 
   useEffect(() => {
       Promise.all([axios.get(`/api/submissions?assignmentId=${id}`),
@@ -98,7 +103,7 @@ function ViewAssignmentGradeComponent(props, {submissionId, id, rubricId, matchi
         setSubmissions(submissionsRes);
         setSubReports(userSubmissions);
         setRevReports(reviewReportsRes);
-      }).catch(err => console.log({err}));
+      });
 
   }, []);
 
@@ -147,8 +152,7 @@ function ViewAssignmentGradeComponent(props, {submissionId, id, rubricId, matchi
   }
 
   return (
-    <div className="Content">
-      <Container name={"Submission Reports for " + name} >
+    <div>
           {
             subReports.map((sub,index) =>
               <Accordion key={JSON.stringify(sub)}>
@@ -191,7 +195,6 @@ function ViewAssignmentGradeComponent(props, {submissionId, id, rubricId, matchi
               </Accordion>
             )
           }
-        </Container>
         {/*
         <Container name={"Review Reports for " + name}>
         {

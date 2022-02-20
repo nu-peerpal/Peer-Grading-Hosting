@@ -5,6 +5,7 @@ import StudentViewOutline from './studentViewOutline';
 import AccordionContainer from "./accordioncontainer";
 import PeerReviewSubmission from "./peerreviewsubmission";
 import { useUserData } from "./storeAPI";
+import styles from "./styles/selectassignments.module.scss"
 const axios = require("axios");
 import _ from "lodash";
 
@@ -77,7 +78,7 @@ const SelectAssignment = (props) => {
 
   return (
     <div>
-        <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
+        <StudentToDoList className={styles.accordion} toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
         {/* <StudentViewOutline SetIsStudent={props.SetIsStudent} /> */}
     </div>
   );

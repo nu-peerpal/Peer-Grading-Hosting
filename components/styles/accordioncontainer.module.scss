@@ -1,9 +1,17 @@
+// .tables {
+//     width: 90% ;
+//     margin: 30px 5%;
+//     border-spacing: 0px;
+//     border: 2px solid #e5e5e5;
+//     position: relative;
+// }
+
 .tables {
-    width: 90% !important;
-    margin: 30px 5%;
-    border-spacing: 0px;
-    border: 2px solid #e5e5e5;
-    position: relative;
+  width: 90% !important;
+  margin: 30px 5% !important;
+  border-spacing: 0px;
+  border: 2px solid #e5e5e5;
+  position: relative;
 }
   
 .header {
@@ -15,6 +23,16 @@
 
   color: #000000;
   background: #e5e5e5;
+}
+
+.info {
+  font-size: 14px !important;
+  color: #000000 !important;
+  font-weight: 400;
+  font-family: "Roboto";
+  margin-left: auto;
+
+  color: #000000;
 }
 
 .alertheader {
@@ -42,15 +60,6 @@
   font-family: "Roboto";
 }
 
-.info {
-  font-style: normal;
-  font-weight: normal;
-  font-size: 17px;
-  color: #a4a4a4;
-  text-align: right !important;
-  padding-right: 20px;
-}
-
 .actionItem {
   font-style: normal;
   font-weight: normal;
@@ -66,8 +75,6 @@
     cursor:pointer !important;
 }
 
-.accordion {
-}
 
 .accordionsummary {
   // border-top: 2px solid #e5e5e5;

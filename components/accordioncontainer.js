@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
+// import StylesEngineProvider from "@material-ui/core/StylesEngineProvider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 function Info(props) { // Display list item description
@@ -21,6 +22,7 @@ function Info(props) { // Display list item description
 }
 
 function AccordionContainer(props) {
+  console.log("Styles " + JSON.stringify(styles));
   function getData() {
     var information = props;
 
@@ -81,7 +83,7 @@ function AccordionContainer(props) {
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={styles.accordionsummary}>
                   <div className={styles.name}>{x.name}</div>
                   <div className={styles.actionItem}>{x.actionItem}</div>
-                <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} />
+                  <Info dueDate={date} info={x.info} actionItem={x.actionItem} type={type} className={styles.info}/>
 
                 </AccordionSummary>
                 <AccordionDetails className={styles.accordiondetails}>
@@ -104,15 +106,18 @@ function AccordionContainer(props) {
   }
 
   return (
-    <Table className={styles.tables}>
-      <TableHead className={props.alert ? styles.alertheader : styles.header}>
-        <TableRow>
-          <TableCell className={styles.hcell}>{props.name}</TableCell>
-        </TableRow>
-      </TableHead>
+    // <StyledEngineProvider injectFirst>
+      <Table className={styles.tables}>
+        <TableHead className={props.alert ? styles.alertheader : styles.header}>
+          <TableRow>
+            <TableCell className={styles.hcell}>{props.name}</TableCell>
+          </TableRow>
+        </TableHead>
 
-      {getData()}
-    </Table>
+        {getData()}
+      </Table>
+    // </StyledEngineProvider>
+
   )
 }
 
