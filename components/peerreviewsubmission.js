@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Container from "./container";
 import Submission from "./submissionview";
 import SubmissionCompleted from "./submissionviewcompleted";
 import StudentViewOutline from './studentViewOutline';
 import { useUserData } from "./storeAPI";
 import styles from "./styles/peerreviewsubmissions.module.scss"
-// import Button from "@material-ui/core/Button";
-// import Box from '@material-ui/core/Box';
-// import { FormatColorResetTwoTone } from "@material-ui/icons";
-// import ButtonExample from '../../pages/peer_reviews/prbutton'
-// import TAGrading from "../grading/tagrading";
-// import ReviewGradingTable from "../../components/UI/ReviewGradingTable";
 
 const getData = async url => {
   const res = await fetch(url);
@@ -29,39 +22,14 @@ const PeerReviewSubmission = (props) => {
   const [instructor, setInstructor] = useState(false);
   let {isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
 
-  // props = Object.keys(props).map(key => key == undefined ? props.key = "" : props.key = props.key);
-  // console.log("fixed props", props);
-
   if (id == undefined) {
     id = "";
   }
 
-
-  // console.log("props", props);
-  // console.log("matching id", matchingId);
-  // console.log("submission id", submissionId);
-  // console.log(" id", id);
-  // console.log("rubric id", rubricId);
-  // console.log("sub id", subId);
-  // console.log("due date", dueDate);
-
-  // let presetComments = ReviewGradingTable;
-  // console.log('presetComments:',presetComments);
-
-  // const current = new Date();
-  // const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
-
   const currentDate = new Date();
   const currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
-  // const newCurrentDate = "Current Date and Time: "+date;
-  // console.log('currentDateFormatted:',currentDateFormatted);
-  // console.log('currentDate.getTime():',currentDate.getTime());
-
 
   const reviewDueDate = new Date(dueDate);
-
-  // console.log('reviewDueDate:',reviewDueDate)
-  // console.log('reviewDueDate.getTime():',reviewDueDate.getTime());
 
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
 
@@ -128,45 +96,8 @@ const PeerReviewSubmission = (props) => {
   }
 
 
-  // function isInstructor() {
-  //   if (roles.includes("instructor")) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // let instructor = isInstructor()
-
-
-  // function handleClickSubmit() {
-  //   setViewPeerReviewAssessment(!viewPeerReviewAssessment);
-  // };
-
-
   return (
     <div className={styles.mydiv}>
-        {/* {instructor == false ?
-          <Box textAlign='center'>
-            {/* <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Do not allow view of peer review assessment to students
-            </Button> */}
-            {/* {viewPeerReviewAssessment ?
-              <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Do not allow view of peer review assessment to students
-              </Button>
-              :
-              <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Allow view of peer review assessment to students
-              </Button>
-            }
-            <br />
-            <br />
-            <br />
-          </Box>
-          :
-          null
-          } */}
         {assignmentCompleted ?
           <SubmissionCompleted instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
           :

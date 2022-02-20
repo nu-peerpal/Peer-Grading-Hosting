@@ -1,76 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import Container from "../../components/container";
-// import ListContainer from "../../components/listcontainer";
-// import SelectReviewAccordian from "../../components/selectreviewaccordian";
-// import StudentViewOutline from '../../components/studentViewOutline';
-// import { useUserData } from "../../components/storeAPI";
-// import { useRouter } from 'next/router';
-// const axios = require("axios");
-// import _ from "lodash";
-// import PeerReviewComponent from "../../components/peerreviewcomponent";
-
-// const SelectReview = (props) => {
-//   const router = useRouter();
-//   const { userId, courseId, courseName, assignment } = useUserData();
-//   const [toDoReviews, setToDoReviews] = useState([]);
-//   const { name, id, dueDate, rubricId, reviewStatus } = router.query;
-//   useEffect(() => {
-//     (async () => {
-//         let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
-//         // console.log({resData})
-//         const peerMatchings = res.data.data;
-//         peerMatchings.sort(function(a, b){return a.id-b.id})
-//         console.log({peerMatchings});
-
-//         const reviewReviewText = (reviewReview) => {
-//           if (!reviewReview)
-//             return "";
-
-//           const total = _.sum(reviewReview.reviewBody.map(({points}) => points));
-//           const maximum = _.sum(reviewReview.reviewBody.map(({maxPoints}) => maxPoints));
-
-//           return ` (Grade ${total}/${maximum})`;
-//         }
-
-//         const toDoReviews = peerMatchings.map((m,i) => ({
-//           name: `Submission ${i+1} ${reviewReviewText(m.reviewReview)}`,
-//           reviewDueDate: dueDate,
-//           rubricId,
-//           data: m,
-//           reviewStatus: parseInt(reviewStatus),
-//           submissionAlias: i+1
-//         }));
-
-//       setToDoReviews(toDoReviews)
-//     })().catch( e => { console.error(e) });
-//   }, []);
-
-//   function StudentToDoList(props) {
-//     if (props.toDoReviews) {
-//       return <ListContainer
-//         textIfEmpty="no peer reviews have been assigned"
-//         name={"Reviews for " + name}
-//         data={props.toDoReviews}
-//         student={props.ISstudent}
-//         link="/peer_reviews/peerreview"
-//         children={PeerReviewComponent}
-//     />
-//     } else {
-//       return null;
-//     }
-//   }
-
-//   return (
-//     <div className="Content">
-//       <Container name="Select Review">
-//         <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
-//         <StudentViewOutline SetIsStudent={props.SetIsStudent} />
-//       </Container>
-//     </div>
-//   );
-// };
-
-// export default SelectReview;
 import React, { useState, useEffect } from "react";
 import Container from "./container";
 import ListContainer from "./listcontainer";
@@ -88,7 +15,7 @@ const getData = async url => {
 };
 
 const SelectAssignment = (props) => {
-//   const router = useRouter();
+  // const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
   let {isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
@@ -97,11 +24,12 @@ const SelectAssignment = (props) => {
     id = "";
   }
 
-  console.log("HELLO", props.textIfEmpty + " " + JSON.stringify(props));
+  console.log("HELLO");
   useEffect(() => {
+    console.log("Inside use effect");
     (async () => {
-        // let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
-        let res = await Promise(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
+        let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
+        // let res = await Promise(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
         console.log("RES DATA", props.textIfEmpty + " " + JSON.stringify(res));
         const peerMatchings = res.data.data;
         peerMatchings.sort(function(a, b){return a.id-b.id})
@@ -122,13 +50,13 @@ const SelectAssignment = (props) => {
           reviewDueDate: dueDate,
           rubricId,
           data: m,
-          reviewStatus: parseInt(reviewStatus),
+          reviewStatus: parseInt(m.reviewStatus),
           submissionAlias: i+1
         }));
       
         console.log("TO DO REVIEWS", props.textIfEmpty + " " + JSON.stringify(toDoReviews))
       setToDoReviews(toDoReviews)
-    })().catch( e => { console.error(e) });
+    })();
   }, []);
 
   function StudentToDoList(props) {
@@ -148,9 +76,9 @@ const SelectAssignment = (props) => {
   }
 
   return (
-    <div className="Content">
+    <div>
         <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
-        <StudentViewOutline SetIsStudent={props.SetIsStudent} />
+        {/* <StudentViewOutline SetIsStudent={props.SetIsStudent} /> */}
     </div>
   );
 };

@@ -45,49 +45,25 @@ const CompletedAssignments = (props) => {
     return null;
   console.log("completed assignment props", assignments);
 
-  // function SelectReview(props) {
-  //   // return <ListContainer
-  //   return <SelectReviewComponent
-  //     textIfEmpty="no peer reviews are graded"
-  //     name="Graded Reviews"
-  //     data={props.a}
-  //     link={props.r}
-  //     hideDueDate={true}
-  //     children={SelectReviewComponent}
-  //   />
-  // }
-  // const listContainer = (
-  //   // <SelectReviewAccordian
-  //   <ListContainer
-  //     textIfEmpty="no peer reviews are graded"
-  //     name="Graded Reviews"
-  //     data={assignments}
-  //     link={route}
-  //     hideDueDate={true}
-  //     children={SelectReviewComponent}
-  //   />
-  // );
-
-  function SelectReviewFunc(props) {
-    return <ListContainer
-    // return <AccordionContainer
+  const listContainer = (
+    // <ListContainer
+    <AccordionContainer
       textIfEmpty="no peer reviews are graded"
       name="Graded Reviews"
-      data={props.assignments}
-      link={props.route}
+      data={assignments}
+      link={route}
       hideDueDate={true}
       children={SelectAssignment}
     />
-  }
+  );
 
   if (!props.SetIsStudent)
-    // return listContainer;
-    return (<SelectReviewFunc assignments={assignments} route={route}/>);
+    return listContainer;
 
   // if standalone page
   return (
     <div className="Content">
-      <SelectReviewFunc assignments={assignments} route={route}/>
+      {listContainer}
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
