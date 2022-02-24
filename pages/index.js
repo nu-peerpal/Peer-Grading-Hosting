@@ -77,8 +77,15 @@ function Dashboard(props) {
 
           // find users that need to be added to db
           const dbUserLookup = _.keyBy(dbUsers,({canvasId}) => canvasId);
+          const canvasUserLookup = _.keyBy(theCanvasUsers,({canvasId}) => canvasId);
+
           const newUsers = theCanvasUsers
             .filter(({canvasId}) => !dbUserLookup[canvasId]);
+
+          const droppedUsers = dbUsers
+            .filter(({canvasId}) => !canvasUserLookup[canvasId]);
+
+          console.log({droppedUsers});
 
           // find new enrollments that need to be added to db.
           const dbEnrollmentLookup = _.keyBy(dbEnrollments,({userId,enrollment}) => [userId,enrollment]);
