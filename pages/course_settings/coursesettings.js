@@ -220,7 +220,8 @@ function CourseSettings(props) {
     if (currentMinute < 10) {
       currentMinute = '0' + currentMinute;
     }
-    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute);
+
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute + ':59');
     console.log('toDate date:', date);
     return date;
   }
@@ -247,13 +248,15 @@ function CourseSettings(props) {
 
   useEffect(() => {
     if (courseId != "") {
+      console.log('courseId:',courseId)
       Promise.all([axios.get(`/api/assignments/${assignmentId}`),
       axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
       axios.get(`/api/canvas/rubrics?courseId=${courseId}`),
       axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`),
       axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/courses/${courseId}`),
-      axios.get(`/api/assignments?courseId=${courseId}`)
+      axios.get(`/api/assignments?courseId=${courseId}`),
+      axios.get(`/api/assignment_submissions?id=294`)
       ]).then(data => {
         let assignmentData = data[0].data.data;
         console.log(assignmentData);
@@ -378,7 +381,7 @@ function CourseSettings(props) {
               if (data.assignmentGroup != -1) {
                 courseSettingsJson.assignmentGroup = data.assignmentGroup;
               } else {
-                courseSettingsJson.assignmentGroup = data.assignmentGroup;
+                courseSettingsJson.assignmentGroup = null;
               }
               setCourseSettingsJsonObj(courseSettingsJson);
               console.log('coursesettingsjsonobj:', courseSettingsJsonObj);
@@ -503,7 +506,7 @@ function CourseSettings(props) {
                     )}
                     MenuProps={MenuProps}
                   >
-                    {taNames.map((name) => (
+                    {tas.map((name) => (
                       <MenuItem key={name} value={name} >
                         <Checkbox checked={values.tas.indexOf(name) > -1} />
                         {name}
@@ -587,7 +590,7 @@ function CourseSettings(props) {
                               <option key={0} value={-1}>Select Assignment Group</option>
                               {/* <option key={0} value={-1}>{initialData.assignmentGroup}</option> */}
                               {prGroupOptions.map(prGroup => {
-                                return <option key={prGroup.id} value={prGroup.name}>{prGroup.name}</option>;
+                                return <option key={prGroup.id} value={prGroup.id}>{prGroup.name}</option>;
                               })}
                             </select>
                           </div>
@@ -727,7 +730,7 @@ function CourseSettings(props) {
                               <option key={0} value={-1}>Select Rubric</option>
                               {rubricOptions.map(rubricObj => {
                                 /* console.log('rubric:', rubricObj) */
-                                return <option key={rubricObj.id} value={rubricObj.title}>{rubricObj.title}</option>;
+                                return <option key={rubricObj.id} value={rubricObj.id}>{rubricObj.title}</option>;
                               })}
                             </select>
                           </div>

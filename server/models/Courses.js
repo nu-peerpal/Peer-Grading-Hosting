@@ -18,13 +18,13 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
     },
     reviewRubric: {
-      type: Sequelize.JSON,
+      type: Sequelize.STRING,
     },
     matchingSettings: {
       type: Sequelize.JSON,
     },
     assignmentGroup: {
-      type: Sequelize.JSON,
+      type: Sequelize.STRING,
     },
     matchingAlgo: {
       type: Sequelize.STRING,

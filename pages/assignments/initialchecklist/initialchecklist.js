@@ -31,7 +31,7 @@ const InitialChecklist = (props) => {
   // new info
   const [existingDueDate, setExistingDueDate] = React.useState(false);
   const [submitResponse, setSubmitResponse] = React.useState("");
-  const [submitSuccess, setSubmitSuccess] = React.useState(true)
+  const [submitSuccess, setSubmitSuccess] = React.useState(true);
   // new info stop
   let localDate = new Date(dueDate);
   // const courseId = 1 // hardcoded
@@ -39,6 +39,31 @@ const InitialChecklist = (props) => {
   // const assignmentName = "Peer Reviews Static"
   // console.log({rubricOptions});
 
+
+  function toDate(timestamp,days) {
+    var d = new Date(timestamp);
+    console.log('d:',d);
+    d.setDate(d.getDate()+days);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var currentHour = d.getHours();
+    if (currentHour < 10) {
+      currentHour = '0' + currentHour;
+    }
+    var currentMinute = d.getMinutes();
+    if (currentMinute < 10) {
+      currentMinute = '0' + currentMinute;
+    }
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute + ':59');
+    console.log('toDate date:', date);
+    return date;
+  }
 
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
@@ -68,18 +93,28 @@ const InitialChecklist = (props) => {
 
     for (i = 0; i < rubricOptions.length; i++) {
       if (rubricOptions[i].id == rubricId) {
+        console.log('rubricoptions:',rubricOptions);
         rubric = rubricOptions[i];
         break;
       }
     }
+    //rubric = rubricGroup
+    console.log('initialchecklist prduedate:', prDueDate);
     const reviewAssignment = {
       courseId: courseId,
       assignmentName: assignmentName,
       prName: prName,
-      prDueDate: prDueDate,
+      prDueDate: new Date(prDueDate).toISOString(),
       prGroup: prGroup,
       rubric: rubric
     }
+    console.log('prGroup:',prGroup)
+    console.log('rubric:',rubric)
+    console.log('rubricId:',rubricId)
+    console.log('prduedate:',prDueDate)
+    console.log(typeof prDueDate)
+    console.log('prGroup:',prGroup);
+    console.log('rubric',rubric);
     let reviewAssignmentRes = await axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
       assignment = assignment.data.data
       console.log({assignment})
@@ -124,6 +159,7 @@ const InitialChecklist = (props) => {
     axios.get(`/api/canvas/rubrics?courseId=${courseId}`).then(response => {
       // console.log('rubrics: ', response.data.data)
       setRubricOptions(response.data.data);
+      console.log('rubric options:',response.data.data);
 
       // set default peer review assignment group
       const [defaultRubricId] = [
@@ -132,7 +168,7 @@ const InitialChecklist = (props) => {
           .map(({id}) => id)),
         -1
       ];
-      setRubricId(defaultRubricId);
+      //setRubricId(defaultRubricId);
 
     });
     axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`).then(response => {
@@ -146,9 +182,24 @@ const InitialChecklist = (props) => {
           .map(({id}) => id)),
         -1
       ];
-      setPrGroup(defaultPrGroup);
+      //setPrGroup(defaultPrGroup);
 
     });
+
+    axios.get(`/api/courses/${courseId}`).then(response => {
+      let coursesData = response.data.data;
+      console.log('initialchecklist coursesData',coursesData)
+      let assignmentDateToPrDate = coursesData.assignmentDateToPrDate;
+      let reviewRubric = coursesData.reviewRubric;
+      let assignmentGroup = coursesData.assignmentGroup;
+      let peerReviewDate = dueDate;
+      console.log(peerReviewDate)
+      peerReviewDate = toDate(peerReviewDate,assignmentDateToPrDate);
+      setPrDueDate(peerReviewDate);
+      setPrGroup(assignmentGroup);
+      setRubricId(reviewRubric);
+      console.log('peerreviewdate:',peerReviewDate)
+    })
     // setDueDate(null)
 
   }, [courseId]);
@@ -201,9 +252,13 @@ const InitialChecklist = (props) => {
                 <TextField
                   id="datetime-local"
                   type="datetime-local"
-                  defaultValue={"2021-05-24T11:59:50Z"}
+                  value={prDueDate}
+                  /* defaultValue={"2021-05-24T11:59:50Z"} */
+                  
                   onChange={e => {
-                    setPrDueDate(new Date(e.target.value).toISOString());
+                    setPrDueDate(e.target.value);
+                    /* setPrDueDate(new Date(e.target.value).toISOString()); */
+                    console.log('onchange prdd:',prDueDate)
                   }} 
                   InputLabelProps={{
                     shrink: true,
@@ -223,7 +278,8 @@ const InitialChecklist = (props) => {
             <div className={styles.column__content}>
               Select a rubric for the peer review assignment.
               <form>
-                <select value={rubricId} onChange={e => setRubricId(e.target.value)} >
+                <select value={rubricId}
+                onChange={(e) => setRubricId(e.target.value)} >
                 <option key={0} value={-1}>Select Rubric</option>
                   {rubricOptions.map(rubricObj => {
                     return <option key={rubricObj.id} value={rubricObj.id}>{rubricObj.title}</option>;
@@ -239,9 +295,12 @@ const InitialChecklist = (props) => {
       {/* {rubricId != -1 && prGroup != -1 && prDueDate && <Button onClick={handleSubmit}>
           Create Peer Review Assignment
         </Button>} */}
-        {rubricId != -1 && prGroup != -1 && prDueDate && <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"}
+        {/* {rubricId != -1 && prGroup != -1 && prDueDate && <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"}
                 submitAlert={submitResponse}
-                submitSuccess={submitSuccess}/>}
+                submitSuccess={submitSuccess}/>} */}
+        <SubmitButton onClick={handleSubmit} title={"Create Peer Review Assignment"}
+                submitAlert={submitResponse}
+                submitSuccess={submitSuccess}/>
       </div>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>

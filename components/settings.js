@@ -8,11 +8,48 @@ import AutoComplete from "./autocomplete";
 import { peerMatch } from "../pages/api/AlgCalls.js";
 import { useUserData } from "./storeAPI";
 import { useRouter } from 'next/router';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 const axios = require("axios");
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+  noLabel: {
+    marginTop: theme.spacing(3),
+  },
+}));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader, setMatchings, setMatchingGrid, setUserList, ISstudent, SetIsStudent }) {
     const [subFirstView, setSubFirstView] = useState(true); // true = submission first, false = reviewer first
     const [tas, setTas] = useState([]);
+    const [taNames, setTaNames] = useState([]);
     const [matchedUsers, setMatchedUsers] = useState();
     const [matchedSubs, setMatchedSubs] = useState();
     const [submissionGroups, setSubmissionGroups] = useState();
@@ -22,16 +59,25 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
     const [submissions,setSubmissions] = useState([]);
     const router = useRouter()
     const { userId, courseId, courseName, assignment } = useUserData();
+    const classes = useStyles();
+    const [initialData, setInitialData] = useState({
+      /* peerLoad: "",
+      graderLoad: "",
+      tas: [], */
+    });
 
     useEffect(() => {
       // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
-      Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${router.query.assignmentId}`)]).then((canvasData) => {
+      Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),
+      axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${router.query.assignmentId}`),
+      axios.get(`/api/courses/${courseId}`)]).then((canvasData) => {
         console.log('canvas data:',canvasData);
         let tempUsers = canvasData[0].data.data;
         let tempSubmissionData = canvasData[1].data.data;
+        let coursesData = canvasData[2].data.data;
         setSubmissionData(tempSubmissionData); //used for pushing submissions later
         // separate users, compile data for alg call
-        let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment");
+        let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment" || user.enrollment == "InstructorEnrollment");
         let tempGraders = [];
         let tempTas = [];
         for (let grader in graderData) {
@@ -91,17 +137,38 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
           }
           tempSubmissions.push([tempSubmissionData[sub]["submitterId"],subId]);
         }
+
+        console.log('initialchecklist coursesData',coursesData)
+        coursesData.peerLoad = Number(coursesData.peerLoad);
+        coursesData.graderLoad = Number(coursesData.graderLoad);
+        if (!coursesData.tas) {
+          coursesData.tas = {};
+        }
+      /* let assignmentDateToPrDate = coursesData.assignmentDateToPrDate;
+      let reviewRubric = coursesData.reviewRubric;
+      let assignmentGroup = coursesData.assignmentGroup;
+      let peerReviewDate = dueDate;
+      console.log(peerReviewDate)
+      peerReviewDate = toDate(peerReviewDate,assignmentDateToPrDate);
+      setPrDueDate(peerReviewDate);
+      setPrGroup(assignmentGroup);
+      setRubricId(reviewRubric);
+      console.log('peerreviewdate:',peerReviewDate) */
+
         // console.log({subStudents})
         setSubStudentIds(subStudentId)
         setSubmissionGroups(subStudents);
         // console.log('alg data: ',tempUsers,tempGraders,tempPeers,tempSubmissions)
+        console.log('tas:',tempTas)
         setTas([tempTas]);
+        setTaNames(tempTas);
         setUsers(tempUsers);
         setUserList(tempUsers);
         setGraders(tempGraders);
         setPeers(tempPeers.sort(function(a, b){return a-b}));// sort by increasing user id
         setSubmissions(tempSubmissions);
-
+        setInitialData(coursesData);
+        console.log('initialData 1:',initialData)
       });
     },[]);
 
@@ -129,6 +196,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
     // run algo, produce matchings
     async function createMatchings(data, setSubmitting) {
       setSubmitting(true);
+      console.log('selected graders data:',data);
       // console.log('form data:',graders,peers,submissions);
       // console.log('graders:',graders);
       let selectedGraders = graders.filter(function(ta){
@@ -239,44 +307,81 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
     return (
       <div>
       <Formik
-        initialValues={{ peerLoad: 3, graderLoad: 6, TA: [] }}
+        /* initialValues={{ peerLoad: 3, graderLoad: 6, TA: [] }} */
+        initialValues={initialData}
+        enableReinitialize={true}
+        key={tas}
         onSubmit={async (data, { setSubmitting }) => {
           createMatchings(data, setSubmitting);
         }}
       >
-        {({ values, isSubmitting }) => (
+        {({ values, isSubmitting, handleChange }) => (
           <Form>
+            Peer Load:
             <Field
               name="peerLoad"
               type="input"
               value={values.peerLoad}
-              label="Peer Load"
+              onChange={handleChange}
+              /* label="Peer Load" */
               required={true}
               as={TextField}
               className={styles.formfield}
             />
+            Grader Load:
             <Field
               name="graderLoad"
               type="input"
               value={values.graderLoad}
-              label="Grader Load"
+              onChange={handleChange}
+              /* label="Grader Load" */
               required={true}
               as={TextField}
               className={styles.formfield}
             />
-            Graders: {/* why isn't the label working here ??  */}
+            Graders: 
             {tas.map(taList =>
               <Field
               key={taList}
               name="TA"
+              value={values.tas}
               className={styles.formfield}
               component={AutoComplete}
               required={true}
               label="TA"
               options={taList}
-              />
-            )
+              /> 
+              )
+            
             }
+
+                {/* Graders:
+                  <InputLabel id="demo-mutiple-checkbox-label"></InputLabel>
+                  <Select
+                    labelId="demo-mutiple-chip-label"
+                    id="demo-mutiple-chip"
+                    name="tas"
+                    multiple
+                    value={values.tas}
+                    onChange={handleChange}
+                    input={<Input id="select-multiple-chip" />}
+                    renderValue={(selected) => (
+                      <div className={classes.chips}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={value} className={classes.chip} />
+                        ))}
+                      </div>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {tas.map((name) => (
+                      <MenuItem key={name} value={name} >
+                        <Checkbox checked={values.tas.indexOf(name) > -1} />
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select> */}
+
             <Button disabled={isSubmitting} type="submit">
               Compute Matchings
             </Button>
