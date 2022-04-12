@@ -88,7 +88,6 @@ function Appeals(props) {
                     }}
                   />
               </form>
-
               <SubmitButton onClick={handleSubmit} 
                 title={existingDueDate ? "Update Deadline" : "Set Deadline"} 
                 anyChanges={anyChanges}

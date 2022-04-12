@@ -67,7 +67,7 @@ function TeacherView() {
         <a>PeerPal Settings</a>
          </Link> */}
       <Link href={"/course_settings/coursesettings"}>
-        <a>General Course Settings</a>
+        <a>Course Settings</a>
       </Link>
       {/* <Link href={"/canvas/canvas"}>
         <a>Canvas</a>
