@@ -28,6 +28,12 @@ export default async (req, res) => {
           params.matchingType = req.query.matchingType;
         }
         let peerMatchings = await db.peer_matchings.findAll({ where: params });
+
+        // is scores has length 0 then review is not done.
+        if (req.query.done === "true") {
+          peerMatchings = peerMatchings.filter(({dataValues}) => dataValues.review && dataValues.review.reviewBody.scores.length)
+        }
+
         responseHandler.response200(res, peerMatchings);
         break;
       case "PATCH":
