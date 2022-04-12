@@ -151,81 +151,196 @@ function ViewAssignmentGradeComponent(props) {
     console.log({res})
   }
 
-  return (
-    <div>
-          {
-            subReports.map((sub,index) =>
-              <Accordion key={JSON.stringify(sub)}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                <Typography >Submission {index + 1}. Grade: {getGrade(sub.report)}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <div className={styles.details}>
-                    {index === loadSRSubmission ?
-                      sub.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}></iframe> : <Typography>{sub.s3Link}</Typography>
-                      :
-                        <Button onClick={() => setLoadSRSubmission(index)}>Load Submission</Button>
-                      }
+  if (subReports.length == 0) {
+    return (
+      <div>
+        <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
+      </div>
+    )
+  } else {
+    let sub = subReports[0];
+    return (
+      <div className={styles.details}>
+      {index === loadSRSubmission ?
+        sub.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}></iframe> : <Typography>{sub.s3Link}</Typography>
+        :
+          <Button onClick={() => setLoadSRSubmission(index)}>Load Submission</Button>
+        }
 
-                      <ReactMarkdown plugins={[gfm]} children={sub.report} />
-                      <br />
-                      <br />
-                      {eligibleAppeal ? <div className={styles.disclaimer}>
-                        <div>This submission is eligible for appeal. If you submit an appeal,
-                        you will lose the 5% bonus added to your current score and receive a TA grade instead.</div>
-                      <br />
-                      <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
-                      <div>
-                        <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
-                        {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
-                      </div>
-                      </div> : <div>
-                        <span className={styles.disclaimer}>This submission is not eligible for appeal
-                        because you have already received a TA grade. If you would like to submit a regrade request,
-                        see Canvas for more information on how to do that.
-                        </span>
-                      </div>}
+        <ReactMarkdown plugins={[gfm]} children={sub.report} />
+        <br />
+        <br />
+        {eligibleAppeal ? <div className={styles.disclaimer}>
+          <div>This submission is eligible for appeal. If you submit an appeal,
+          you will lose the 5% bonus added to your current score and receive a TA grade instead.</div>
+        <br />
+        <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
+        <div>
+          <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
+          {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
+        </div>
+        </div> : <div>
+          <span className={styles.disclaimer}>This submission is not eligible for appeal
+          because you have already received a TA grade. If you would like to submit a regrade request,
+          see Canvas for more information on how to do that.
+          </span>
+        </div>}
 
-                    </div>
-                </AccordionDetails>
-              </Accordion>
-            )
-          }
-        {/*
-        <Container name={"Review Reports for " + name}>
-        {
-            revReports.map((rev, index) =>
-              <Accordion key={JSON.stringify(rev)}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                <Typography >Peer Review {index + 1}. Grade: {getGrade(rev.report)}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <div className={styles.details}>
-                    {index === loadRRSubmission ?
-                      rev.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev.s3Link}></iframe> : <Typography>{rev.s3Link}</Typography>
-                      :
-                        <Button onClick={() => setLoadRRSubmission(index)}>Load Submission</Button>
-                      }
+      </div>
+      // <div>
+      //       {
+      //         subReports.map((sub,index) =>
+      //           <Accordion key={JSON.stringify(sub)}>
+      //             <AccordionSummary
+      //               expandIcon={<ExpandMoreIcon />}
+      //               aria-controls="panel1a-content"
+      //               id="panel1a-header"
+      //             >
+      //             <Typography >Submission {index + 1}. Grade: {getGrade(sub.report)}</Typography>
+      //             </AccordionSummary>
+      //             <AccordionDetails>
+      //                 <div className={styles.details}>
+      //                 {index === loadSRSubmission ?
+      //                   sub.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}></iframe> : <Typography>{sub.s3Link}</Typography>
+      //                   :
+      //                     <Button onClick={() => setLoadSRSubmission(index)}>Load Submission</Button>
+      //                   }
+  
+      //                   <ReactMarkdown plugins={[gfm]} children={sub.report} />
+      //                   <br />
+      //                   <br />
+      //                   {eligibleAppeal ? <div className={styles.disclaimer}>
+      //                     <div>This submission is eligible for appeal. If you submit an appeal,
+      //                     you will lose the 5% bonus added to your current score and receive a TA grade instead.</div>
+      //                   <br />
+      //                   <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
+      //                   <div>
+      //                     <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
+      //                     {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
+      //                   </div>
+      //                   </div> : <div>
+      //                     <span className={styles.disclaimer}>This submission is not eligible for appeal
+      //                     because you have already received a TA grade. If you would like to submit a regrade request,
+      //                     see Canvas for more information on how to do that.
+      //                     </span>
+      //                   </div>}
+  
+      //                 </div>
+      //             </AccordionDetails>
+      //           </Accordion>
+      //         )
+      //       }
+      //     {/*
+      //     <Container name={"Review Reports for " + name}>
+      //     {
+      //         revReports.map((rev, index) =>
+      //           <Accordion key={JSON.stringify(rev)}>
+      //             <AccordionSummary
+      //               expandIcon={<ExpandMoreIcon />}
+      //               aria-controls="panel1a-content"
+      //               id="panel1a-header"
+      //             >
+      //             <Typography >Peer Review {index + 1}. Grade: {getGrade(rev.report)}</Typography>
+      //             </AccordionSummary>
+      //             <AccordionDetails>
+      //                 <div className={styles.details}>
+      //                 {index === loadRRSubmission ?
+      //                   rev.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev.s3Link}></iframe> : <Typography>{rev.s3Link}</Typography>
+      //                   :
+      //                     <Button onClick={() => setLoadRRSubmission(index)}>Load Submission</Button>
+      //                   }
+  
+      //                   <ReactMarkdown plugins={[gfm]} children={rev.report} />
+      //                 </div>
+      //             </AccordionDetails>
+      //           </Accordion>
+      //         )
+      //       }
+      //     </Container>
+      //     */}
+      //   <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
+      // </div>
+    );
+  }
 
-                      <ReactMarkdown plugins={[gfm]} children={rev.report} />
-                    </div>
-                </AccordionDetails>
-              </Accordion>
-            )
-          }
-        </Container>
-        */}
-      <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
-    </div>
-  );
+
+
+  // return (
+
+  //   <div>
+  //         {
+  //           subReports.map((sub,index) =>
+  //             <Accordion key={JSON.stringify(sub)}>
+  //               <AccordionSummary
+  //                 expandIcon={<ExpandMoreIcon />}
+  //                 aria-controls="panel1a-content"
+  //                 id="panel1a-header"
+  //               >
+  //               <Typography >Submission {index + 1}. Grade: {getGrade(sub.report)}</Typography>
+  //               </AccordionSummary>
+  //               <AccordionDetails>
+  //                   <div className={styles.details}>
+  //                   {index === loadSRSubmission ?
+  //                     sub.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={sub.s3Link}></iframe> : <Typography>{sub.s3Link}</Typography>
+  //                     :
+  //                       <Button onClick={() => setLoadSRSubmission(index)}>Load Submission</Button>
+  //                     }
+
+  //                     <ReactMarkdown plugins={[gfm]} children={sub.report} />
+  //                     <br />
+  //                     <br />
+  //                     {eligibleAppeal ? <div className={styles.disclaimer}>
+  //                       <div>This submission is eligible for appeal. If you submit an appeal,
+  //                       you will lose the 5% bonus added to your current score and receive a TA grade instead.</div>
+  //                     <br />
+  //                     <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
+  //                     <div>
+  //                       <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
+  //                       {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
+  //                     </div>
+  //                     </div> : <div>
+  //                       <span className={styles.disclaimer}>This submission is not eligible for appeal
+  //                       because you have already received a TA grade. If you would like to submit a regrade request,
+  //                       see Canvas for more information on how to do that.
+  //                       </span>
+  //                     </div>}
+
+  //                   </div>
+  //               </AccordionDetails>
+  //             </Accordion>
+  //           )
+  //         }
+  //       {/*
+  //       <Container name={"Review Reports for " + name}>
+  //       {
+  //           revReports.map((rev, index) =>
+  //             <Accordion key={JSON.stringify(rev)}>
+  //               <AccordionSummary
+  //                 expandIcon={<ExpandMoreIcon />}
+  //                 aria-controls="panel1a-content"
+  //                 id="panel1a-header"
+  //               >
+  //               <Typography >Peer Review {index + 1}. Grade: {getGrade(rev.report)}</Typography>
+  //               </AccordionSummary>
+  //               <AccordionDetails>
+  //                   <div className={styles.details}>
+  //                   {index === loadRRSubmission ?
+  //                     rev.s3Link.includes('http') ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={rev.s3Link}></iframe> : <Typography>{rev.s3Link}</Typography>
+  //                     :
+  //                       <Button onClick={() => setLoadRRSubmission(index)}>Load Submission</Button>
+  //                     }
+
+  //                     <ReactMarkdown plugins={[gfm]} children={rev.report} />
+  //                   </div>
+  //               </AccordionDetails>
+  //             </Accordion>
+  //           )
+  //         }
+  //       </Container>
+  //       */}
+  //     <StudentViewOutline SetIsStudent={props.SetIsStudent}/>
+  //   </div>
+  // );
 }
 
 export default ViewAssignmentGradeComponent;

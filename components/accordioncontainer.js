@@ -70,6 +70,7 @@ function AccordionContainer(props) {
           
           return (
             <Accordion key={JSON.stringify(x)} className={styles.accordion} disableGutters
+            // <Accordion key={JSON.stringify(x)} className={styles.accordion} disableGutters
                 elevation={0}
                 sx={{
                   border: `10px solid #ff0000`,
@@ -78,8 +79,8 @@ function AccordionContainer(props) {
                   },
                   '&:before': {
                     display: 'none',
-                  },
-                }}>
+                  },}
+                  }>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} className={styles.accordionsummary}>
                   <div className={styles.name}>{x.name}</div>
                   <div className={styles.actionItem}>{x.actionItem}</div>
@@ -108,6 +109,7 @@ function AccordionContainer(props) {
   return (
     // <StyledEngineProvider injectFirst>
       <Table className={styles.tables}>
+      {/* <Table> */}
         <TableHead className={props.alert ? styles.alertheader : styles.header}>
           <TableRow>
             <TableCell className={styles.hcell}>{props.name}</TableCell>

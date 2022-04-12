@@ -26,6 +26,8 @@ function Grades(props) {
     })
   }, [courseId]);
 
+
+  console.log("graded assignemnt", gradedAssignments);
   const listContainer = (
     // <ListContainer
     <AccordionContainer

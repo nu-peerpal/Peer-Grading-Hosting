@@ -19,7 +19,7 @@ const SelectAssignment = (props) => {
   // const router = useRouter();
   const { userId, courseId, courseName, assignment } = useUserData();
   const [toDoReviews, setToDoReviews] = useState([]);
-  let {isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
+  let {name, isStudent, submissionId, id, rubricId, matchingId, subId, dueDate} = props;
 
   if (id == undefined) {
     id = "";
@@ -64,6 +64,7 @@ const SelectAssignment = (props) => {
     if (props.toDoReviews) {
       // return <ListContainer
       return <AccordionContainer
+        className={styles.inner_accordion}
         textIfEmpty="no peer reviews have been assigned"
         name={"Reviews for " + name}
         data={props.toDoReviews}
@@ -78,7 +79,7 @@ const SelectAssignment = (props) => {
 
   return (
     <div>
-        <StudentToDoList className={styles.accordion} toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
+        <StudentToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} />
         {/* <StudentViewOutline SetIsStudent={props.SetIsStudent} /> */}
     </div>
   );
