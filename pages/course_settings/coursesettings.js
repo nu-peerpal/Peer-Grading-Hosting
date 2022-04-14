@@ -39,6 +39,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import SubmitButton from '../../components/submitButton';
 import Alert from '@material-ui/lab/Alert';
 import Link from 'next/link'
+import { init } from "emailjs-com";
 
 const axios = require("axios");
 
@@ -255,8 +256,8 @@ function CourseSettings(props) {
       axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`),
       axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/courses/${courseId}`),
-      axios.get(`/api/assignments?courseId=${courseId}`),
-      axios.get(`/api/assignment_submissions?id=294`)
+      axios.get(`/api/assignments?courseId=${courseId}`)
+      //axios.get(`/api/assignment_submissions?id=294`)
       ]).then(data => {
         let assignmentData = data[0].data.data;
         console.log(assignmentData);
@@ -289,6 +290,7 @@ function CourseSettings(props) {
         initial.appealDueDate = toDate(initial.appealDueDate);
         console.log('initial pr due date', initial.prDueDate);
         console.log('initial appeal due date', initial.appealDueDate);
+        console.log('initial pull of course:',initial);
         /* initial.prDueDate = formatTimestamp(initial.prDueDate);
         initial.appealDueDate = formatTimestamp(initial.appealDueDate) */
         let canvasAssignments = [];
@@ -506,7 +508,7 @@ function CourseSettings(props) {
                     )}
                     MenuProps={MenuProps}
                   >
-                    {tas.map((name) => (
+                    {taNames.map((name) => (
                       <MenuItem key={name} value={name} >
                         <Checkbox checked={values.tas.indexOf(name) > -1} />
                         {name}
