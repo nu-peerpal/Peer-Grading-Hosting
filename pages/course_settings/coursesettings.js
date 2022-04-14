@@ -39,6 +39,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import SubmitButton from '../../components/submitButton';
 import Alert from '@material-ui/lab/Alert';
 import Link from 'next/link'
+import { init } from "emailjs-com";
 
 const axios = require("axios");
 
@@ -148,6 +149,7 @@ function CourseSettings(props) {
     prAssignmentName: "",
     prAssignmentGroup: "",
     prDueDate: "",
+    originalDueDate: "",
     rubric: "",
     appealDueDate: "",
     tas: [],
@@ -248,15 +250,15 @@ function CourseSettings(props) {
 
   useEffect(() => {
     if (courseId != "") {
-      console.log('courseId:',courseId)
+      console.log('courseId:', courseId)
       Promise.all([axios.get(`/api/assignments/${assignmentId}`),
       axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
       axios.get(`/api/canvas/rubrics?courseId=${courseId}`),
       axios.get(`/api/canvas/assignmentGroups?courseId=${courseId}`),
       axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/courses/${courseId}`),
-      axios.get(`/api/assignments?courseId=${courseId}`),
-      axios.get(`/api/assignment_submissions?id=294`)
+      axios.get(`/api/assignments?courseId=${courseId}`)
+        //axios.get(`/api/assignment_submissions?id=294`)
       ]).then(data => {
         let assignmentData = data[0].data.data;
         console.log(assignmentData);
@@ -287,8 +289,10 @@ function CourseSettings(props) {
         console.log('initial pr due date type:', typeof initial.prDueDate);
         initial.prDueDate = toDate(initial.prDueDate);
         initial.appealDueDate = toDate(initial.appealDueDate);
+        initial.originalDueDate = toDate(initial.originalDueDate);
         console.log('initial pr due date', initial.prDueDate);
         console.log('initial appeal due date', initial.appealDueDate);
+        console.log('initial pull of course:', initial);
         /* initial.prDueDate = formatTimestamp(initial.prDueDate);
         initial.appealDueDate = formatTimestamp(initial.appealDueDate) */
         let canvasAssignments = [];
@@ -317,33 +321,6 @@ function CourseSettings(props) {
         // name={"Settings for Course Using Assignment: " + assignments[0].name}
         name={"Settings for Course Using Assignment: " + currentAssignment}
       >
-        <TableCell
-          /* className={styles.name}  */
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            fontSize: '15pt',
-          }}>
-          Select Assigment in Course:
-          <FormControl variant="outlined" style={{ marginLeft: '15px' }}>
-            <InputLabel > Assignment </InputLabel>
-            <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              style={{ width: '200px' }}
-              name="assignment"
-              value={currentAssignment}
-              onChange={handleChange}
-            >
-              {assignments.map((name) => (
-                <MenuItem key={name} value={name} >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </TableCell>
         <div className={styles.below} >
         </div>
 
@@ -359,6 +336,7 @@ function CourseSettings(props) {
               let courseSettingsJson = {
                 appealDueDate: data.appealDueDate,
                 prDueDate: data.prDueDate,
+                originalDueDate: data.originalDueDate,
                 bonusPercent: data.bonusPercent,
                 matchingAlgo: "",
                 subGradeAlgo: "",
@@ -401,6 +379,7 @@ function CourseSettings(props) {
                   console.log('data1:', data)
                   console.log('data1 appeal due date:', data.appealDueDate)
                   console.log('data1 pr due date:', data.prDueDate)
+                  console.log('data original due date:',data.originalDueDate)
                 }
               }).catch(err => {
                 setSubmitResponse("Something went wrong.")
@@ -506,7 +485,7 @@ function CourseSettings(props) {
                     )}
                     MenuProps={MenuProps}
                   >
-                    {tas.map((name) => (
+                    {taNames.map((name) => (
                       <MenuItem key={name} value={name} >
                         <Checkbox checked={values.tas.indexOf(name) > -1} />
                         {name}
@@ -605,7 +584,26 @@ function CourseSettings(props) {
                         <div className={styles.column__content}>
                           Due date for the original assignment:
                           <div>
-                            <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p>
+                            {/* <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p> */}
+                            <TextField
+                              id="datetimelocal"
+                              name="originalDueDate"
+                              /* type="datetime-local" */
+                              type="datetime-local"
+                              /* defaultValue="2021-05-24T11:59" */
+                              value={values.originalDueDate}
+                              /* value={values.prDueDate} */
+                              onChange={handleChange}
+                              disabled={submitted}
+                              /* onChange={e => {
+                                values.prDueDate = e.target.value;
+                                console.log('values:', values);
+                                setPrDueDate(e.target.value + ":59-05:00")
+                              }} */ // hardcode CT, might have to change with time shift
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                            />
                           </div>
                           <div style={{ marginTop: '25px' }}>
                             Due date for the peer review assignment:
@@ -650,7 +648,7 @@ function CourseSettings(props) {
                             />
                           </div>
                           <div className={styles.left}>
-                    <div className={styles.rightBelow}>
+                            {/* <div className={styles.rightBelow}>
                       Number of Days from Original Due Date to Peer Review Due Date:
                       <div >
                         <Field
@@ -662,34 +660,35 @@ function CourseSettings(props) {
                           className={styles.formfield}
                           onKeyUp={handleChange}
                           disabled={submitted}
-                        /* onChange={e => {
+                        onChange={e => {
                           values.graderLoad = e.target.value;
                           setGraderLoad(e.target.value)
-                        }} */
+                        }} 
                         />
                       </div>
-                    </div>
-                  </div><div className={styles.left}>
-                    <div className={styles.rightBelow}>
-                      Number of Days from Peer Review Due Date to Appeal Due Date:
-                      <div >
-                        <Field
-                          name="prDueDateToAppealDueDate"
-                          type="input"
-                          value={values.prDateToAppealDate}
-                          required={true}
-                          as={TextField}
-                          className={styles.formfield}
-                          onKeyUp={handleChange}
-                          disabled={submitted}
-                        /* onChange={e => {
-                          values.graderLoad = e.target.value;
-                          setGraderLoad(e.target.value)
-                        }} */
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    </div> */}
+                          </div>
+                          {/* <div className={styles.left}>
+                            <div className={styles.rightBelow}>
+                              Number of Days from Peer Review Due Date to Appeal Due Date:
+                              <div >
+                                <Field
+                                  name="prDueDateToAppealDueDate"
+                                  type="input"
+                                  value={values.prDateToAppealDate}
+                                  required={true}
+                                  as={TextField}
+                                  className={styles.formfield}
+                                  onKeyUp={handleChange}
+                                  disabled={submitted}
+                                 onChange={e => {
+                                  values.graderLoad = e.target.value;
+                                  setGraderLoad(e.target.value)
+                                }} 
+                                />
+                              </div>
+                            </div>
+                          </div> */}
                         </div>
 
                       </div>

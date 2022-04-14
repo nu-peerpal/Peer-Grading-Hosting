@@ -62,6 +62,9 @@ module.exports = (sequelize, Sequelize) => {
     prDateToAppealDate: {
       type: Sequelize.INTEGER,
     },
+    originalDueDate: {
+      type: Sequelize.DATE,
+    }
   });
 
   // Courses.associate = (db) => {
