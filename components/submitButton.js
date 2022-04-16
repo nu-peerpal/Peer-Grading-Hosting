@@ -5,14 +5,14 @@ import Alert from '@material-ui/lab/Alert';
 
 const CanvasForm = (props) => {
     const [showAlert, setShowAlert] = useState(false);
-
+    console.log('canvasform props:',props);
     let alert = (
         <Alert style={{marginLeft: '5px'}} severity={props.submitSuccess ? "success" : "error"}>{props.submitAlert}</Alert>
     )
 
     return (
         <>
-      <Button color="primary" variant="outlined" onClick={()=>{
+      <Button color="primary" variant="contained" disabled={props.anyChanges} onClick={()=>{
           props.onClick().then(()=>setShowAlert(true));
         }}>
         {props.title}

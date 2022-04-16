@@ -25,7 +25,8 @@ function Appeals(props) {
   const [submitResponse, setSubmitResponse] = useState("");
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [peerReviews, setPeerReviews] = useState([]);
-  const [submitSuccess, setSubmitSuccess] = useState(true)
+  const [submitSuccess, setSubmitSuccess] = useState(true);
+  const [anyChanges, setAnyChanges] = useState("disable");
 
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
@@ -56,6 +57,7 @@ function Appeals(props) {
         setSubmitResponse("Deadline set.")
         setExistingDueDate(true);
         setSubmitSuccess(true);
+        setAnyChanges("disable");
       }
     }).catch(err => {
       setSubmitResponse("Something went wrong.")
@@ -78,13 +80,17 @@ function Appeals(props) {
                     name="appealDueDate"
                     id="datetime-local"
                     type="datetime-local"
-                    onChange={e => setAppealDueDate(e.target.value+":59-05:00")} // hardcode CT, might have to change with time shift
+                    onChange={e => {
+                      setAppealDueDate(e.target.value+":59-05:00") // hardcode CT, might have to change with time shift
+                      setAnyChanges("")}}
                     InputLabelProps={{
                     shrink: true,
                     }}
                   />
               </form>
-              <SubmitButton onClick={handleSubmit} title={existingDueDate ? "Update Deadline" : "Set Deadline"}
+              <SubmitButton onClick={handleSubmit} 
+                title={existingDueDate ? "Update Deadline" : "Set Deadline"} 
+                anyChanges={anyChanges}
                 submitAlert={submitResponse}
                 submitSuccess={submitSuccess}/>
             </div>

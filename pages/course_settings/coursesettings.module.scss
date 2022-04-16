@@ -1,5 +1,5 @@
-@import '../../../global_styles/colors.scss';
-@import "../../../global_styles/utilities.scss";
+@import '../../global_styles/colors.scss';
+@import "../../global_styles/utilities.scss";
 
 .column{
     width: 30%;
@@ -71,6 +71,14 @@
     width: '25ch';
 }
 
+.right {
+    margin-left: 5px 150px 0  !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 30px;
+}
+
 .submitContainer {
     display: flex;
     flex-direction: row;
@@ -83,3 +91,42 @@
     color: #000000;
     padding-left: 25px;
   }
+
+  .centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 17px;
+    color: #a4a4a4;
+    text-align: right !important;
+    padding-right: 50px;
+  }
+
+  .tables {
+    width: 100% !important;
+    //margin: 30px 5%;
+    border-spacing: 0px;
+    //border: 2px solid #e5e5e5;
+  }
+  
+  .header {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 19px;
+    line-height: 48px;
+    text-align: left;
+  
+    color: #000000;
+    background: #e5e5e5;
+  }
+  
+  .hcell {
+    padding-left: 20px; 
+  }
+
+  
