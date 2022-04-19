@@ -64,7 +64,13 @@ module.exports = (sequelize, Sequelize) => {
     },
     originalDueDate: {
       type: Sequelize.DATE,
-    }
+    },
+    prToOriginalTimeDelta: {
+      type: Sequelize.INTEGER
+    },
+    appealToOriginalTimeDelta: {
+      type: Sequelize.INTEGER
+    },
   });
 
   // Courses.associate = (db) => {

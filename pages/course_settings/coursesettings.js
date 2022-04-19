@@ -287,9 +287,13 @@ function CourseSettings(props) {
         initial.peerLoad = String(initial.peerLoad);
         initial.graderLoad = String(initial.graderLoad);
         console.log('initial pr due date type:', typeof initial.prDueDate);
+        console.log('raw format initial pr due date:', initial.prDueDate);
         initial.prDueDate = toDate(initial.prDueDate);
         initial.appealDueDate = toDate(initial.appealDueDate);
         initial.originalDueDate = toDate(initial.originalDueDate);
+        // initial.prDueDate = new Date(initial.prDueDate);
+        // initial.appealDueDate = new Date(initial.appealDueDate);
+        // initial.originalDueDate = new Date(initial.originalDueDate);
         console.log('initial pr due date', initial.prDueDate);
         console.log('initial appeal due date', initial.appealDueDate);
         console.log('initial pull of course:', initial);
@@ -333,6 +337,12 @@ function CourseSettings(props) {
             onSubmit={(data, { setSubmitting }) => {
               /* tas prop to general component */
               console.log('onsubmit data:', data)
+              const prDateObj = new Date(data.prDueDate);
+              const originalDateObj = new Date(data.originalDueDate);
+              const appealDateObj = new Date(data.appealDueDate);
+              const prToOriginalTimeDelta = prDateObj - originalDateObj;
+              const appealToOriginalTimeDelta = appealDateObj - prDateObj;
+              console.log('time deltas on submit:',prToOriginalTimeDelta,appealToOriginalTimeDelta) 
               let courseSettingsJson = {
                 appealDueDate: data.appealDueDate,
                 prDueDate: data.prDueDate,
@@ -350,6 +360,8 @@ function CourseSettings(props) {
                 matchingSettings: data.matchingSettings,
                 assignmentDateToPrDate: data.assignmentDateToPrDate,
                 prDateToAppealDate: data.prDateToAppealDate,
+                prToOriginalTimeDelta: prToOriginalTimeDelta,
+                appealToOriginalTimeDelta: appealToOriginalTimeDelta,
               };
               if (data.reviewRubric != -1) {
                 courseSettingsJson.reviewRubric = data.reviewRubric;
@@ -591,7 +603,8 @@ function CourseSettings(props) {
                               /* type="datetime-local" */
                               type="datetime-local"
                               /* defaultValue="2021-05-24T11:59" */
-                              value={values.originalDueDate}
+                              // value={values.originalDueDate.toLocaleString('en-US')}
+                              value={values.originalDueDate.toLocaleString('en-US')}
                               /* value={values.prDueDate} */
                               onChange={handleChange}
                               disabled={submitted}
@@ -613,6 +626,7 @@ function CourseSettings(props) {
                               /* type="datetime-local" */
                               type="datetime-local"
                               /* defaultValue="2021-05-24T11:59" */
+                              // value={values.prDueDate.toLocaleString('en-US')}
                               value={values.prDueDate}
                               /* value={values.prDueDate} */
                               onChange={handleChange}
