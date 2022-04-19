@@ -33,14 +33,39 @@ const InitialChecklist = (props) => {
   const [submitResponse, setSubmitResponse] = React.useState("");
   const [submitSuccess, setSubmitSuccess] = React.useState(true);
   // new info stop
-  let localDate = new Date(dueDate);
+  // let localDate = new Date(dueDate);
+  console.log("router due date", typeof dueDate);
+  let originalDueDate = new Date(dueDate);
   // const courseId = 1 // hardcoded
   // const assignmentId = 7
   // const assignmentName = "Peer Reviews Static"
   // console.log({rubricOptions});
 
+  function toDate(timestamp) {
+    var d = new Date(timestamp);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var currentHour = d.getHours();
+    if (currentHour < 10) {
+      currentHour = '0' + currentHour;
+    }
+    var currentMinute = d.getMinutes();
+    if (currentMinute < 10) {
+      currentMinute = '0' + currentMinute;
+    }
 
-  function toDate(timestamp,days) {
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute + ':59');
+    console.log('toDate date:', date);
+    return date;
+  }
+
+  /* function toDate(timestamp,days) {
     var d = new Date(timestamp);
     console.log('d:',d);
     d.setDate(d.getDate()+days);
@@ -63,7 +88,7 @@ const InitialChecklist = (props) => {
     var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute + ':59');
     console.log('toDate date:', date);
     return date;
-  }
+  } */
 
   async function uploadRubrics(rawRubrics) {
     console.log('Uploading Rubrics...')
@@ -192,9 +217,11 @@ const InitialChecklist = (props) => {
       let assignmentDateToPrDate = coursesData.assignmentDateToPrDate;
       let reviewRubric = coursesData.reviewRubric;
       let assignmentGroup = coursesData.assignmentGroup;
-      let peerReviewDate = dueDate;
+      let prToOriginalTimeDelta = Number(coursesData.prToOriginalTimeDelta);
+      // console.log("time delta", dueDate.getTime());
+      let peerReviewDate = new Date(originalDueDate.getTime() + prToOriginalTimeDelta);
       console.log(peerReviewDate)
-      peerReviewDate = toDate(peerReviewDate,assignmentDateToPrDate);
+      peerReviewDate = toDate(peerReviewDate);
       setPrDueDate(peerReviewDate);
       setPrGroup(assignmentGroup);
       setRubricId(reviewRubric);
@@ -244,7 +271,8 @@ const InitialChecklist = (props) => {
             <div className={styles.column__content}>
               Due date for the original assignment:
               <div>
-                <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p>
+                <p>{(originalDueDate.getMonth() + 1) + '/' + originalDueDate.getDate() + '/' + originalDueDate.getFullYear() + ' ' + originalDueDate.getHours() + ':' + originalDueDate.getMinutes()+ ':' + originalDueDate.getSeconds()}</p>
+                {/* <p>{toDate(originalDueDate)}</p> */}
               </div>
               <div style={{marginTop: '25px'}}>
               Due date for the peer review assignment:
