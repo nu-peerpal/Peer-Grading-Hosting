@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./styles/submissionview.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -20,120 +20,243 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
+import BarChart from "./BarChart";
 import { palette } from '@material-ui/system';
 const axios = require("axios");
 import _ from "lodash";
 
-class SubmissionCompleted extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
+/*
+DOCUMENTATION:
+
+review = peer reviews,
+taReviewReview = instructor grades & ta reviews,
+rubric = the rubric (categories & explanations)
+
+from JSON (in peerreview.js): 
+  review = matchingData.review.reviewBody (matchingData <- `/api/peerReviews/${matchingId}`)
+  taReviewReview = matchingData.reviewReview
+  rubric = rubricData.rubric (rubricData <- `/api/rubrics/${rubricId}`)
+*/
+
+const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, submission, isDocument, rubric, subId, review, disabled }) => {
+  var gradingrubric = [];
+  rubric.map((x) => gradingrubric.push(x));
+
+  const taReviewReport = taReviewReview;
+  const barChartEl = useRef()
+  const [selectedComment, setSelectedComment] = useState([0,0])
+
+  const handleBarClick = (e) => {
+    e.preventDefault()
+    console.log("Bar clicked")
+
+    const elem = e.currentTarget;
+    const barChart = elem.children[0];
+    console.log(thing)
   }
-  render() {
-    var gradingrubric = [];
-    this.props.rubric.map((x) => gradingrubric.push(x));
 
-    const taReviewReport = this.props.taReviewReview;
+  const sendCommentToParent = (comment) => {
+    setSelectedComment(comment)
+  }
 
-    console.log({taReviewReport});
+  // scroll new comment into view whenever selected comment changes
+  useEffect(() => {
+    let commentId = `${selectedComment[0]==0 ? "peer" : "ta"}-comment-${selectedComment[1]}`
+    console.log(commentId)
+    const comment = document.getElementById(commentId)
+    if (comment) {
+      comment.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
 
-    return (
-      <div className={styles.sub}>
-      <Container>
-      { (taReviewReport && taReviewReport.reviewBody) ?
-        <Box bgcolor="#f73378">
-          <br />
-              <div className={styles.report}>
-                  Your peer review has been assessed as follows:
-              </div>
-              <br />
-            <div className={styles.peerreviewscore}>
-              Review Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))}
+    // set timeout and remove class
+    setTimeout(function() {
+      if (comment) comment.className = ""
+    }, 2000)
+
+  }, [selectedComment])
+
+  return (
+    <div className={styles.sub}>
+    <Container>
+    { (taReviewReport && taReviewReport.reviewBody) ?
+
+      // if TA completed review, scores are shown in table below
+      <Box bgcolor="#f73378">
+        <br />
+            <div className={styles.report}>
+                Your peer review has been assessed as follows:
             </div>
-              <br />
-          <TableContainer component={Paper}>
-              <Table aria-label='spanning table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Criteria <span className={styles.btw}></span></TableCell>
-                    <TableCell align='center'>Comments</TableCell>
-                    <TableCell align='center'>Scores</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {taReviewReport.reviewBody.map((row, index) => (
-                    <TableRow key={`review-report-${index}`}>
-                      {/* cells for criteria */}
-                      <TableCell>
-                          <div>
-                            {row.element}
-                          </div>
-                      </TableCell>
-
-                      {/* row for comments */}
-                      <TableCell style={{ width: 600 }}>
-                        <div className={`${styles.grader} ${styles.comments}`}>
-                          {row.comment}
+            <br />
+          <div className={styles.peerreviewscore}>
+            Review Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))}
+          </div>
+            <br />
+        <TableContainer component={Paper}>
+            <Table aria-label='spanning table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Criteria <span className={styles.btw}></span></TableCell>
+                  <TableCell align='center'>Comments</TableCell>
+                  <TableCell align='center'>Scores</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {taReviewReport.reviewBody.map((row, index) => (
+                  <TableRow key={`review-report-${index}`}>
+                    {/* cells for criteria */}
+                    <TableCell>
+                        <div>
+                          {row.element}
                         </div>
-                      </TableCell>
-
-                      {/* cells for grades */}
-                      <TableCell style={{ width: 100 }} align='center'>
-                        <div className={styles.grader}>
-                          <nobr>{row.points} / {row.maxPoints}</nobr>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell className={styles.save} style={{ color: "black" }}>
-                      <nobr>Total Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))} / {_.sum(taReviewReport.reviewBody.map(({maxPoints}) => maxPoints))}</nobr>
                     </TableCell>
-                    <TableCell
-                      id='submitted'
-                      className={styles.save}
-                      style={{ color: "green", display: "none" }}
-                    >
-                      Submitted
+
+                    {/* row for comments */}
+                    <TableCell style={{ width: 600 }}>
+                      <div className={`${styles.grader} ${styles.comments}`}>
+                        {row.comment}
+                      </div>
+                    </TableCell>
+
+                    {/* cells for grades */}
+                    <TableCell style={{ width: 100 }} align='center'>
+                      <div className={styles.grader}>
+                        <nobr>{row.points} / {row.maxPoints}</nobr>
+                      </div>
                     </TableCell>
                   </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-        </Box>
-        :
-        null
-      }
-      </Container>
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell className={styles.save} style={{ color: "black" }}>
+                    <nobr>Total Score: {_.sum(taReviewReport.reviewBody.map(({points}) => points))} / {_.sum(taReviewReport.reviewBody.map(({maxPoints}) => maxPoints))}</nobr>
+                  </TableCell>
+                  <TableCell
+                    id='submitted'
+                    className={styles.save}
+                    style={{ color: "green", display: "none" }}
+                  >
+                    Submitted
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+      </Box>
+      :
+      <div></div>
+    }
+    </Container>
+    <br />
+    <br />
+    <Accordion defaultExpanded={true} className={styles.acc}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          Submission {subId} (click to show/hide submission)
+        </AccordionSummary>
+        <AccordionDetails>
+          {isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={submission.s3Link}></iframe> : <Typography>{submission.s3Link}</Typography>}
+        </AccordionDetails>
+    </Accordion>
       <br />
       <br />
-      <Accordion defaultExpanded={true} className={styles.acc}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Submission {this.props.subId} (click to show/hide submission)
-          </AccordionSummary>
-          <AccordionDetails>
-            {this.props.isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={this.props.submission.s3Link}></iframe> : <Typography>{this.props.submission.s3Link}</Typography>}
-          </AccordionDetails>
-      </Accordion>
-        <br />
-        <br />
-        <div className={styles.peerreviewreport}>
-          { (taReviewReport && taReviewReport.instructorGrades)
-            ? "Compare your review for this submission with the TA review below:"
-            : "Your Review"
-          }
-        </div>
-        <br />
-        {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled, taReviewReport)}
+      <div className={styles.peerreviewreport}>
+        { (taReviewReport && taReviewReport.instructorGrades)
+          ? "Compare your review for this submission with the TA review below:"
+          : "Your Review"
+        }
       </div>
-    );
-  }
+      <br />
+      {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
+      <div className={styles.submissiondata}>
+        <div style={{ width: "40%" }}>
+          <BarChart 
+            id="bar-chart" 
+            className={styles.barchart} 
+            chartData={formatChartData(rubric, review, taReviewReport)}
+            passSelectedComment={sendCommentToParent} 
+          />
+        </div>
+        <div className={styles.commentField}>
+          {displayComments(review, taReviewReport, selectedComment)}
+        </div>
+      </div>
+
+    </div>
+  );
 }
 
 export default SubmissionCompleted;
 
+const displayComments = (peerReview, taReview, selectedComment) => {
+  // the comments for each category given by peers and TA's
+  const peerComments = peerReview ? peerReview.scores.map(score => score[1]) : []
+  const taComments = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.comment) : []
+
+  // dynamically add/remove className based on current selectedComment
+  return peerComments.map((peerComment, i) => (
+    <div key={`comment-${i}`}>
+      <p className={`${selectedComment[0]==0 && selectedComment[1]==i ? styles.highlightedComment : ""}`} id={`peer-comment-${i}`}>{peerComment} {i}</p>
+      <p className={`${selectedComment[0]==1 && selectedComment[1]==i ? styles.highlightedComment : ""}`} id={`ta-comment-${i}`}>{taComments[i]} {i}</p>
+    </div>
+  ))
+}
+
+// manipulate the review data to display properly on the bar chart
+const formatChartData = (rubric, peerReview, taReview) => {
+
+  // labels and max points for each graded category
+  const labels = rubric ? rubric.map(category => category.description) : []
+  const maxPoints = rubric ? rubric.map(category => category.points) : []
+
+  // the actual points data to display
+  const peerGrades = peerReview ? peerReview.scores.map(score => score[0]) : []
+  const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
+
+  // colors for the peer/ta bars
+  const peerBackgroundColors = Array(peerGrades.length).fill("rgba(79, 38, 131, 0.4)")
+  const taBackgroundColors = Array(peerGrades.length).fill("rgba(255, 198, 47, 0.4)")
+
+  // data to pass into bar chart component
+  const chartProp = {
+    labels: labels,
+    datasets: [{
+      label: "Peer Grade",
+      data: peerGrades,
+      backgroundColor: peerBackgroundColors,
+      hoverBackgroundColor: ["rgba(79, 38, 131, 1.0)"],
+      borderColor: "rgba(79, 38, 131, 1)",
+      borderWidth: 2,
+      categoryPercentage: 0.8,
+      barPercentage: 1.0,
+      grouped: true,
+    }, {
+      label: "TA Grade",
+      data: taGrades,
+      backgroundColor: taBackgroundColors,
+      hoverBackgroundColor: ["rgba(255, 198, 47, 1.0)"],
+      borderColor: "rgba(255, 198, 47, 1)",
+      borderWidth: 2,
+      categoryPercentage: 0.8,
+      barPercentage: 1.0,
+      grouped: true,
+    }, {
+      label: "Max Points",
+      data: maxPoints,
+      borderColor: "rgba(0, 0, 0, 1)",
+      borderWidth: 0,
+      categoryPercentage: 0.88,
+      grouped: false,
+    }
+  ]
+  };
+
+  return chartProp;
+};
+
+// get the initial values from the peer reviews (the comments and grades given)
 function getInitialValues(rubric, review) {
   var len = rubric.length;
   var comments = [];
@@ -153,6 +276,7 @@ function getInitialValues(rubric, review) {
   return { Grades: grades, Comments: comments, FinalComment: finalcomment };
 }
 
+// Helper Functions for grading calculations
 function getMaxScore(rubric) {
   return _.sum(rubric.map(({points}) => points));
 }
@@ -171,8 +295,9 @@ function getFinalScore(data, rubric) {
   return body;
 }
 
-function Grading(rubric, matching, review, disabled, taReviewReport) {
-    var initialValues = getInitialValues(rubric, review);
+// Sub-component rendered inside of SubmissionCompleted
+const Grading = (rubric, matching, review, disabled, taReviewReport) => {
+  var initialValues = getInitialValues(rubric, review);
   var maxScore = getMaxScore(rubric);
 
   return (
@@ -252,11 +377,11 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
                             {/* cells for grades */}
                             <TableCell style={{ width: 100 }} align='center'>
                               <div className={`${styles.details} ${styles.grader}`}>
-                                <nobr>{taReviewReport.instructorGrades.[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
+                                <nobr>{taReviewReport.instructorGrades[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
                               </div>
                             </TableCell>
                           </TableRow>)
-                        : null
+                        : <div></div>
                     }
                   </React.Fragment>
                 ))}

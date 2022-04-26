@@ -143,3 +143,30 @@
       margin: 0 !important;
   }
 }
+
+.submissiondata {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 2px dashed blue;
+
+  & > p {
+    width: 25%;
+    text-align: center;
+  }
+
+  .commentField {
+
+
+    .highlightedComment {
+      border: 2px dashed red;
+    }
+  }
+  
+}
+
+// .barchart {
+//   width: 50%;
+//   border: 2px dashed red;
+// }
