@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
-import Submission from "../../components/submissionview";
-import SubmissionCompleted from "../../components/submissionviewcompleted"
+import Submission from "../../components/submissionVisualization/submissionview";
+import SubmissionCompleted from "../../components/submissionVisualization/submissionviewcompleted"
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
