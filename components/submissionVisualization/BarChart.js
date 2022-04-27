@@ -25,10 +25,6 @@ const BarChart = ({ chartData, passSelectedComment }) => {
     }
   }, [])
 
-  // const sendCommentToParent = () => {
-
-  // }
-
   // select the bar for corresponding comment to scroll to view
   const selectBar = evt => {
     if (chartRef.current) {
@@ -54,6 +50,7 @@ const BarChart = ({ chartData, passSelectedComment }) => {
     }
   }
 
+  // NOT WORKING
   const setBackgroundColors = (chart, clickedElement) => {
     // reset backgrounds
     const dataLength = chart.data.labels.length

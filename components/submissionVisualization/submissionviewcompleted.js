@@ -39,6 +39,11 @@ from JSON (in peerreview.js):
   rubric = rubricData.rubric (rubricData <- `/api/rubrics/${rubricId}`)
 */
 
+const PEER_INACTIVE_BAR_COLOR = "rgba(79, 38, 131, 0.4)"
+const PEER_ACTIVE_BAR_COLOR = "rgba(79, 38, 131, 1.0)" 
+const TA_INACTIVE_BAR_COLOR = "rgba(255, 198, 47, 0.4)"
+const TA_ACTIVE_BAR_COLOR = "rgba(255, 198, 47, 1.0)"
+
 const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, submission, isDocument, rubric, subId, review, disabled }) => {
   var gradingrubric = [];
   rubric.map((x) => gradingrubric.push(x));
@@ -56,6 +61,7 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
     let commentId = `${selectedComment[0]==0 ? "peer" : "ta"}-comment-${selectedComment[1]}`
     console.log(commentId)
     const comment = document.getElementById(commentId)
+    console.log(comment)
     if (comment) {
       comment.scrollIntoView({
         behavior: "smooth",
@@ -167,14 +173,17 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
       <div className={styles.submissiondata}>
         <div className={styles.barChart}>
-          <p>Click on the Bar Graph to find the corresponding comment:</p>
+          <p>Click on the Bar Graph to view the corresponding comment:</p>
           <BarChart 
             id="bar-chart" 
             className={styles.barchart} 
             chartData={formatChartData(rubric, review, taReviewReport)}
             passSelectedComment={sendCommentToParent} 
           />
-          <p>TOTAL SCORE: 30 / 30</p>
+          <div>
+            <p>YOUR TOTAL SCORE: X / {getMaxScore(rubric)}</p>
+            <p>TA TOTAL SCORE: X / {getMaxScore(rubric)}</p>
+          </div>
         </div>
         <div className={styles.commentsField}>
           <SubmissionComments peerReview={review} taReview={taReviewReport} selectedComment={selectedComment} rubric={rubric}/>
@@ -199,8 +208,8 @@ const formatChartData = (rubric, peerReview, taReview) => {
   const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
 
   // colors for the peer/ta bars
-  const peerBackgroundColors = Array(peerGrades.length).fill("rgba(79, 38, 131, 0.4)")
-  const taBackgroundColors = Array(peerGrades.length).fill("rgba(255, 198, 47, 0.4)")
+  const peerBackgroundColors = Array(peerGrades.length).fill(PEER_INACTIVE_BAR_COLOR)
+  const taBackgroundColors = Array(peerGrades.length).fill(TA_INACTIVE_BAR_COLOR)
 
   // data to pass into bar chart component
   const chartProp = {
@@ -209,8 +218,8 @@ const formatChartData = (rubric, peerReview, taReview) => {
       label: "Peer Grade",
       data: peerGrades,
       backgroundColor: peerBackgroundColors,
-      hoverBackgroundColor: ["rgba(79, 38, 131, 1.0)"],
-      borderColor: "rgba(79, 38, 131, 1)",
+      hoverBackgroundColor: [PEER_ACTIVE_BAR_COLOR],
+      borderColor: PEER_ACTIVE_BAR_COLOR,
       borderWidth: 2,
       categoryPercentage: 0.8,
       barPercentage: 1.0,
@@ -219,8 +228,8 @@ const formatChartData = (rubric, peerReview, taReview) => {
       label: "TA Grade",
       data: taGrades,
       backgroundColor: taBackgroundColors,
-      hoverBackgroundColor: ["rgba(255, 198, 47, 1.0)"],
-      borderColor: "rgba(255, 198, 47, 1)",
+      hoverBackgroundColor: [TA_ACTIVE_BAR_COLOR],
+      borderColor: TA_ACTIVE_BAR_COLOR,
       borderWidth: 2,
       categoryPercentage: 0.8,
       barPercentage: 1.0,

@@ -157,25 +157,29 @@
   align-items: center;
   height: 500px;
 
+  border-radius: 0.25rem;
+  box-shadow: 0px 0px 15px lightgray;
+
   .barChart {
     grid-area: barChart;
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-items: center;
     margin: 0 1rem 0 0; 
-    border: 2px dahsed blue;
+    height: 100%;
+    padding: 1rem;
   }
 
   .commentsField {
     grid-area: commentsField;
+
     max-height: 100%;
-    overflow: scroll;
-    border: 1px solid gray;
+    overflow-y: scroll;
     border-radius: 0.25rem;
     margin: 0 0 0 1rem;
-    box-shadow: 0px 2px 5px lightgray;
-
+    box-shadow: 0px 0px 15px lightgray;
 
     .commentLabel {
       color: white;
@@ -186,55 +190,63 @@
       margin: auto;
       padding: 0.5rem;
 
-      grid-area: commentLabel;
       text-align: center;
-      // transform: rotate(-90deg);
     }
+
+    $PEER_ACTIVE_COLOR: rgba(79, 38, 131, 1.0);
+    $PEER_INACTIVE_COLOR: rgba(79, 38, 131, 0.4);
+    $TA_ACTIVE_COLOR: rgba(255, 198, 47, 1.0);
+    $TA_INACTIVE_COLOR: rgba(255, 198, 47, 0.4);
 
     .contentContainer {
       display: flex;
       flex-direction: column;
       font-family: monospace;
 
-      // grid-template-columns: 1fr 5fr;
-      // grid-template-rows: auto auto;
-      // grid-template-areas: 
-      //   "commentLabel peerComment"
-      //   "commentLabel taComment";
-
-      .selectedComment {
-        // border: 2px dotted red;
+      .selectedComment > p {
+        text-shadow: 0px 0px 5px lightgray;
         transform: scale(1.05);
         font-weight: 900;
-        font-size: x-large;
-        text-shadow: 0px 0px 5px lightgray;
-
-        transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;          
+        transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
+        border: none;
+        text-align: center;
       }
-  
-      .unselectedComment {
+
+      .unselectedComment > p {
+        text-shadow: 0px 0px 0px lightgray;
         transform: scale(1);
         font-weight: 400;
-        font-size: x-large;
-        text-shadow: 0px 0px 0px lightgray;
         transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
+        border: none;
+        text-align: center;
+      }
+
+      .selectedComment.peerComment{
+        border-left: 20px solid $PEER_ACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+
+      .selectedComment.taComment{
+        border-left: 20px solid $TA_ACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+  
+      .unselectedComment.peerComment{
+        border-left: 20px solid $PEER_INACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+
+      .unselectedComment.taComment{
+        border-left: 20px solid $TA_INACTIVE_COLOR;
+        transition: border 0.3s; 
       }
 
       .peerComment {
-        grid-area: peerComment;
-
-        display: grid;
-        text-align: center;
-        border-left: 20px solid rgba(79, 38, 131, 0.2);
-        border-bottom: 2px solid lightgray;
-        
+        border-bottom: 1px solid lightgray;
       }
 
       .taComment {
-        grid-area: taComment;
-        text-align: center;
-        border-left: 20px solid rgba(255, 198, 47, 0.2);
-        // border: 2px dotted red;
+        border-top: 1px solid lightgray;
       }
 
     }
@@ -243,10 +255,3 @@
 
 
 }
-  
-
-
-// .barchart {
-//   width: 50%;
-//   border: 2px dashed red;
-// }
