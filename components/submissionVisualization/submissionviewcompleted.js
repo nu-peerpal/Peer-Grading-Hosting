@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styles from "./styles/submissionview.module.scss";
+import styles from "../styles/submissionview.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -21,6 +21,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import BarChart from "./BarChart";
+import SubmissionComments from "./SubmissionComments";
 import { palette } from '@material-ui/system';
 const axios = require("axios");
 import _ from "lodash";
@@ -44,16 +45,7 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
 
   const taReviewReport = taReviewReview;
   const barChartEl = useRef()
-  const [selectedComment, setSelectedComment] = useState([0,0])
-
-  const handleBarClick = (e) => {
-    e.preventDefault()
-    console.log("Bar clicked")
-
-    const elem = e.currentTarget;
-    const barChart = elem.children[0];
-    console.log(thing)
-  }
+  const [selectedComment, setSelectedComment] = useState([])
 
   const sendCommentToParent = (comment) => {
     setSelectedComment(comment)
@@ -73,7 +65,10 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
 
     // set timeout and remove class
     setTimeout(function() {
-      if (comment) comment.className = ""
+      if (comment) {
+        comment.classList.remove(styles.selectedComment)
+        comment.classList.add(styles.unselectedComment)
+      }
     }, 2000)
 
   }, [selectedComment])
@@ -171,16 +166,18 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       <br />
       {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
       <div className={styles.submissiondata}>
-        <div style={{ width: "40%" }}>
+        <div className={styles.barChart}>
+          <p>Click on the Bar Graph to find the corresponding comment:</p>
           <BarChart 
             id="bar-chart" 
             className={styles.barchart} 
             chartData={formatChartData(rubric, review, taReviewReport)}
             passSelectedComment={sendCommentToParent} 
           />
+          <p>TOTAL SCORE: 30 / 30</p>
         </div>
-        <div className={styles.commentField}>
-          {displayComments(review, taReviewReport, selectedComment)}
+        <div className={styles.commentsField}>
+          <SubmissionComments peerReview={review} taReview={taReviewReport} selectedComment={selectedComment} rubric={rubric}/>
         </div>
       </div>
 
@@ -189,20 +186,6 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
 }
 
 export default SubmissionCompleted;
-
-const displayComments = (peerReview, taReview, selectedComment) => {
-  // the comments for each category given by peers and TA's
-  const peerComments = peerReview ? peerReview.scores.map(score => score[1]) : []
-  const taComments = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.comment) : []
-
-  // dynamically add/remove className based on current selectedComment
-  return peerComments.map((peerComment, i) => (
-    <div key={`comment-${i}`}>
-      <p className={`${selectedComment[0]==0 && selectedComment[1]==i ? styles.highlightedComment : ""}`} id={`peer-comment-${i}`}>{peerComment} {i}</p>
-      <p className={`${selectedComment[0]==1 && selectedComment[1]==i ? styles.highlightedComment : ""}`} id={`ta-comment-${i}`}>{taComments[i]} {i}</p>
-    </div>
-  ))
-}
 
 // manipulate the review data to display properly on the bar chart
 const formatChartData = (rubric, peerReview, taReview) => {
