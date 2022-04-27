@@ -5,8 +5,8 @@
   "private": true,
   "babelrc": false,
   "engines": {
-    "npm": "8.6.0",
-    "node": "14.17.3"
+    "npm": "8.5.5",
+    "node": "16.15.0"
   },
   "scripts": {
     "dev": "set NODE_ENV=development && node ./main.js",
