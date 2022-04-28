@@ -171,16 +171,15 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       </div>
       <br />
       {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
-      <div className={styles.submissiondata}>
-        <div className={styles.barChart}>
-          <p>Click on the Bar Graph to view the corresponding comment:</p>
+      <div className={styles.submissionData}>
+        <div className={styles.chartContainer}>
+          <p className={styles.commentInstructions}>Click on the Bar Graph to view the corresponding comment:</p>
           <BarChart 
             id="bar-chart" 
-            className={styles.barchart} 
             chartData={formatChartData(rubric, review, taReviewReport)}
             passSelectedComment={sendCommentToParent} 
           />
-          <div>
+          <div className={styles.scoresField}>
             <p>YOUR TOTAL SCORE: X / {getMaxScore(rubric)}</p>
             <p>TA TOTAL SCORE: X / {getMaxScore(rubric)}</p>
           </div>

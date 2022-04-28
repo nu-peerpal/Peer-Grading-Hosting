@@ -144,13 +144,13 @@
   }
 }
 
-.submissiondata {
+.submissionData {
   margin-top: 1rem;
 
   display: grid;
   grid-template-columns: 6fr 10fr;
   grid-template-rows: auto;
-  grid-template-areas: "barChart commentsField";
+  grid-template-areas: "chartContainer commentsField";
 
   flex-direction: row;
   justify-content: space-evenly;
@@ -160,8 +160,8 @@
   border-radius: 0.25rem;
   box-shadow: 0px 0px 15px lightgray;
 
-  .barChart {
-    grid-area: barChart;
+  .chartContainer {
+    grid-area: chartContainer;
 
     display: flex;
     flex-direction: column;
@@ -170,6 +170,19 @@
     margin: 0 1rem 0 0; 
     height: 100%;
     padding: 1rem;
+
+    width: 450px;
+
+    .commentInstructions {
+      text-align: center;
+      padding: 0.25rem;
+    }
+
+    .scoresField {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
   }
 
   .commentsField {
@@ -186,7 +199,7 @@
       background-color: gray;
       max-height: 50px;
       min-width: 300px;
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
       padding: 0.5rem;
 
@@ -250,8 +263,28 @@
       }
 
     }
+  }
+}
 
+@media only screen and (max-width: 1124px) {
+  .submissionData {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    .commentsField {
+      margin: 0;
+      width: 100%;
+    }
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .chartContainer {
+    max-width: 350px;
   }
 
-
 }
+
+
