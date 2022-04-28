@@ -39,21 +39,25 @@ from JSON (in peerreview.js):
   rubric = rubricData.rubric (rubricData <- `/api/rubrics/${rubricId}`)
 */
 
-const PEER_INACTIVE_BAR_COLOR = "rgba(79, 38, 131, 0.4)"
-const PEER_ACTIVE_BAR_COLOR = "rgba(79, 38, 131, 1.0)" 
-const TA_INACTIVE_BAR_COLOR = "rgba(255, 198, 47, 0.4)"
-const TA_ACTIVE_BAR_COLOR = "rgba(255, 198, 47, 1.0)"
+const PEER_INACTIVE_BAR_COLOR = "rgba(79, 38, 131, 0.4)";
+const PEER_ACTIVE_BAR_COLOR = "rgba(79, 38, 131, 1.0)" ;
+const TA_INACTIVE_BAR_COLOR = "rgba(255, 198, 47, 0.4)";
+const TA_ACTIVE_BAR_COLOR = "rgba(255, 198, 47, 1.0)";
+const DEFAULT_COMMENT = [];
 
 const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, submission, isDocument, rubric, subId, review, disabled }) => {
   var gradingrubric = [];
   rubric.map((x) => gradingrubric.push(x));
 
   const taReviewReport = taReviewReview;
-  const barChartEl = useRef()
-  const [selectedComment, setSelectedComment] = useState([])
+    // selectedComment = [peer=0/ta comment=1, label index] - the current comment brought to view
+  const [selectedComment, setSelectedComment] = useState(DEFAULT_COMMENT)
+  // triggers useEffect whenever boolean value is flipped - allows selectedComment to be reset w/in useEffect
+  const [commentChange, setCommentChange] = useState(true)
 
   const sendCommentToParent = (comment) => {
     setSelectedComment(comment)
+    setCommentChange(!commentChange)
   }
 
   // scroll new comment into view whenever selected comment changes
@@ -74,10 +78,11 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       if (comment) {
         comment.classList.remove(styles.selectedComment)
         comment.classList.add(styles.unselectedComment)
+        setSelectedComment(DEFAULT_COMMENT)
       }
     }, 2000)
 
-  }, [selectedComment])
+  }, [commentChange])
 
   return (
     <div className={styles.sub}>

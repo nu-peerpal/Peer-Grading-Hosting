@@ -10,18 +10,15 @@ const PEER_INACTIVE_BAR_COLOR = "rgba(79, 38, 131, 0.4)"
 const PEER_ACTIVE_BAR_COLOR = "rgba(79, 38, 131, 1.0)" 
 const TA_INACTIVE_BAR_COLOR = "rgba(255, 198, 47, 0.4)"
 const TA_ACTIVE_BAR_COLOR = "rgba(255, 198, 47, 1.0)"
-const DEFAULT_SELECTED_COMMENT = [0,0]
 
 const BarChart = ({ chartData, passSelectedComment }) => {
 
   const chartRef = useRef()
-  // selectedComment = [peer=0/ta comment=1, label index] - the current comment brought to view
-  const [selectedComment, setSelectedComment] = useState(DEFAULT_SELECTED_COMMENT)
 
   // useEffect cleanup function - potential memory leak fix
   useEffect(() => {
     return () => {
-      setSelectedComment(DEFAULT_SELECTED_COMMENT)
+
     }
   }, [])
 
@@ -40,9 +37,8 @@ const BarChart = ({ chartData, passSelectedComment }) => {
       // change new selected comment only if we click on a peer or ta bar (datasetIndex == 2 indicates "Max Points" bar)
       let newSelectedComment = clickedElement && clickedElement.datasetIndex < 2 
                                   ? [clickedElement.datasetIndex, clickedElement.index] 
-                                  : DEFAULT_SELECTED_COMMENT
+                                  : []
 
-      setSelectedComment(newSelectedComment)
       // pass new selected comment to parent
       passSelectedComment(newSelectedComment)
 
