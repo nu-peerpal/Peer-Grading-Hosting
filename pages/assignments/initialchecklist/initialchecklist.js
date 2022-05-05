@@ -125,21 +125,24 @@ const InitialChecklist = (props) => {
     }
     //rubric = rubricGroup
     console.log('initialchecklist prduedate:', prDueDate);
+    // setPrDueDate("2021-05-01T11:59:00Z");
+    
     const reviewAssignment = {
       courseId: courseId,
       assignmentName: assignmentName,
       prName: prName,
-      prDueDate: new Date(prDueDate).toISOString(),
+      prDueDate: prDueDate,
+      // prDueDate: "2021-05-01T11:59:00Z",
       prGroup: prGroup,
       rubric: rubric
     }
-    console.log('prGroup:',prGroup)
-    console.log('rubric:',rubric)
-    console.log('rubricId:',rubricId)
-    console.log('prduedate:',prDueDate)
-    console.log(typeof prDueDate)
-    console.log('prGroup:',prGroup);
-    console.log('rubric',rubric);
+    console.log('courseId type:', typeof courseId, courseId)
+    console.log('assignment name type:', typeof assignmentName, assignmentName)
+    console.log('prName type:', typeof prName, prName)
+    console.log('prGroup type:', typeof prDueDate, prDueDate)
+    console.log('prGroup type:', typeof prGroup, prGroup)
+    console.log('rubric type:', typeof rubric, rubric)
+    console.log('reviewAssignment:',reviewAssignment)
     let reviewAssignmentRes = await axios.post(`/api/canvas/createReviewAssignment`, reviewAssignment).then(assignment => {
       assignment = assignment.data.data
       console.log({assignment})
@@ -226,6 +229,7 @@ const InitialChecklist = (props) => {
       setPrGroup(assignmentGroup);
       setRubricId(reviewRubric);
       console.log('peerreviewdate:',peerReviewDate)
+      console.log('rubricId:',rubricId)
     })
     // setDueDate(null)
 

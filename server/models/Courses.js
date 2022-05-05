@@ -56,19 +56,19 @@ module.exports = (sequelize, Sequelize) => {
     appealDueDate: {
       type: Sequelize.DATE,
     },
-    assignmentDateToPrDate: {
+    /* assignmentDateToPrDate: {
       type: Sequelize.INTEGER,
     },
     prDateToAppealDate: {
       type: Sequelize.INTEGER,
-    },
+    }, */
     originalDueDate: {
       type: Sequelize.DATE,
     },
     prToOriginalTimeDelta: {
       type: Sequelize.INTEGER
     },
-    appealToOriginalTimeDelta: {
+    appealToPrTimeDelta: {
       type: Sequelize.INTEGER
     },
   });

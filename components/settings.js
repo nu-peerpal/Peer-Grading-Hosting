@@ -61,14 +61,16 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
     const { userId, courseId, courseName, assignment } = useUserData();
     const classes = useStyles();
     const [initialData, setInitialData] = useState({
-      /* peerLoad: "",
+      peerLoad: "",
       graderLoad: "",
-      tas: [], */
+      tas: [],
     });
 
     useEffect(() => {
       // get and parse canvas data (users, submissionos, groups)to run peerMatch algorithm
-      Promise.all([axios.get(`/api/canvas/users?courseId=${courseId}`),
+      Promise.all([
+      //axios.get(`/api/canvas/users?courseId=${courseId}`),
+      axios.get(`/api/users?courseId=${courseId}&enrollment=TaEnrollment&enrollment=InstructorEnrollment`),
       axios.get(`/api/canvas/submissions?courseId=${courseId}&assignmentId=${router.query.assignmentId}`),
       axios.get(`/api/courses/${courseId}`)]).then((canvasData) => {
         console.log('canvas data:',canvasData);
@@ -77,6 +79,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         let coursesData = canvasData[2].data.data;
         setSubmissionData(tempSubmissionData); //used for pushing submissions later
         // separate users, compile data for alg call
+        console.log("users", tempUsers)
         let graderData = tempUsers.filter(user => user.enrollment == "TaEnrollment" || user.enrollment == "TeacherEnrollment" || user.enrollment == "InstructorEnrollment");
         let tempGraders = [];
         let tempTas = [];
@@ -200,7 +203,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
       // console.log('form data:',graders,peers,submissions);
       // console.log('graders:',graders);
       let selectedGraders = graders.filter(function(ta){
-        if(data.TA.includes(ta.name)){
+        if(data.tas.includes(ta.name)){
           return ta;
         }
       });
@@ -312,6 +315,7 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
         enableReinitialize={true}
         key={tas}
         onSubmit={async (data, { setSubmitting }) => {
+          console.log('data:',data)
           createMatchings(data, setSubmitting);
         }}
       >
@@ -339,23 +343,23 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
               as={TextField}
               className={styles.formfield}
             />
-            Graders: 
-            {tas.map(taList =>
+            
+         {/*  {tas.map(taList =>
               <Field
               key={taList}
               name="TA"
               value={values.tas}
               className={styles.formfield}
               component={AutoComplete}
+              onChange={handleChange}
               required={true}
+              multiple
               label="TA"
               options={taList}
               /> 
-              )
-            
-            }
+              )} */}
 
-                {/* Graders:
+                Graders:
                   <InputLabel id="demo-mutiple-checkbox-label"></InputLabel>
                   <Select
                     labelId="demo-mutiple-chip-label"
@@ -374,13 +378,13 @@ function Settings({ setSubmitted, setSubmissionData, setSubStudentIds, setGrader
                     )}
                     MenuProps={MenuProps}
                   >
-                    {tas.map((name) => (
+                    {taNames.map((name) => (
                       <MenuItem key={name} value={name} >
                         <Checkbox checked={values.tas.indexOf(name) > -1} />
                         {name}
                       </MenuItem>
                     ))}
-                  </Select> */}
+                  </Select>
 
             <Button disabled={isSubmitting} type="submit">
               Compute Matchings

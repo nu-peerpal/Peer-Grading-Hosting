@@ -30,28 +30,63 @@ function Appeals(props) {
 
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
-    return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
+    return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes()+ ':59');
 
   }
+
+  
+  function toDate(timestamp) {
+    var d = new Date(timestamp);
+    var currentMonth = d.getMonth() + 1;
+    if (currentMonth < 10) {
+      currentMonth = '0' + currentMonth;
+    }
+    var currentDay = d.getDate();
+    if (currentDay < 10) {
+      currentDay = '0' + currentDay;
+    }
+    var currentHour = d.getHours();
+    if (currentHour < 10) {
+      currentHour = '0' + currentHour;
+    }
+    var currentMinute = d.getMinutes();
+    if (currentMinute < 10) {
+      currentMinute = '0' + currentMinute;
+    }
+
+    var date = (d.getFullYear() + '-' + currentMonth + '-' + currentDay + 'T' + currentHour + ':' + currentMinute + ':59');
+    console.log('toDate date:', date);
+    return date;
+  }
+
   useEffect(() => {
     Promise.all([
       axios.get(`/api/assignments/${assignmentId}`),
-      axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`)
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`),
+      axios.get(`/api/courses/${courseId}`)
     ]).then(data => {
       let assignmentData = data[0].data.data
+      console.log('assignmentData:',assignmentData)
       let peerReviewData = data[1].data.data
+      let courseSettings = data[2].data.data
+      console.log("settings", courseSettings)
+      let appealToPrTimeDelta = Number(courseSettings.appealToPrTimeDelta);
+      let appealDueDate = new Date(assignmentData.reviewDueDate);
+      appealDueDate = new Date(appealDueDate.getTime() + appealToPrTimeDelta);
+      appealDueDate = toDate(appealDueDate)
+      let appealDateString = appealDueDate.toString();
+      console.log("appeal date", appealDateString)
       setPeerReviews(peerReviewData);
-      if (assignmentData.appealsDueDate) {
-        let formattedDate = formatTimestamp(assignmentData.appealsDueDate);
+      if (assignmentData.reviewDueDate) {
+        let formattedDate = formatTimestamp(assignmentData.reviewDueDate);
         setLoadedDeadline(formattedDate);
         setExistingDueDate(true);
-        console.log('got date:', formattedDate)
       }
     })
   }, []);
 
   async function handleSubmit() {
-    // console.log({appealDueDate})
+    // console.log({appealDueDae})
     axios.patch(`/api/assignments/${assignmentId}`,{ appealsDueDate: appealDueDate }).then(res => {
       if (res.status == 201) {
         setSubmitResponse("Deadline set.")
@@ -80,6 +115,7 @@ function Appeals(props) {
                     name="appealDueDate"
                     id="datetime-local"
                     type="datetime-local"
+                    value={appealDateString}
                     onChange={e => {
                       setAppealDueDate(e.target.value+":59-05:00") // hardcode CT, might have to change with time shift
                       setAnyChanges("")}}

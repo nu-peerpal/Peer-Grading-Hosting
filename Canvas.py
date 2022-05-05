@@ -1,8 +1,9 @@
 import requests
 import json
 
-canvas = "http://ec2-3-22-99-14.us-east-2.compute.amazonaws.com/api/v1/"
-token = "Z0yUTlhvaEPRnh0iuYdnZgI68qrluXPN5zgcQ2Ca47Xb5U5NO5cHy3lP882sRL7n"
+canvas = "http://canvas.peerpal.io/api/v1/"
+token = "XiDf3kWMYi8cjDGegnrs2Dcq0Vh6ay98yHs65eHoqxf8xvGO1zlWe8cES9L8hNHN"
+
 
 def getCourseIds():
     response = requests.get(canvas + "courses.json?access_token=" + token)

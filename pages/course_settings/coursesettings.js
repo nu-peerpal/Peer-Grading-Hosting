@@ -341,8 +341,8 @@ function CourseSettings(props) {
               const originalDateObj = new Date(data.originalDueDate);
               const appealDateObj = new Date(data.appealDueDate);
               const prToOriginalTimeDelta = prDateObj - originalDateObj;
-              const appealToOriginalTimeDelta = appealDateObj - prDateObj;
-              console.log('time deltas on submit:',prToOriginalTimeDelta,appealToOriginalTimeDelta) 
+              const appealToPrTimeDelta = appealDateObj - prDateObj;
+              console.log('time deltas on submit:',prToOriginalTimeDelta,appealToPrTimeDelta) 
               let courseSettingsJson = {
                 appealDueDate: data.appealDueDate,
                 prDueDate: data.prDueDate,
@@ -358,10 +358,8 @@ function CourseSettings(props) {
                 peerLoad: data.peerLoad,
                 graderLoad: data.graderLoad,
                 matchingSettings: data.matchingSettings,
-                assignmentDateToPrDate: data.assignmentDateToPrDate,
-                prDateToAppealDate: data.prDateToAppealDate,
                 prToOriginalTimeDelta: prToOriginalTimeDelta,
-                appealToOriginalTimeDelta: appealToOriginalTimeDelta,
+                appealToOriginalTimeDelta: appealToPrTimeDelta,
               };
               if (data.reviewRubric != -1) {
                 courseSettingsJson.reviewRubric = data.reviewRubric;
