@@ -27,6 +27,7 @@ function Appeals(props) {
   const [peerReviews, setPeerReviews] = useState([]);
   const [submitSuccess, setSubmitSuccess] = useState(true);
   const [anyChanges, setAnyChanges] = useState("disable");
+  const [appealDateString, setAppealDateString] = useState("");
 
   function formatTimestamp(timestamp) {
     var d = new Date(timestamp);
@@ -74,7 +75,9 @@ function Appeals(props) {
       let appealDueDate = new Date(assignmentData.reviewDueDate);
       appealDueDate = new Date(appealDueDate.getTime() + appealToPrTimeDelta);
       appealDueDate = toDate(appealDueDate)
-      let appealDateString = appealDueDate.toString();
+      setAppealDateString(appealDueDate.toString())
+      setAnyChanges("");
+      //let appealDateString = appealDueDate.toString();
       console.log("appeal date", appealDateString)
       setPeerReviews(peerReviewData);
       if (assignmentData.reviewDueDate) {
@@ -83,7 +86,7 @@ function Appeals(props) {
         setExistingDueDate(true);
       }
     })
-  }, []);
+  }, [loadedDeadline]);
 
   async function handleSubmit() {
     // console.log({appealDueDae})
@@ -112,12 +115,13 @@ function Appeals(props) {
             <div className={styles.formfield}>
               <form noValidate>
                   <TextField className={styles.submitButton}
-                    name="appealDueDate"
+                    name="appealDateString"
                     id="datetime-local"
                     type="datetime-local"
                     value={appealDateString}
                     onChange={e => {
-                      setAppealDueDate(e.target.value+":59-05:00") // hardcode CT, might have to change with time shift
+                      console.log("e", e);
+                      setAppealDateString(e.target.value) // hardcode CT, might have to change with time shift
                       setAnyChanges("")}}
                     InputLabelProps={{
                     shrink: true,
