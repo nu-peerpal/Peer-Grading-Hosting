@@ -182,14 +182,16 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       <div className={styles.submissionData}>
         <div className={styles.chartContainer}>
           <p className={styles.commentInstructions}>Click on the Bar Graph to view the corresponding comment:</p>
-          <BarChart 
-            id="bar-chart" 
-            chartData={formatChartData(rubric, review, taReviewReport)}
-            passSelectedComment={sendCommentToParent} 
-          />
+          <div className={styles.barChart}>
+            <BarChart 
+              id="bar-chart" 
+              chartData={formatChartData(rubric, review, taReviewReport)}
+              passSelectedComment={sendCommentToParent} 
+            />
+          </div>
           <div className={styles.scoresField}>
-            <p>YOUR TOTAL SCORE: {getPeerTotalScore(review)} / {getMaxScore(rubric)}</p>
-            <p>TA TOTAL SCORE: {getTaTotalScore(taReviewReport)} / {getMaxScore(rubric)}</p>
+            <p>YOUR TOTAL SCORE: <strong>{getPeerTotalScore(review)} / {getMaxScore(rubric)}</strong></p>
+            <p>TA TOTAL SCORE: <strong>{getTaTotalScore(taReviewReport)} / {getMaxScore(rubric)}</strong></p>
           </div>
         </div>
         <div className={styles.commentsField}>
@@ -261,12 +263,15 @@ function getMaxScore(rubric) {
 
 function getTaTotalScore(taReview) {
   const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
+  const totalPoints = _.sum(taGrades.map(s => s ? s : 0))
+  const isGraded = totalPoints !== 0;
 
-  return _.sum(taGrades.map(s => s ? s : 0));
+  return isGraded ? totalPoints : "XX";
 }
 
 function getPeerTotalScore(peerReview) {
   const peerGrades = peerReview && peerReview.scores ? peerReview.scores.map(score => score[0]) : []
+  const totalPoints = _.sum(peerGrades.map(s => s ? s : 0))
 
-  return _.sum(peerGrades.map(s => s ? s : 0));
+  return totalPoints;
 }
