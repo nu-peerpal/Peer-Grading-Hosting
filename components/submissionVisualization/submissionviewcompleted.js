@@ -50,7 +50,7 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
   rubric.map((x) => gradingrubric.push(x));
 
   const taReviewReport = taReviewReview;
-    // selectedComment = [peer=0/ta comment=1, label index] - the current comment brought to view
+  // selectedComment = [peer=0/ta comment=1, label index] - the current comment brought to view
   const [selectedComment, setSelectedComment] = useState(DEFAULT_COMMENT)
   // triggers useEffect whenever boolean value is flipped - allows selectedComment to be reset w/in useEffect
   const [commentChange, setCommentChange] = useState(true)
@@ -185,8 +185,8 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
             passSelectedComment={sendCommentToParent} 
           />
           <div className={styles.scoresField}>
-            <p>YOUR TOTAL SCORE: X / {getMaxScore(rubric)}</p>
-            <p>TA TOTAL SCORE: X / {getMaxScore(rubric)}</p>
+            <p>YOUR TOTAL SCORE: {getPeerTotalScore(review)} / {getMaxScore(rubric)}</p>
+            <p>TA TOTAL SCORE: {getTaTotalScore(taReviewReport)} / {getMaxScore(rubric)}</p>
           </div>
         </div>
         <div className={styles.commentsField}>
@@ -208,7 +208,7 @@ const formatChartData = (rubric, peerReview, taReview) => {
   const maxPoints = rubric ? rubric.map(category => category.points) : []
 
   // the actual points data to display
-  const peerGrades = peerReview ? peerReview.scores.map(score => score[0]) : []
+  const peerGrades = peerReview && peerReview.scores ? peerReview.scores.map(score => score[0]) : []
   const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
 
   // colors for the peer/ta bars
@@ -277,8 +277,16 @@ function getMaxScore(rubric) {
   return _.sum(rubric.map(({points}) => points));
 }
 
-function getTotalScore(grades) {
-  return _.sum(grades.map(s => s ? s : 0));
+function getTaTotalScore(taReview) {
+  const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
+
+  return _.sum(taGrades.map(s => s ? s : 0));
+}
+
+function getPeerTotalScore(peerReview) {
+  const peerGrades = peerReview && peerReview.scores ? peerReview.scores.map(score => score[0]) : []
+
+  return _.sum(peerGrades.map(s => s ? s : 0));
 }
 
 function getFinalScore(data, rubric) {
@@ -385,7 +393,7 @@ const Grading = (rubric, matching, review, disabled, taReviewReport) => {
               <TableFooter>
                 <TableRow>
                   <TableCell className={styles.save} style={{ color: "black" }}>
-                    <nobr>Total Score: {getTotalScore(values.Grades)} / {maxScore}</nobr>
+                    {/* <nobr>Total Score: {getTotalScore(values.Grades)} / {maxScore}</nobr> */}
                   </TableCell>
                   <TableCell
                     id='submitted'

@@ -190,9 +190,11 @@
 
     max-height: 100%;
     overflow-y: scroll;
+    overflow-x: hidden;
     border-radius: 0.25rem;
     margin: 0 0 0 1rem;
     box-shadow: 0px 0px 15px lightgray;
+    scrollbar-width: none;
 
     .commentLabel {
       color: white;
@@ -276,6 +278,7 @@
     .commentsField {
       margin: 0;
       width: 100%;
+
     }
   }
 }
