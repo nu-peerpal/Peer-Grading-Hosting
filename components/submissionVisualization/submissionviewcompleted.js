@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Field, Formik, Form } from "formik";
 import TextField from "@material-ui/core/TextField";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import { Switch } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
@@ -54,10 +55,15 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
   const [selectedComment, setSelectedComment] = useState(DEFAULT_COMMENT)
   // triggers useEffect whenever boolean value is flipped - allows selectedComment to be reset w/in useEffect
   const [commentChange, setCommentChange] = useState(true)
+  const [isNewVis, setIsNewVis] = useState(false)
 
   const sendCommentToParent = (comment) => {
     setSelectedComment(comment)
     setCommentChange(!commentChange)
+  }
+
+  const handleChangeVis = () => {
+    setIsNewVis(!isNewVis)
   }
 
   // scroll new comment into view whenever selected comment changes
@@ -178,26 +184,32 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       </div>
 
       <br />
-
-      <div className={styles.submissionData}>
-        <div className={styles.chartContainer}>
-          <p className={styles.commentInstructions}>Click on the Bar Graph to view the corresponding comment:</p>
-          <div className={styles.barChart}>
-            <BarChart 
-              id="bar-chart" 
-              chartData={formatChartData(rubric, review, taReviewReport)}
-              passSelectedComment={sendCommentToParent} 
-            />
+      <Switch checked={isNewVis} onChange={handleChangeVis}/>
+      {isNewVis ? 
+        <div className={styles.submissionData}>
+          <div className={styles.chartContainer}>
+            <p className={styles.commentInstructions}>Click on the Bar Graph to view the corresponding comment:</p>
+            <div className={styles.barChart}>
+              <BarChart 
+                id="bar-chart" 
+                chartData={formatChartData(rubric, review, taReviewReport)}
+                passSelectedComment={sendCommentToParent} 
+              />
+            </div>
+            <div className={styles.scoresField}>
+              <p>YOUR TOTAL SCORE: <strong>{getPeerTotalScore(review)} / {getMaxScore(rubric)}</strong></p>
+              <p>TA TOTAL SCORE: <strong>{getTaTotalScore(taReviewReport)} / {getMaxScore(rubric)}</strong></p>
+            </div>
           </div>
-          <div className={styles.scoresField}>
-            <p>YOUR TOTAL SCORE: <strong>{getPeerTotalScore(review)} / {getMaxScore(rubric)}</strong></p>
-            <p>TA TOTAL SCORE: <strong>{getTaTotalScore(taReviewReport)} / {getMaxScore(rubric)}</strong></p>
+          <div className={styles.commentsField}>
+            <SubmissionComments peerReview={review} taReview={taReviewReport} selectedComment={selectedComment} rubric={rubric}/>
           </div>
         </div>
-        <div className={styles.commentsField}>
-          <SubmissionComments peerReview={review} taReview={taReviewReport} selectedComment={selectedComment} rubric={rubric}/>
-        </div>
-      </div>
+      :
+      <div></div>
+    }
+    
+    {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
 
     </div>
   );
@@ -274,4 +286,150 @@ function getPeerTotalScore(peerReview) {
   const totalPoints = _.sum(peerGrades.map(s => s ? s : 0))
 
   return totalPoints;
+}
+
+// OLD SYSTEM:
+function getTotalScore(grades) {
+  return _.sum(grades.map(s => s ? s : 0));
+}
+
+function getFinalScore(data, rubric) {
+  var len = rubric.length;
+  var body = { reviewBody: { scores: [], comments: [] } };
+  for (var i = 0; i < len; i++) {
+    body.reviewBody.scores.push([data.Grades[i], data.Comments[i]]);
+  }
+  body.reviewBody.comments = data.FinalComment;
+  return body;
+}
+
+function getInitialValues(rubric, review) {
+  var len = rubric.length;
+  var comments = [];
+  var grades = [];
+  var finalcomment = "";
+  if (review){
+    for (var i = 0; i < len; i++) {
+      comments.push(review.scores[i][1]);
+      grades.push(review.scores[i][0]);
+    }
+  } else {
+    for (var i = 0; i < len; i++) {
+      comments.push("");
+      grades.push(0);
+    }
+  }
+  return { Grades: grades, Comments: comments, FinalComment: finalcomment };
+}
+
+// Sub-component rendered inside of SubmissionCompleted
+const Grading = (rubric, matching, review, disabled, taReviewReport) => {
+  var initialValues = getInitialValues(rubric, review);
+  var maxScore = getMaxScore(rubric);
+
+  return (
+    <Formik
+      enableReinitialize= {true}
+      initialValues={getInitialValues(rubric, review)}
+      onSubmit={(data, { setSubmitting }) => {
+        setSubmitting(true);
+        axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+          console.log('rubric post:', res);
+          // setSubmitting(false);
+          if (res.status === 200) {
+            document.getElementById("submitted").innerHTML = "Submitted";
+            document.getElementById("submitted").style.display = "";
+          }
+        });
+      }}
+    >
+      {({ values, handleChange, dirty }) => (
+          <TableContainer component={Paper}>
+            <Table aria-label='spanning table'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Criteria<br /><span className={styles.btw}>(Hover for details)</span></TableCell>
+                  <TableCell align='center'>
+                    Comments
+                    <br />
+                    {taReviewReport && taReviewReport.instructorGrades && <span className={`${styles.btw} ${styles.grader}`}>(TA Comments)</span>}
+                  </TableCell>
+                  <TableCell align='center'>
+                    Scores
+                    <br />
+                    {taReviewReport && taReviewReport.instructorGrades && <span className={`${styles.btw} ${styles.grader}`}>(TA Scores)</span>}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rubric.map((row, index) => (
+                  <React.Fragment key={`review-${index}`}>
+                    <TableRow>
+                      {/* cells for criteria */}
+                      <TableCell>
+                        <Tooltip title={row["long_description"]} placement="bottom">
+                          <div>{row["description"]}</div>
+                        </Tooltip>
+                      </TableCell>
+
+                      {/* row for comments */}
+                      <TableCell style={{ width: 600 }}>
+                        <div className={styles.comments}>
+                          {initialValues.Comments[index]}
+                        </div>
+                      </TableCell>
+
+                      {/* cells for grades */}
+                      <TableCell style={{ width: 100 }} align='center'>
+                        <div className={styles.details} ><nobr>{initialValues.Grades[index]} / {row["points"]}</nobr></div>
+                      </TableCell>
+                    </TableRow>
+                    {
+                      taReviewReport && taReviewReport.instructorGrades
+                        ? (<TableRow>
+                            <TableCell>
+                              {/*<div className={styles.grader}>
+                                TA Review
+                              </div>
+                              */}
+                            </TableCell>
+
+                            {/* col for comments */}
+                            <TableCell style={{ width: 600 }}>
+                              <div className={`${styles.comments} ${styles.grader}`}>
+                                {taReviewReport.instructorGrades[index].comment}
+                              </div>
+                            </TableCell>
+
+                            {/* cells for grades */}
+                            <TableCell style={{ width: 100 }} align='center'>
+                              <div className={`${styles.details} ${styles.grader}`}>
+                                <nobr>{taReviewReport.instructorGrades[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
+                              </div>
+                            </TableCell>
+                          </TableRow>)
+                        : <div></div>
+                    }
+                  </React.Fragment>
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell className={styles.save} style={{ color: "black" }}>
+                    <nobr>Total Score: {getTotalScore(values.Grades)} / {maxScore}</nobr>
+                  </TableCell>
+                  <TableCell
+                    id='submitted'
+                    className={styles.save}
+                    style={{ color: "green", display: "none" }}
+                  >
+                    Submitted
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+      )}
+    </Formik>
+  );
 }
