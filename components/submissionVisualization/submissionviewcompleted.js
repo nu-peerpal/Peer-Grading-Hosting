@@ -206,10 +206,14 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
           </div>
         </div>
       :
-      <div></div>
+        <Grading
+          rubric={gradingrubric}
+          matching={matchingId}
+          review={review}
+          disabled={disabled}
+          taReviewReport={taReviewReport}
+        />
     }
-    
-    {Grading(gradingrubric, matchingId, review, disabled, taReviewReport)}
 
     </div>
   );
@@ -323,7 +327,7 @@ function getInitialValues(rubric, review) {
 }
 
 // Sub-component rendered inside of SubmissionCompleted
-const Grading = (rubric, matching, review, disabled, taReviewReport) => {
+const Grading = ({rubric, matching, review, disabled, taReviewReport}) => {
   var initialValues = getInitialValues(rubric, review);
   var maxScore = getMaxScore(rubric);
 
