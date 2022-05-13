@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Field, Formik, Form } from "formik";
 import TextField from "@material-ui/core/TextField";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import { Switch } from "@material-ui/core";
+import { Switch, FormGroup, FormControlLabel, Grid } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import Button from "@material-ui/core/Button";
 import Table from "@material-ui/core/Table";
@@ -55,7 +55,7 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
   const [selectedComment, setSelectedComment] = useState(DEFAULT_COMMENT)
   // triggers useEffect whenever boolean value is flipped - allows selectedComment to be reset w/in useEffect
   const [commentChange, setCommentChange] = useState(true)
-  const [isNewVis, setIsNewVis] = useState(false)
+  const [isNewVis, setIsNewVis] = useState(true)
 
   const sendCommentToParent = (comment) => {
     setSelectedComment(comment)
@@ -184,7 +184,15 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       </div>
 
       <br />
-      <Switch checked={isNewVis} onChange={handleChangeVis}/>
+
+      <Grid className={styles.toggleVis} component="label" container alignItems="center" spacing={1}>
+        <Grid item>Old Display</Grid>
+        <Grid item>
+          <Switch checked={isNewVis} onChange={handleChangeVis}/>
+        </Grid>
+        <Grid item>New Display</Grid>
+      </Grid>
+
       {isNewVis ? 
         <div className={styles.submissionData}>
           <div className={styles.chartContainer}>
