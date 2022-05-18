@@ -196,7 +196,12 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       {isNewVis ? 
         <div className={styles.submissionData}>
           <div className={styles.chartContainer}>
-            <p className={styles.commentInstructions}>Click on the Bar Graph to view the corresponding comment:</p>
+            <p className={styles.commentInstructions}>
+              Click on any bar element to view the corresponding comment
+              <br />
+              <br />
+              Click on the legend to disable the specified category
+            </p>
             <div className={styles.barChart}>
               <BarChart 
                 id="bar-chart" 
