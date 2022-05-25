@@ -69,9 +69,8 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
   // scroll new comment into view whenever selected comment changes
   useEffect(() => {
     let commentId = `${selectedComment[0]==0 ? "peer" : "ta"}-comment-${selectedComment[1]}`
-    console.log(commentId)
     const comment = document.getElementById(commentId)
-    console.log(comment)
+
     if (comment) {
       comment.scrollIntoView({
         behavior: "smooth",
