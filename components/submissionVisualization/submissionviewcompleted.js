@@ -162,17 +162,6 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
       <div></div>
     }
     </Container>
-    
-    <br />
-
-    <Accordion defaultExpanded={true} className={styles.acc}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          Submission {subId} (click to show/hide submission)
-        </AccordionSummary>
-        <AccordionDetails>
-          {isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={submission.s3Link}></iframe> : <Typography>{submission.s3Link}</Typography>}
-        </AccordionDetails>
-    </Accordion>
 
       <br />
 
@@ -227,6 +216,17 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
           taReviewReport={taReviewReport}
         />
     }
+
+    <br />
+
+    <Accordion defaultExpanded={true} className={styles.acc}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          Submission {subId} (click to show/hide submission)
+        </AccordionSummary>
+        <AccordionDetails>
+          {isDocument ? <iframe style={{ width:"100%",height:"100%",minHeight:"80vh"}} src={submission.s3Link}></iframe> : <Typography>{submission.s3Link}</Typography>}
+        </AccordionDetails>
+    </Accordion>
 
     </div>
   );
