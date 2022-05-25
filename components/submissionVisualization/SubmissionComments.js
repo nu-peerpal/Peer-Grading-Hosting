@@ -33,11 +33,11 @@ const SubmissionComment = ({peerGrade, taGrade, maxPoints, peerComment, taCommen
       <div className={styles.contentContainer} key={`comment-${index}`}>
         <div className={`${styles.peerComment} ${selectedComment[0]==0 && selectedComment[1]==index ? styles.selectedComment : styles.unselectedComment}`} id={`peer-comment-${index}`}>
           <p style={{ 'font-size': "x-large" }}>{peerComment}</p>
-          <p>YOUR SCORE: {peerGrade} / {maxPoints}</p>
+          <p className={styles.scoreField}>YOUR SCORE: {peerGrade} / {maxPoints}</p>
         </div>
         <div className={`${styles.taComment} ${selectedComment[0]==1 && selectedComment[1]==index ? styles.selectedComment : styles.unselectedComment}`} id={`ta-comment-${index}`}>
           <p style={{ 'font-size': "x-large" }}>{taComment}</p>
-          <p>TA SCORE: {taGrade} / {maxPoints}</p>
+          <p className={styles.scoreField}>TA SCORE: {taGrade} / {maxPoints}</p>
         </div>
       </div>
     </div>

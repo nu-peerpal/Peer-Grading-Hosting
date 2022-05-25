@@ -234,7 +234,8 @@
         font-weight: 900;
         transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
         border: none;
-        text-align: center;
+        margin-left: 2rem;
+        margin-right: 2rem;
       }
 
       .unselectedComment > p {
@@ -243,7 +244,8 @@
         font-weight: 400;
         transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
         border: none;
-        text-align: center;
+        margin-left: 2rem;
+        margin-right: 2rem;
       }
 
       .selectedComment.peerComment{
@@ -272,6 +274,10 @@
 
       .taComment {
         border-top: 1px solid lightgray;
+      }
+
+      .scoreField {
+        text-align: center;
       }
 
     }
