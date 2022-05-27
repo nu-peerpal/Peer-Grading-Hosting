@@ -252,7 +252,7 @@ function Grading(rubric, matching, review, disabled, taReviewReport) {
                             {/* cells for grades */}
                             <TableCell style={{ width: 100 }} align='center'>
                               <div className={`${styles.details} ${styles.grader}`}>
-                                <nobr>{taReviewReport.instructorGrades.[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
+                                <nobr>{taReviewReport.instructorGrades[index].points} / {taReviewReport.instructorGrades[index].maxPoints}</nobr>
                               </div>
                             </TableCell>
                           </TableRow>)

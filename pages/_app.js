@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/header'
 import Navbar from '../components/navbar'
 import { NotAuthenticated } from '../components/navbar'
-import GoogleFonts from "next-google-fonts";
+import { GoogleFonts } from "next-google-fonts";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
