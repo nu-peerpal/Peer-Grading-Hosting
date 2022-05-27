@@ -15,7 +15,7 @@ async function callAlg(algName,algInput) {
 
   const response = await axios
     .post(
-      `https://axmdfan1og.execute-api.us-east-1.amazonaws.com/dev/${algName}`,
+      `https://7mlmi8tkul.execute-api.us-east-1.amazonaws.com/dev/${algName}`,
       alg_input
     )
     .catch(error => {
