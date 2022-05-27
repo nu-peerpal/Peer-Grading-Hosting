@@ -143,3 +143,167 @@
       margin: 0 !important;
   }
 }
+
+.toggleVis {
+  display: flex;
+  justify-content: center;
+}
+
+.submissionData {
+  margin-top: 1rem;
+
+  display: grid;
+  grid-template-columns: 3fr 5fr;
+  grid-template-rows: auto;
+  grid-template-areas: "chartContainer commentsField";
+
+  height: 500px;
+
+  border-radius: 0.25rem;
+  box-shadow: 0px 0px 15px lightgray;
+
+  .chartContainer {
+    grid-area: chartContainer;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 100%;
+
+    .commentInstructions {
+      text-align: center;
+      font-size: large;
+      font-family: monospace;
+      padding: 0 5rem;
+    }
+
+    .barChart {
+      width: 95%;
+    }
+
+    .scoresField {
+      font-size: large;
+      font-family: monospace;
+
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      & > p > strong {
+        font-size: x-large;
+      }
+    }
+  }
+
+  .commentsField {
+    grid-area: commentsField;
+
+    max-height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-radius: 0.25rem;
+    margin: 0 0 0 1rem;
+    box-shadow: 0px 0px 15px lightgray;
+    scrollbar-width: none;
+
+    .commentLabel {
+      color: white;
+      background-color: gray;
+      max-height: 50px;
+      width: 100%;
+      margin: auto;
+      padding: 0.5rem;
+
+      text-align: center;
+    }
+
+    $PEER_ACTIVE_COLOR: rgba(79, 38, 131, 1.0);
+    $PEER_INACTIVE_COLOR: rgba(79, 38, 131, 0.4);
+    $TA_ACTIVE_COLOR: rgba(255, 198, 47, 1.0);
+    $TA_INACTIVE_COLOR: rgba(255, 198, 47, 0.4);
+
+    .contentContainer {
+      display: flex;
+      flex-direction: column;
+      font-family: monospace;
+
+      .selectedComment > p {
+        text-shadow: 0px 0px 5px lightgray;
+        transform: scale(1.05);
+        font-weight: 900;
+        transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
+        border: none;
+        margin-left: 2rem;
+        margin-right: 2rem;
+      }
+
+      .unselectedComment > p {
+        text-shadow: 0px 0px 0px lightgray;
+        transform: scale(1);
+        font-weight: 400;
+        transition: transform 0.3s, font-weight 0.3s, text-shadow 0.3s;
+        border: none;
+        margin-left: 2rem;
+        margin-right: 2rem;
+      }
+
+      .selectedComment.peerComment{
+        border-left: 20px solid $PEER_ACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+
+      .selectedComment.taComment{
+        border-left: 20px solid $TA_ACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+  
+      .unselectedComment.peerComment{
+        border-left: 20px solid $PEER_INACTIVE_COLOR;
+        transition: border 0.3s;
+      }
+
+      .unselectedComment.taComment{
+        border-left: 20px solid $TA_INACTIVE_COLOR;
+        transition: border 0.3s; 
+      }
+
+      .peerComment {
+        border-bottom: 1px solid lightgray;
+      }
+
+      .taComment {
+        border-top: 1px solid lightgray;
+      }
+
+      .scoreField {
+        text-align: center;
+      }
+
+    }
+  }
+}
+
+@media only screen and (max-width: 1124px) {
+  .submissionData {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    .commentsField {
+      margin: 0;
+      width: 100%;
+
+    }
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .chartContainer {
+    max-width: 350px;
+  }
+
+}
+
+

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Container from "../../components/container";
-import Submission from "../../components/submissionview";
-import SubmissionCompleted from "../../components/submissionviewcompleted"
+import Submission from "../../components/submissionVisualization/submissionview";
+import SubmissionCompleted from "../../components/submissionVisualization/submissionviewcompleted"
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
@@ -30,28 +30,11 @@ const PeerReview = (props) => {
   const router = useRouter()
   const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
 
-  // let presetComments = ReviewGradingTable;
-  // console.log('presetComments:',presetComments);
-
-  // const current = new Date();
-  // const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
-
   const currentDate = new Date();
   const currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
-  // const newCurrentDate = "Current Date and Time: "+date;
-  // console.log('currentDateFormatted:',currentDateFormatted);
-  // console.log('currentDate.getTime():',currentDate.getTime());
-
-
   const reviewDueDate = new Date(dueDate);
-
-  // console.log('reviewDueDate:',reviewDueDate)
-  // console.log('reviewDueDate.getTime():',reviewDueDate.getTime());
-
   const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
-
   const assignmentCompleted = isDisabled();
-
 
   useEffect(() => {
     (async () => {
@@ -69,6 +52,7 @@ const PeerReview = (props) => {
       console.log('taReviewReview:',reviewReview);
       setTaReviewReview(reviewReview);
 
+      // used to display submission
       if (submission.s3Link.includes('http')) { // if link, then view using iframe
         setIsDocument(true);
       }
@@ -88,6 +72,8 @@ const PeerReview = (props) => {
     })();
   }, []);
 
+  // disabled for students if we are not at due date yet
+  // ta/instructor can access and edit
   function isDisabled() {
     if (props.ISstudent) {
       return isDisabledRaw();
@@ -100,6 +86,7 @@ const PeerReview = (props) => {
     return isDisabledRaw();
   }
 
+  // check if we are past due date by an hour
   function isDisabledRaw() {
     if (!dueDate)
       return true;
@@ -110,59 +97,41 @@ const PeerReview = (props) => {
     return ((new Date) - dueDateObj) > ONE_HOUR;
   }
 
-
-  // function isInstructor() {
-  //   if (roles.includes("instructor")) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // let instructor = isInstructor()
-
-
-  // function handleClickSubmit() {
-  //   setViewPeerReviewAssessment(!viewPeerReviewAssessment);
-  // };
-
-
   return (
     <div className="Content">
       <Container name={"Grade Submission " + subId}>
-        {/* {instructor == false ?
-          <Box textAlign='center'>
-            {/* <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Do not allow view of peer review assessment to students
-            </Button> */}
-            {/* {viewPeerReviewAssessment ?
-              <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Do not allow view of peer review assessment to students
-              </Button>
-              :
-              <Button variant="contained" color="primary" onClick={handleClickSubmit}>
-              Allow view of peer review assessment to students
-              </Button>
-            }
-            <br />
-            <br />
-            <br />
-          </Box>
-          :
-          null
-          } */}
         {assignmentCompleted ?
-          <SubmissionCompleted instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
+          <SubmissionCompleted 
+            instructor={instructor} 
+            taReviewReview={taReviewReview} 
+            matchingId={matchingId} 
+            dueDate={reviewDueDateFormatted} 
+            submission={submission} 
+            isDocument={isDocument} 
+            rubric={rubric} 
+            subId={subId} 
+            review={review} 
+            disabled={isDisabled()} 
+          />
           :
-          <Submission instructor={instructor} taReviewReview={taReviewReview} matchingId={matchingId} dueDate={reviewDueDateFormatted} submission={submission} isDocument={isDocument} rubric={rubric} subId={subId} review={review} disabled={isDisabled()} />
+          <Submission 
+            instructor={instructor} 
+            taReviewReview={taReviewReview} 
+            matchingId={matchingId} 
+            dueDate={reviewDueDateFormatted} 
+            submission={submission} 
+            isDocument={isDocument} 
+            rubric={rubric} 
+            subId={subId} 
+            review={review} 
+            disabled={isDisabled()} 
+          />
         }
       </Container>
+
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
   );
-
 };
-
-
 
 export default PeerReview;

@@ -5,8 +5,8 @@
   "private": true,
   "babelrc": false,
   "engines": {
-    "npm": "6.14.6",
-    "node": "12.18.3"
+    "npm": "8.5.5",
+    "node": "16.15.0"
   },
   "scripts": {
     "dev": "set NODE_ENV=development && node ./main.js",
@@ -21,8 +21,9 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "aws-sdk": "^2.873.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bcryptjs": "^2.4.3",
+    "chart.js": "^3.7.1",
     "cookie-cutter": "^0.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -40,7 +41,7 @@
     "ims-lti": "^3.0.2",
     "js-cookie": "^2.2.1",
     "keyv": "^4.0.3",
-    "ltijs": "^5.0.3",
+    "ltijs": "^5.8.8",
     "ltijs-sequelize": "^1.0.6",
     "mailslurp-client": "^12.4.4",
     "net": "^1.0.2",
@@ -50,9 +51,9 @@
     "next-server": "^9.0.5",
     "pg": "^8.3.0",
     "postgres": "^1.0.2",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.2",
     "react-gmail": "^1.0.1",
     "react-loadingmask": "^4.0.6",
     "react-markdown": "^5.0.3",
@@ -61,8 +62,8 @@
     "request": "^2.88.2",
     "sass": "^1.32.6",
     "sass-loader": "^11.0.0",
-    "sequelize": "^6.3.4",
-    "sqlite3": "^5.0.0",
+    "sequelize": "^6.19.0",
+    "sqlite3": "^5.0.4",
     "styled-components": "^5.1.1",
     "swr": "^0.3.0",
     "webpack": "^4.44.1"
