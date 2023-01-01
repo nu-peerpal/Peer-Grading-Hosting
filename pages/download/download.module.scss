@@ -1,0 +1,96 @@
+@import "../../global_styles/colors.scss";
+
+.containers {
+
+    width: 90%;
+    margin: auto;
+    border: 2px solid #e5e5e5;
+    border-spacing: 10px;
+    margin-top: 150px;
+
+    & > h1 {
+        text-align: center;
+    }
+  
+}
+
+.filterContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: horizontal;
+    justify-content: center;
+    
+    .button {
+        margin: 1.5rem;
+        border-radius: 0.5rem;
+        border: 2px solid black;
+    }
+}
+
+.infoContainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h2 {
+        border-top: 2px dashed black;
+        padding-top: 1rem;
+        width: 45%;
+    }
+
+    ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 1rem;
+        border: 2px solid black;
+        border-radius: 1rem;
+        margin: 0 1rem 1rem 1rem;
+
+        li {
+            font-weight: bold;
+            margin: 1rem;
+            display: inline-block;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px dotted black;
+
+            .tooltipText {
+                visibility: hidden;
+                width: 200px;
+                
+                background-color: $primary_color;
+                color: #000;
+                text-align: center;
+                padding: 0.5rem;
+                border-radius: 6px;
+                
+                // Position the tooltip text
+                position: absolute;
+                top: 480%;
+            }
+
+            // make toolip visible on hover
+            &:hover {
+                color: $primary_color;
+                cursor: pointer;
+                border-bottom: 1px dotted $primary_color;
+
+                .tooltipText {
+                    visibility: visible;
+                }
+            }
+            
+        }
+    }
+
+}
