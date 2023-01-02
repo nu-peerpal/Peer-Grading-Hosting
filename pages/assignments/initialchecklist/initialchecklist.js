@@ -99,6 +99,8 @@ const InitialChecklist = (props) => {
       //   setSubmitSuccess(true)
       // }
       // new info stop
+    }).catch(err => {
+      console.log('error creating assignment',err);
     });
     console.log({reviewAssignmentRes});
     router.push({
@@ -204,7 +206,7 @@ const InitialChecklist = (props) => {
                   defaultValue={"2021-05-24T11:59:50Z"}
                   onChange={e => {
                     setPrDueDate(new Date(e.target.value).toISOString());
-                  }} 
+                  }}
                   InputLabelProps={{
                     shrink: true,
                   }}

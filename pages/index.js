@@ -343,14 +343,18 @@ function Dashboard(props) {
         {roles.includes('ta') && <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> }
         {/* <TaToDoList toDoReviews={toDoReviews} ISstudent={props.ISstudent} /> */}
         {!canvasUsers || <ViewAsStudent SetIsStudent={props.SetIsStudent} canvasUsers={canvasUsers} />}
-        <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} />
-        <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments} />
+        {!canvasFinishedAssignments || <CanvasAssignments name="Completed Assignments" assignments={canvasFinishedAssignments} state="completed"/>}
+        {!canvasAssignments  || <CanvasAssignments name="Enablable Assignments" assignments={canvasAssignments.filter((a) => readyToEnable(a))} state="ready"/>}
+        {!canvasAssignments || <CanvasAssignments name="Other Assignments" assignments={canvasAssignments.filter((a) => !readyToEnable(a))} state="other"/>}
         <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
       </div>
     );
   }
 }
 
+function readyToEnable(assignment) {
+  return assignment.rubricId && assignment.assignmentDueDate;
+}
 
 function CanvasAPICheck(props) {
   if (props.canvasAvailable)
@@ -417,6 +421,7 @@ function CanvasAssignments(props) {
       name={props.name || "Assignment List"}
       data={props.assignments}
       link="/assignments/fullassignmentview/fullassignmentview"
+      status={props.status}
     />
   } else { // No assignments loaded
   return null;

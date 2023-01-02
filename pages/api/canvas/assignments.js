@@ -19,6 +19,7 @@ export default async (req, res) => {
             });
             assignments = response.data.map(assignment => {
               let rubricId = null;
+              console.log({assignment});
               if (assignment.rubric_settings) {
                 rubricId = assignment.rubric_settings.id;
               }

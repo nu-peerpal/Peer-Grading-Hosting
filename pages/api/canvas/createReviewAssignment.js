@@ -45,6 +45,7 @@ export default async (req, res) => {
             }
           }
         }
+        console.log("POST canvas create assignment:",{data});
         const response = await axios.post(canvas + "courses/" + courseId + "/assignments", data, {
           headers: {'Authorization': `Bearer ${token}`}
         })

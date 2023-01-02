@@ -59,6 +59,8 @@ const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
     }
   })
 
+  console.log({initialValues:values});
+
   return values;
 };
 
@@ -70,14 +72,20 @@ const PeerReviewMatrix = ({
   setPresetComments
 }) => {
   const [upvotedGrades, setUpvotedGrades] = useState(null);
-  useEffect(() => {
+
+
+  if (!assignmentRubric.length)
+    return null;
+
+  if (!upvotedGrades)
+  {
     const initUpvotedGrades = {};
     for (const { element } of assignmentRubric) {
       initUpvotedGrades[element] = [];
     }
     setUpvotedGrades(initUpvotedGrades);
-  }, [assignmentRubric]);
-
+  }
+  
   const averageUpvotes = element =>
     parseFloat(
       (

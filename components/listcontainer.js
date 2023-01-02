@@ -31,7 +31,13 @@ function ListContainer(props) {
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
           if (information.link) link = information.link;
-          if (!x.actionItem) x.actionItem='';
+          if (!x.actionItem) {
+            x.actionItem=[
+              ... (!x.rubricId) ? ["no rubric set in canvas"] : [],
+              ... (!x.assignmentDueDate) ? ["no due date set in canvas"] : []
+            ].join("; "); 
+
+          }
           let date = '';
           let type = '';
           // console.log({x})

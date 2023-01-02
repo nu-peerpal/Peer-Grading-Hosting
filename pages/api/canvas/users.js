@@ -46,6 +46,7 @@ export default async (req, res) => {
         throw new Error("Invalid HTTP method");
     }
   } catch (err) {
+    console.log('canvas error',err);
     responseHandler.response400(res, err);
   }
 };

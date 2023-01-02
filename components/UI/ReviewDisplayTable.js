@@ -39,6 +39,7 @@ const ReviewDisplayTable = ({
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
   const classes = useStyles();
+  console.log('ReviewDisplayTable',{peerMatchings});
   const reviewAverages = assignmentRubric.map(({ element }) => {
     const totalPoints = peerMatchings.reduce((acc, { review }) => {
       const section = review.find(section => section.element === element);

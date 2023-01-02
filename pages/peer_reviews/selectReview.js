@@ -36,7 +36,8 @@ const SelectReview = (props) => {
           rubricId,
           data: m,
           reviewStatus: parseInt(reviewStatus),
-          submissionAlias: i+1
+          submissionAlias: i+1,
+          actionItem: "submit peer review by due date"
         }));
 
       setToDoReviews(toDoReviews)

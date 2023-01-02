@@ -15,6 +15,7 @@ import ReloadMatchings from "../../../components/reloadMatchings";
 import canvasCalls from "../../../canvasCalls";
 
 function Matching(props) {
+  const { courseId } = useUserData();
   const [matchings, setMatchings] = useState([]);
   const [matchingGrid, setMatchingGrid] = useState([]);
   const [matchingExists, setMatchingExists] = useState(false);
