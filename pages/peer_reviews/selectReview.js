@@ -34,7 +34,7 @@ const SelectReview = (props) => {
           name: `Submission ${i+1} ${reviewReviewText(m.reviewReview)}`,
           reviewDueDate: dueDate,
           rubricId,
-          data: m,
+          data: {...m,matchingId:m.id},
           reviewStatus: parseInt(reviewStatus),
           submissionAlias: i+1,
           actionItem: "submit peer review by due date"
