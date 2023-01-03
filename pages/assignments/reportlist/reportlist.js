@@ -39,7 +39,6 @@ const ReviewReports = () => {
   const [loadSRSubmission, setLoadSRSubmission] = useState();
   const [loadRRSubmission, setLoadRRSubmission] = useState();
   let { assignmentId, assignmentName, rubricId } = router.query;
-  if (!rubricId) rubricId = 1;
 
   async function handleUpload() {
     let subGrades = uploadSubReports[0]; // [subId, grade]
@@ -256,7 +255,7 @@ const ReviewReports = () => {
       setPeerMatchings(peerReviews);
 
       rubric = rubric.map(section => {
-        return [section.points, section.title];
+        return [section.points, section.description];
       });
       let reviewRubric = [];
       // console.log({peerReviews})
