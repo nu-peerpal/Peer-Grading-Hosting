@@ -245,7 +245,11 @@ const ReviewReports = () => {
   }
   useEffect(() => {
     console.log({courseId});
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users?courseId=${courseId}`)]).then(dbData => {
+    Promise.all([
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
+      axios.get(`/api/rubrics/${rubricId}`),
+      axios.get(`/api/users?courseId=${courseId}`)
+    ]).then(dbData => {
       let [peerReviews,rubricData,dbUsers] = dbData.map(({data}) => data.data);
 
       let rubric = rubricData.rubric;
@@ -256,9 +260,11 @@ const ReviewReports = () => {
       });
       let reviewRubric = [];
       // console.log({peerReviews})
-      let graders = dbUsers
-        .filter(({enrollment}) => (enrollment === "TaEnrollment" || enrollment === "InstructorEnrollment"))
-        .map(({id}) => id);
+      let graders = _.uniq(peerReviews
+        .filter(({matchingType}) => matchingType !== "initial")
+        .map(({userId}) => userId)
+      );
+
       let subReportData, revReportData;
       let reviews = [];
       console.log({graders})

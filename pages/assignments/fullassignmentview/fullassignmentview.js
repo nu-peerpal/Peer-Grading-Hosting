@@ -25,6 +25,11 @@ const FullAssignment = (props) => {
     return null;
   }
 
+  if (!router.query.id) {
+    console.log("no assignmentId");
+    return null;
+  }
+
   return (
     <div className="Content">
       <Container name={"Assignment Details: " + router.query.name}>

@@ -9,11 +9,11 @@ import { useRouter } from 'next/router';
 
 const fetcher = url => fetch(url).then(res => res.json());
 
-const transformRubric = (rubric) =>
+export const transformRubric = (rubric) =>
   rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
 
 
-const transformMatchings = (matchings, assignmentRubric, users) =>
+export const transformMatchings = (matchings, assignmentRubric, users) =>
   matchings.map(matching => {
     const { firstName, lastName } = users.find(
       user => user.canvasId == matching.userId
@@ -59,7 +59,7 @@ const TAGrading = (props) => {
   const [submission, setSubmission] = useState(null);
   const [isDocument, setIsDocument] = useState(false);
   const [presetComments, setPresetComments] = useState(['Great job!', 'Good but could use more detail', 'Missed the prompt']);
-  let { id, submissionId } = router.query;
+  let { matchingId, submissionId , id} = router.query;
 
   useEffect(() => {
     var assignmentRes, matchingsRes, usersRes;
@@ -112,6 +112,7 @@ const TAGrading = (props) => {
     <div className="Content">
       <Container name="TA Grading">
         <TAsubmission
+          matchingId={matchingId}
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}

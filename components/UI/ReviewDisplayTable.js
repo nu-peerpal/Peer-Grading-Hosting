@@ -163,8 +163,8 @@ const ReviewDisplayTable = ({
                     arrow
                   >
                     <CopyToClipboard text={section.comment} onCopy={onCopyText}>
-                    <Button style={{ padding: 0}} onClick={(e) => e.stopPropagation()} >[?]</Button>
-                      </CopyToClipboard>
+                      <Button style={{ padding: 0}} onClick={(e) => e.stopPropagation()} >[?]</Button>
+                    </CopyToClipboard>
                   </Tooltip>
                   <IconButton
                     size="small"

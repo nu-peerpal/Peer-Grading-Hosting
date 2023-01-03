@@ -35,7 +35,12 @@ const SelectTaGrading = (props) => {
     }
   }, []);
   useEffect(() => {
-    Promise.all([axios.get(`/api/submissions?assignmentId=${assignmentId}`), axios.get(`/api/peerReviews?assignmentId=${assignmentId}`), axios.get(`/api/assignments/${assignmentId}`), axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)]).then(data => {
+    Promise.all([
+      axios.get(`/api/submissions?assignmentId=${assignmentId}`),
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
+      axios.get(`/api/assignments/${assignmentId}`),
+      axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)
+    ]).then(data => {
       console.log({data})
       const submissions = data[0].data.data;
       const allMatchings = data[1].data.data;
@@ -93,7 +98,7 @@ const SelectTaGrading = (props) => {
             canvasId: assignmentId,
             rubricId: rubricId,
             // matchingId: sub.matchingId,
-            data: {submissionId: sub.submission.canvasId, id: sub.matchingId},
+            data: {submissionId: sub.submission.canvasId, matchingId: sub.matchingId},
           });
         } else {
           if (sub.done[1]) {
@@ -106,7 +111,8 @@ const SelectTaGrading = (props) => {
           toDoReviews.push({
               name: `Grade group ${sub.submission.canvasId}'s submission ${finished}`,
               canvasId: assignmentId,
-              data: {submissionId: sub.submission.canvasId},
+              rubricId: rubricId,
+              data: {submissionId: sub.submission.canvasId, matchingId: sub.matchingId},
           });
         }
 
@@ -223,9 +229,8 @@ const SelectTaGrading = (props) => {
 
   return (
     <div className="Content">
-        <TaToDoList toDoReviews={toDoReviews} />
-        <TaToDoGrades toDoGrades={toDoGrades} />
-        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
+        {!toDoReviews || <TaToDoList toDoReviews={toDoReviews} />}
+        {!toDoGrades || <TaToDoGrades toDoGrades={toDoGrades} />}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
           {/* <Button disabled={!reviewsCompleted || reviewStatusSet=="Confirmed"} onClick={handleCompleted}>
             Confirm Grading is Completed
@@ -244,6 +249,7 @@ const SelectTaGrading = (props) => {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }} >
           {reviewStatusSet}
         </div>
+        <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />
     </div>
   );
 };

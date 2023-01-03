@@ -129,7 +129,6 @@ app
         userData = await keyv.get(nonce);
         if (!_.isEmpty(userData)) {
           console.log("AUTHENTICATED GET.")
-          console.log({userData});
           req.userData = userData;
         }
       }

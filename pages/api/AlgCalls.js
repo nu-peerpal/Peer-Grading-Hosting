@@ -13,11 +13,7 @@ async function callAlg(algName,algInput) {
 
   console.log(`calling ${algName}${Object.keys(alg_input)}`);
 
-  const response = await axios
-    .post(
-      `https://7mlmi8tkul.execute-api.us-east-1.amazonaws.com/dev/${algName}`,
-      alg_input
-    )
+  const response = await axios.post(`https://7mlmi8tkul.execute-api.us-east-1.amazonaws.com/dev/${algName}`,alg_input)
     .catch(error => {
       console.log({error});
       return {
