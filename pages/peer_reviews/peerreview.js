@@ -48,7 +48,7 @@ const PeerReview = (props) => {
       console.log('rubric data:',rubricData);
       console.log('matching data:',matchingData);
 
-      const reviewReview = matchingData["reviewReview"];
+      const reviewReview = matchingData.reviewReview;
       console.log('taReviewReview:',reviewReview);
       setTaReviewReview(reviewReview);
 
