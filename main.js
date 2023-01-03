@@ -181,6 +181,26 @@ app
       return handle(req, res);
     });
 
+    server.put("*", async (req, res) => {
+
+      if (req.cookies && req.cookies.authToken){
+        var nonce = req.cookies.authToken;
+        const userData = await keyv.get(nonce);
+        if (!_.isEmpty(userData)) {
+          req.userData = userData;
+          console.log("AUTHENTICATED PUT.")
+        }
+      }
+      var data  = await req.userData;
+
+      if (_.isEmpty(data)) {
+        console.log("UNAUTHENTICATED PUT DENIED")
+        return response401(res);
+      }
+
+      return handle(req, res);
+    });
+
     server.listen(port, (err) => {
       if (err) throw err;
       console.log(`> App running on ${port}`);

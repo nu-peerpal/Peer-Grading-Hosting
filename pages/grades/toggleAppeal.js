@@ -15,54 +15,52 @@ const gfm = require('remark-gfm');
 const axios = require("axios");
 
 function ToggleAppeal(props) {
-  const [eligibleAppeal, setEligibleAppeal] = useState();
+  const [isAppealed, setIsAppealed] = useState(false);
   const [appealReview, setAppealReview] = useState({});
   const [appealReviewed, setAppealReviewed] = useState(false);
-  const [appealAvailable, setAppealAvailable] = useState(false);
-  const [appealButtonText, setAppealButtonText] = useState("Appeal Not Loaded");
+  const [appealUnavailable, setAppealUnavailable] = useState(null);
+  const [appealButtonText, setAppealButtonText] = useState("");
   const id = props.assignmentId;
   const userId = props.userId;
+
 
   async function setup() {
     try {
       const results = await Promise.all([
         axios.get(`/api/assignments/${id}`),
-        axios.get(`/api/peerReviews?assignmentId=${id}&submitterId=${userId}&matchingType=appeal`),
-        axios.get(`/api/groupEnrollments?assignmentId=${id}&userId=${userId}`)
+        axios.get(`/api/peerReviews?assignmentId=${id}&submitterId=${userId}`)
       ]);
-      console.log({results});
 
-      const [assignmentRes,taReviews,appealReviews] = results.map(r => r.data.data);
+      const [assignmentRes,allReviews] = results.map(r => r.data.data);
+
+      const taReviews = allReviews.filter(({matchingType}) => matchingType !== "initial");
+      const appealReviews = taReviews.filter(({matchingType}) => matchingType === "appeal");
+      const priorTaReviews = taReviews.filter(({matchingType}) => matchingType !== "appeal");
 
       let userSubmissions = [];
 
+      const appealFinished = !!appealReviews.filter(({review}) => review).length;
+
       // if the appeal is already reviewed, then it cannot be un-appealed.
-      if (appealReviews.length && appealReviews.filter(({review}) => review).length)
+      if (appealFinished)
+      {
+        setAppealUnavailable("the appeal has already been reviewed by and cannot be canceled")
         setAppealReviewed(true);
-
-      if (taReviews.length)
-        setEligibleAppeal(true);
-
-      if (assignmentRes.appealsDueDate) {
-        let today = new Date();
-        let dueDate = new Date(assignmentRes.appealsDueDate);
-        if (today < dueDate) {
-          if (appealReviews.length) { // if appeal already exists
-            setAppealAvailable(false);
-            setAppealButtonText('Appeal Submitted');
-            setAppealReview(appealReviews[0]); // assuming one appeal
-          } else {
-            setAppealAvailable(true);
-            setAppealButtonText("Submit Appeal")
-          }
-        } else {
-          setAppealAvailable(false);
-          setAppealButtonText("Appeals Deadline Passed")
-        }
-      } else {
-        setAppealAvailable(false);
-        setAppealButtonText("Appeals not set for assignment yet")
       }
+
+      if (priorTaReviews.length)
+      {
+        setAppealUnavailable("submission has been reviewed by a TA and is not available for appeal")
+      }
+
+      if (!assignmentRes.appealsDueDate)
+        setAppealUnavailable("appeals have not yet been configured for this assignment");
+
+      if (new Date() > new Date(assignmentRes.appealsDueDate))
+        setAppealUnavailable("due date for appeals has passed and appeals cannot be made or canceled");
+
+      setIsAppealed(!!appealReviews.length);
+
     } catch (err) {
       console.log({err});
     }
@@ -72,8 +70,17 @@ function ToggleAppeal(props) {
     setup();
   }, []);
 
+
   async function handleAppeal() {
-    if (!appealAvailable)
+    if (isAppealed) {
+      await removeAppeal();
+    } else {
+      await requestAppeal();
+    }
+  }
+
+  async function requestAppeal() {
+    if (appealUnavailable)
       return;
 
     console.log('handling appeal');
@@ -83,16 +90,15 @@ function ToggleAppeal(props) {
     try {
       const appealResponse = await axios.put(`/api/appeal?userId=${userId}&assignmentId=${id}`);
       if (appealResponse.status == 201) {
-        console.log("appeal set", appealResponse.data);
-        setAppealAvailable(false);
-        setAppealButtonText('Appeal Submitted');
+        setIsAppealed(true);
+        setAppealButtonText('');
       } else {
         setAppealButtonText('Something Went Wrong. Try again');
-        console.log('appeal error',appealResponse);
+        console.log('appeal error',{appealResponse});
       }
     } catch (err) {
       setAppealButtonText('Something Went Wrong. Try again');
-      console.log('appeal error',err)
+      console.log('appeal request failed',{err})
     }
   }
 
@@ -100,46 +106,44 @@ function ToggleAppeal(props) {
 
     console.log('removing appeal');
 
-    let res = await axios.delete(`/api/appeal?userId=${userId}&assignmentId=${id}`);
-    if (res.status == 200) {
-      setAppealAvailable(true);
-      setAppealButtonText("Submit Appeal");
-    } else {
+    try {
+
+      let res = await axios.delete(`/api/appeal?userId=${userId}&assignmentId=${id}`);
+      if (res.status == 200) {
+        setIsAppealed(false);
+        setAppealButtonText('');
+      } else {
+        setAppealButtonText('Something Went Wrong. Try again');
+        console.log('appeal cancel failed',{res});
+      }
+    } catch (err) {
       setAppealButtonText('Something Went Wrong. Try again');
+      console.log('appeal request failed',{err})
     }
-    console.log('appeal',{res});
   }
 
-  if (appealReviewed)
-    return (
-      <div>
-        <span className={styles.disclaimer}>
-          The appeal for this submission has been graded.  It may not be appealed again.  It may not be un-appealed.
-        </span>
-      </div>
-    );
-
-  if (eligibleAppeal)
+  if (!appealUnavailable)
     return (
       <div className={styles.disclaimer}>
         <div>
-          This submission is eligible for appeal. If you submit an appeal,
-          you will lose any bonus added to your current score and receive a TA grade instead.
+          {isAppealed
+            ? "This submission has been appealed.  An instructor will review the submission and determine its grade. Any bonus included in your current score will be lost."
+            : "This submission is eligible for appeal.  If you submit an appeal, you will lose any bonus added to your current score and receive a TA grade instead."
+          }
         </div>
         <br />
-        <span><b>Note:</b> submitting an appeal applies to all members in your group.</span>
+        <span><b>Note:</b> an appeal applies to all members of a group submission.</span>
         <div>
-          <Button disabled={!appealAvailable} onClick={handleAppeal}>{appealButtonText}</Button>
-            {appealReview && <Button onClick={removeAppeal}>Cancel</Button>}
+          <Button onClick={handleAppeal}>{isAppealed ? "Cancel Appeal": "Request Appeal"}</Button>
+          {appealButtonText}
         </div>
       </div>
     );
 
   return (
     <div>
-      <span className={styles.disclaimer}>This submission is not eligible for appeal
-      because you have already received a TA grade. If you would like to submit a regrade request,
-      see Canvas for more information on how to do that.
+      <span className={styles.disclaimer}> This submission is not eligible for appeal
+      because {appealUnavailable}.
       </span>
     </div>
   );

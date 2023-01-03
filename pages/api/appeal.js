@@ -32,13 +32,15 @@ async function getSubmissionId(userId,assignmentId) {
     console.log('found multiple submissions for user:', submissions);
   }
 
-  return (submission.length) ? submissions[0].submissionId : undefined;
+  return (submissions.length) ? submissions[0].submissionId : undefined;
 }
 
 export default async (req, res) => {
   try {
     const {assignmentId,userId} = req.query;
     var {submissionId} = req.query;
+
+    console.log(`APPEAL ${req.method}:`,{query:req.query});
 
     if (!assignmentId) {
       throw new Error("Query parameter assignmentId required");
@@ -56,16 +58,15 @@ export default async (req, res) => {
       );
     }
 
-    if (!submissionId) {
-      console.log(`APPEAL ${req.method}: no submission, no appeal for user ${userId} on assignment ${assignmentId}`);
-      responseHandler.response200(res, []);
-      return;
-    }
+    const appeals = (submissionId) ? await getAppeals(submissionId,assignmentId) : [];
 
-    const appeals = await getAppeals(submissionId,assignmentId);
+    console.log({submissionId,appeals});
 
     switch (req.method) {
       case "GET":
+
+        if (!submissionId)
+          console.log(`APPEAL ${req.method}: no submission, no appeal for user ${userId} on assignment ${assignmentId}`);
 
         responseHandler.response200(res, appeals);
 
@@ -123,7 +124,7 @@ export default async (req, res) => {
           const tas = _.uniq(taMatchings.map(({userId}) => userId));
 
           if (!tas.length) {
-            console.log(`APPEAL PUT: cannot assign appeals if no TAs matched for ${assignmentId}`);
+            console.log(`APPEAL POST: cannot assign appeals if no TAs matched for ${assignmentId}`);
             responseHandler.msgResponse400(res, "no TAs matched, cannot appeal");
             break;
           }
@@ -151,6 +152,7 @@ export default async (req, res) => {
         throw new Error("Invalid HTTP method");
     }
   } catch (err) {
+    console.log({err});
     responseHandler.response400(res, err);
   }
 };
