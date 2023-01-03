@@ -15,6 +15,8 @@ import ReviewDisplayTableReadOnly from "../../components/UI/ReviewDisplayTableRe
 const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm')
 const axios = require("axios");
+const _ = require("lodash");
+
 import {transformRubric, transformMatchings} from "../grading/tagrading";
 
 function ViewAssignmentGrade(props) {
@@ -92,13 +94,18 @@ function ViewAssignmentGrade(props) {
     setup();
   }, []);
 
-  function getGrade(report) {
-    if (report.includes("(Ungraded)")) {
-      return "Ungraded";
-    } else {
-      let numbers = report.match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
-      return numbers[0]; // return first number from report
+  function getGrade(submission) {
+    // if an appeal has a review, then calculate grade from it
+    let gradedAppeals = appeal.filter(({review}) => !!review);
+    if (gradedAppeals.length) {
+       let total = _.sum(gradedAppeals[0].review.reviewBody.scores.map(([score,comment]) => score));
+       return total + " (from appeal)";
     }
+
+    if (!submission.grade)
+      return "Ungraded";
+
+    return submission.grade + (appeal.length ? " (pending appeal)" : "");
   }
 
   if (!rubric)
@@ -118,7 +125,7 @@ function ViewAssignmentGrade(props) {
                   aria-controls="panel1a-content"
                   id="panel1a-header"
                 >
-                <Typography >Submission {index + 1}. Grade: {getGrade(sub.report)}</Typography>
+                <Typography >Submission {index + 1}. Grade: {getGrade(sub)}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
