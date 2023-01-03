@@ -92,7 +92,8 @@ const TAGrading = (props) => {
         tempReviewRubric = transformRubric(reviewRubricRes.data.rubric);
       }
       if (matchingsRes && usersRes && rawRubric.length > 0) {
-        const peerMatchings = matchingsRes.data;
+        const peerMatchings = matchingsRes.data
+          .filter(({matchingType}) => matchingType === "initial");
         let tempPeerMatchings = transformMatchings(peerMatchings, rawRubric, usersRes.data);
         console.log({rawRubric});
         console.log({tempPeerMatchings});
