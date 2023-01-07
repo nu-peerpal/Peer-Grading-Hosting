@@ -9,9 +9,11 @@ import { useRouter } from 'next/router';
 
 const fetcher = url => fetch(url).then(res => res.json());
 
-const transformRubric = rubric =>
+export const transformRubric = (rubric) =>
   rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
-const transformMatchings = (matchings, assignmentRubric, users) =>
+
+
+export const transformMatchings = (matchings, assignmentRubric, users) =>
   matchings.map(matching => {
     const { firstName, lastName } = users.find(
       user => user.canvasId == matching.userId
@@ -23,7 +25,7 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
           points,
           comment,
           maxPoints: assignmentRubric[i]["points"],
-          element: assignmentRubric[i]["title"]
+          element: assignmentRubric[i]["description"]
         })
       );
       // console.log(firstName,lastName,reviewScoreComments,transformedReview)
@@ -51,21 +53,26 @@ const transformMatchings = (matchings, assignmentRubric, users) =>
 const TAGrading = (props) => {
   const { userId, courseId } = useUserData();
   const router = useRouter();
-  const [rubric, setRubric] = useState([]);
-  const [reviewRubric, setReviewRubric] = useState([]);
-  const [peerMatchings, setPeerMatchings] = useState([]);
-  const [submission, setSubmission] = useState();
+  const [rubric, setRubric] = useState(null);
+  const [reviewRubric, setReviewRubric] = useState(null);
+  const [peerMatchings, setPeerMatchings] = useState(null);
+  const [submission, setSubmission] = useState(null);
   const [isDocument, setIsDocument] = useState(false);
   const [presetComments, setPresetComments] = useState(['Great job!', 'Good but could use more detail', 'Missed the prompt']);
-  let { id, submissionId } = router.query;
+  let { matchingId, submissionId , id} = router.query;
 
   useEffect(() => {
     var assignmentRes, matchingsRes, usersRes;
-    Promise.all([axios.get(`/api/assignments/${id}`),axios.get(`/api/users?courseId=${courseId}`),axios.get(`/api/peerReviews?assignmentId=${id}&done=true`),axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`)]).then(async (data) => {
+    Promise.all([
+      axios.get(`/api/assignments/${id}`),
+      axios.get(`/api/users?courseId=${courseId}`),
+      axios.get(`/api/peerReviews?assignmentId=${id}&submissionId=${submissionId}&done=true`),
+      axios.get(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`)
+    ]).then(async (data) => {
       console.log({data})
       assignmentRes = data[0].data;
-      matchingsRes = data[2].data;
       usersRes = data[1].data;
+      matchingsRes = data[2].data;
       setSubmission(data[3].data.data);
       if (data[3].data.data.s3Link.includes('http')){
         setIsDocument(true);
@@ -81,15 +88,15 @@ const TAGrading = (props) => {
         );
         console.log('rubrics:', rubricRes,reviewRubricRes);
         rawRubric = rubricRes.data.rubric;
-        tempRubric = transformRubric(rubricRes.data.rubric);
+        tempRubric = transformRubric(rawRubric);
         tempReviewRubric = transformRubric(reviewRubricRes.data.rubric);
       }
       if (matchingsRes && usersRes && rawRubric.length > 0) {
-        const peerMatchings = matchingsRes.data.filter(
-          matching => matching.submissionId == submissionId
-        );
-        console.log({peerMatchings})
+        const peerMatchings = matchingsRes.data
+          .filter(({matchingType}) => matchingType === "initial");
         let tempPeerMatchings = transformMatchings(peerMatchings, rawRubric, usersRes.data);
+        console.log({rawRubric});
+        console.log({tempPeerMatchings});
         setPeerMatchings(tempPeerMatchings);
         setRubric(tempRubric);
         setReviewRubric(tempReviewRubric);
@@ -97,17 +104,16 @@ const TAGrading = (props) => {
 
     })
 
-    return () => { // if component isn't mounted
-      setPeerMatchings([]);
-      setRubric([]);
-      setReviewRubric([]);
-    };
   }, []);
+
+  if (!rubric || !peerMatchings || !reviewRubric || !submission)
+    return null;
 
   return (
     <div className="Content">
       <Container name="TA Grading">
         <TAsubmission
+          matchingId={matchingId}
           assignmentRubric={rubric}
           reviewRubric={reviewRubric}
           peerMatchings={peerMatchings}

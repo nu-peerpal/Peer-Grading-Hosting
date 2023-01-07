@@ -90,10 +90,6 @@ function Appeals(props) {
             </div>
           </AccordionDetails>
         </Accordion>
-        <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid} />
-        <div className={styles.matchingGrid}>
-          {matchingGrid}
-        </div>
         </div>
       </Container>
       <StudentViewOutline isStudent={props.ISstudent} SetIsStudent={props.SetIsStudent} />

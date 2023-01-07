@@ -28,6 +28,15 @@ export const createGradeValidator = maxPoints => {
   };
 };
 
+function toOldReviewFormat(newReview) {
+  return {
+    reviewBody: {
+      scores: newReview.map(({points,comment}) => [points,comment]),
+      comments: ""
+    }
+  }
+}
+
 const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
   const values = {};
   let instructorGrades;
@@ -59,10 +68,13 @@ const getInitialValues = (assignmentRubric, peerMatchings, reviewRubric) => {
     }
   })
 
+  console.log({initialValues:values});
+
   return values;
 };
 
 const PeerReviewMatrix = ({
+  matchingId,
   peerMatchings,
   assignmentRubric,
   reviewRubric,
@@ -70,13 +82,19 @@ const PeerReviewMatrix = ({
   setPresetComments
 }) => {
   const [upvotedGrades, setUpvotedGrades] = useState(null);
-  useEffect(() => {
+
+
+  if (!assignmentRubric.length)
+    return null;
+
+  if (!upvotedGrades)
+  {
     const initUpvotedGrades = {};
     for (const { element } of assignmentRubric) {
       initUpvotedGrades[element] = [];
     }
     setUpvotedGrades(initUpvotedGrades);
-  }, [assignmentRubric]);
+  }
 
   const averageUpvotes = element =>
     parseFloat(
@@ -101,17 +119,28 @@ const PeerReviewMatrix = ({
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(true);
           peerMatchings.forEach(async matching => {
-            await axios.patch(`/api/peerReviews/${matching.matchingId}`,{reviewReview: {reviewBody: values[matching.userId], instructorGrades: values.instructorGrades}}).then(res => {
-              console.log('review post:', res);
-              if (res.status === 201) {
-                document.getElementById("submitted").innerHTML = "Submitted";
-                document.getElementById("submitted").style.display = "";
-              } else {
-                document.getElementById("submitted").innerHTML = "Submission failed.";
-                document.getElementById("submitted").style.display = "";
-              }
-            });
+            await axios.patch(`/api/peerReviews/${matching.matchingId}`,{reviewReview: {reviewBody: values[matching.userId], instructorGrades: values.instructorGrades}})
+              .then(res => {
+                console.log('review post:', res);
+                if (res.status === 201) {
+                  document.getElementById("submitted").innerHTML = "Submitted";
+                  document.getElementById("submitted").style.display = "";
+                } else {
+                  document.getElementById("submitted").innerHTML = "Submission failed.";
+                  document.getElementById("submitted").style.display = "";
+                }
+              });
+
+
           });
+
+          console.log({matchingId});
+          axios.patch(`/api/peerReviews/${matchingId}`,{review: toOldReviewFormat(values.instructorGrades)})
+            .then(res => {
+              console.log('saved TA review of submission',{res});
+
+            });
+
           setSubmitting(false);
 
         }}

@@ -39,7 +39,6 @@ const ReviewReports = () => {
   const [loadSRSubmission, setLoadSRSubmission] = useState();
   const [loadRRSubmission, setLoadRRSubmission] = useState();
   let { assignmentId, assignmentName, rubricId } = router.query;
-  if (!rubricId) rubricId = 1;
 
   async function handleUpload() {
     let subGrades = uploadSubReports[0]; // [subId, grade]
@@ -245,20 +244,26 @@ const ReviewReports = () => {
   }
   useEffect(() => {
     console.log({courseId});
-    Promise.all([axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),axios.get(`/api/rubrics/${rubricId}`), axios.get(`/api/users?courseId=${courseId}`)]).then(dbData => {
+    Promise.all([
+      axios.get(`/api/peerReviews?assignmentId=${assignmentId}`),
+      axios.get(`/api/rubrics/${rubricId}`),
+      axios.get(`/api/users?courseId=${courseId}`)
+    ]).then(dbData => {
       let [peerReviews,rubricData,dbUsers] = dbData.map(({data}) => data.data);
 
       let rubric = rubricData.rubric;
       setPeerMatchings(peerReviews);
 
       rubric = rubric.map(section => {
-        return [section.points, section.title];
+        return [section.points, section.description];
       });
       let reviewRubric = [];
       // console.log({peerReviews})
-      let graders = dbUsers
-        .filter(({enrollment}) => (enrollment === "TaEnrollment" || enrollment === "InstructorEnrollment"))
-        .map(({id}) => id);
+      let graders = _.uniq(peerReviews
+        .filter(({matchingType}) => matchingType !== "initial")
+        .map(({userId}) => userId)
+      );
+
       let subReportData, revReportData;
       let reviews = [];
       console.log({graders})

@@ -39,6 +39,7 @@ const ReviewDisplayTable = ({
 }) => {
   const [upvotedGrades, setUpvotedGrades] = state;
   const classes = useStyles();
+  console.log('ReviewDisplayTable',{peerMatchings});
   const reviewAverages = assignmentRubric.map(({ element }) => {
     const totalPoints = peerMatchings.reduce((acc, { review }) => {
       const section = review.find(section => section.element === element);
@@ -162,8 +163,8 @@ const ReviewDisplayTable = ({
                     arrow
                   >
                     <CopyToClipboard text={section.comment} onCopy={onCopyText}>
-                    <Button style={{ padding: 0}} onClick={(e) => e.stopPropagation()} >[?]</Button>
-                      </CopyToClipboard>
+                      <Button style={{ padding: 0}} onClick={(e) => e.stopPropagation()} >[?]</Button>
+                    </CopyToClipboard>
                   </Tooltip>
                   <IconButton
                     size="small"

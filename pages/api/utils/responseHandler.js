@@ -18,6 +18,14 @@ exports.msgResponse201 = (res, msg) => {
   return res;
 };
 
+exports.msgResponse400 = (res, msg) => {
+  res.status(400).json({
+    status: "fail",
+    message: msg,
+  });
+  return res;
+};
+
 exports.response400 = (res, err) => {
   res.status(400).json({
     status: "fail",

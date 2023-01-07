@@ -31,7 +31,13 @@ function ListContainer(props) {
           if (!x.submissionAlias) x.submissionAlias={};
           if (!information.link && x.link) link = x.link;
           if (information.link) link = information.link;
-          if (!x.actionItem) x.actionItem='';
+          if (!x.actionItem) {
+            x.actionItem=[
+              ... (!x.rubricId) ? ["no rubric set in canvas"] : [],
+              ... (!x.assignmentDueDate) ? ["no due date set in canvas"] : []
+            ].join("; ");
+
+          }
           let date = '';
           let type = '';
           // console.log({x})
@@ -72,8 +78,20 @@ function ListContainer(props) {
 //        if (date)
 //          console.log(`found date ${new Date(date)}`);
 
+          const queryData = {
+            name: x.name,
+            id: x.canvasId,
+            dueDate: date,
+            rubricId: x.rubricId,
+            submissionId: x.submissionId || x.data.submissionId,
+            matchingId: x.matchingId || x.data.matchingId,
+            subId: x.submissionAlias,
+            reviewStatus: x.reviewStatus
+          };
+
+
           return (
-            <Link key={JSON.stringify(x)} href={{pathname: link, query: { name: x.name, id: x.canvasId, dueDate: date, rubricId: x.rubricId, submissionId: x.data.submissionId, matchingId: x.data.id, subId: x.submissionAlias, reviewStatus: x.reviewStatus}}} className={styles.hov}>
+            <Link key={JSON.stringify(x)} href={{pathname: link, query: queryData}} className={styles.hov}>
               <TableRow className={styles.row}>
                 <TableCell className={styles.name}>{x.name} <div className={styles.actionItem}> {x.actionItem} </div></TableCell>
 

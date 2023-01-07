@@ -8,6 +8,9 @@ import PeerReviewMatrix from "./UI/PeerReviewMatrix";
 import Typography from '@material-ui/core/Typography';
 
 const TAsubmission = (props) => {
+  const {matchingId, assignmentRubric, reviewRubric, peerMatchings, presetComments, setPresetComments} = props;
+
+
   return (
     <div className={styles.sub}>
       {props.peerMatchings && props.submission && <div><Accordion defaultExpanded={true} className={styles.acc}>
@@ -19,11 +22,12 @@ const TAsubmission = (props) => {
         </AccordionDetails>
       </Accordion>
       <PeerReviewMatrix
-        assignmentRubric={props.assignmentRubric}
-        reviewRubric={props.reviewRubric}
-        peerMatchings={props.peerMatchings}
-        presetComments={props.presetComments}
-        setPresetComments={props.setPresetComments}
+        matchingId={matchingId}
+        assignmentRubric={assignmentRubric}
+        reviewRubric={reviewRubric}
+        peerMatchings={peerMatchings}
+        presetComments={presetComments}
+        setPresetComments={setPresetComments}
       /></div>}
     </div>
   );

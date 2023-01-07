@@ -116,9 +116,8 @@ function CheckMatching(props) {
 
       // find students with missing reviews
       const studentsWithMissingReviews = allMatchings
-        .filter(({review}) => !review)
+        .filter(({review,matchingType}) => !review && matchingType === "initial")
         .map(({userId}) => userLookup[userId])
-        .filter(u => u && u.enrollment === "StudentEnrollment")
         .map(({firstName,lastName}) => `${firstName} ${lastName}`);
 
       const countMissing = _.countBy(studentsWithMissingReviews,name => name)
@@ -131,24 +130,16 @@ function CheckMatching(props) {
 
       // find graders in the matching
       const matchedGraders = _.uniq(allMatchings
-        .map(({userId}) => userLookup[userId])
-        .filter(u => u && ["TaEnrollment","InstructorEnrollment"].includes(u.enrollment))
-        .map(({id}) => id)
+        .filter(({matchingType}) => matchingType !== "initial")
+        .map(({userId}) => userId)
       );
 
-      const allGraders = users
-        .filter(user => (user.enrollment == "TaEnrollment" || user.enrollment == "InstructorEnrollment"))
-        .map(({id}) => id);
-
-      // this should always be matchedGraders
-      const gradersForAdditionalMatching = matchedGraders.length ? matchedGraders : allGraders;
       if (!matchedGraders.length)
         console.log("warning, no matched graders");
 
       console.log({matchedGraders});
 
-      setGraders(gradersForAdditionalMatching);
-
+      setGraders(matchedGraders);
 
       // construct reviews
       const tempReviews = completeReviews
@@ -255,7 +246,7 @@ function CheckMatching(props) {
         {/* <Tree response={additionalMatchings} /> */}
         <div className={styles.matching}>
           Students that haven't submitted Peer Reviews:
-          <div><ol>{students.map(name => <li>{name}</li>)}</ol></div>
+          <div><ol>{students.map(name => <li key={name}>{name}</li>)}</ol></div>
           <br />
           <br />
           <ReloadMatchings matchings={peerReviews} setMatchingGrid={setMatchingGrid}/>

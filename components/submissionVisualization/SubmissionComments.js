@@ -4,25 +4,25 @@ import styles from "../styles/submissionview.module.scss";
 const SubmissionComments = ({peerReview, taReview, selectedComment, rubric}) => {
     const peerComments = peerReview ? peerReview.scores.map(score => score[1]) : []
     const taComments = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.comment) : []
-  
+
     const peerGrades = peerReview ? peerReview.scores.map(score => score[0]) : []
     const taGrades = taReview && taReview.instructorGrades ? taReview.instructorGrades.map(score => score.points) : []
     const maxPoints = rubric ? rubric.map(category => category.points) : []
-  
+
     const labels = rubric ? rubric.map(category => category.description) : []
-  
+
     // dynamically add/remove className based on current selectedComment
     return peerComments.map((peerComment, i) => (
-      <SubmissionComment 
-        peerGrade={peerGrades[i]} 
+      <SubmissionComment key={`peer-comments-${i}`}
+        peerGrade={peerGrades[i]}
         taGrade={taGrades[i]}
         maxPoints={maxPoints[i]}
         peerComment={peerComment}
         taComment={taComments[i]}
-        label={labels[i]}   
+        label={labels[i]}
         selectedComment={selectedComment}
-        index={i}     
-      /> 
+        index={i}
+      />
     ))
 }
 

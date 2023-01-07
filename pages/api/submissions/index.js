@@ -26,8 +26,8 @@ const submissionsHandler = async (req, res) => {
             where: params,
           });
         } else {
-          if (!req.query.groupId && !req.query.assignmentId) {
-            throw new Error("Query parameter groupId OR assignmentId required");
+          if (!req.query.submissionId && !req.query.groupId && !req.query.assignmentId) {
+            throw new Error("Query parameter submissionId OR groupId OR assignmentId required");
           }
           params = {};
           if (req.query.assignmentId) {
@@ -35,6 +35,9 @@ const submissionsHandler = async (req, res) => {
           }
           if (req.query.groupId) {
             params.groupId = req.query.groupId;
+          }
+          if (req.query.submissionId) {
+            params.canvasId = req.query.submissionId;
           }
           submissions = await db.assignment_submissions.findAll({
             where: params,

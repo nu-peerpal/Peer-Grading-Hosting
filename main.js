@@ -24,6 +24,11 @@ const AUTH_HOURS = 16;
 // const Database = require("ltijs-sequelize");
 
 
+const translateUser = async (canvasId) => {
+  const result = await db["users"].findAll({where: {canvasId}});
+  // YOU ARE HERE
+}
+
 const response401 = (res, msg = "unauthorized access") => {
   res.status(401).json({
     status: "fail",
@@ -46,9 +51,9 @@ app
     server.enable('trust proxy');
 
     //connecting to database, connect function defined in /models/index.js
-    (async () => {
-      await db.connect();
-    })();
+  //  (async () => {
+  //    await db.connect();
+  //  })();
 
     server.post("*", async function(req, res, next) {
       try {
@@ -73,10 +78,10 @@ app
         var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
         // console.log('lti provider:',provider)
-        console.log('lti request: ',req);
+        console.log('lti request.body: ',req.body);
         provider.valid_request(req, (err, is_valid) => {
           if (is_valid) {
-//            console.log({providerBody:provider.body});
+            console.log({providerBody:provider.body});
             //copying all the useful data from the provider to what will be stored for the user
             userData.user_id = provider.body.custom_canvas_user_id;
             userData.context_id = provider.body.custom_canvas_course_id;
@@ -170,6 +175,26 @@ app
 
       if (_.isEmpty(data)) {
         console.log("UNAUTHENTICATED DELETE DENIED")
+        return response401(res);
+      }
+
+      return handle(req, res);
+    });
+
+    server.put("*", async (req, res) => {
+
+      if (req.cookies && req.cookies.authToken){
+        var nonce = req.cookies.authToken;
+        const userData = await keyv.get(nonce);
+        if (!_.isEmpty(userData)) {
+          req.userData = userData;
+          console.log("AUTHENTICATED PUT.")
+        }
+      }
+      var data  = await req.userData;
+
+      if (_.isEmpty(data)) {
+        console.log("UNAUTHENTICATED PUT DENIED")
         return response401(res);
       }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../styles/submissionview.module.scss";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -20,14 +20,170 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
 const axios = require("axios");
 
+// console.log('what reviews should look like', js.reviews[0])
+function Grading(props) {
+  const {rubric, matching, disabled} = props;
+  const [reviewData,setReviewData] = useState(null);
+
+  useEffect(() => {
+    axios.get(`/api/peerReviews/${matching}`).then(res => {
+      let review = res.data.data.review;
+      setReviewData(getInitialValues(rubric, (review) ? review.reviewBody : null));
+    });
+ }, []);
+
+ var maxScore = getMaxScore(rubric);
+
+ if (!reviewData)
+   return null;
+
+ return (
+   <Formik
+     enableReinitialize= {true}
+     initialValues={reviewData}
+     onSubmit={(data, actions) => {
+       axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+         console.log('review post:', res);
+         actions.setSubmitting(false);
+         // if (res.status === 201) {
+         //   document.getElementById("submitted").innerHTML = "Submitted";
+         //   document.getElementById("submitted").style.display = "";
+         // }
+         actions.resetForm({values: data});
+         setReviewData(data);
+       });
+       // fetch(`/api/peerReviews/${matching}`, {
+       //   method: "PATCH",
+       //   body: JSON.stringify(getFinalScore(data, rubric)),
+       // });
+     }}
+   >
+     {({ values, handleChange, handleSubmit, dirty }) => (
+       <Form onSubmit={handleSubmit} >
+         <TableContainer component={Paper}>
+           <Table aria-label='spanning table'>
+             <TableHead>
+               <TableRow>
+                 <TableCell>Criteria</TableCell>
+                 <TableCell align='center'>Comments</TableCell>
+                 <TableCell align='center'>Grade</TableCell>
+               </TableRow>
+             </TableHead>
+             <TableBody>
+               {rubric.map((row, index) => (
+                 <TableRow key={row["description"]}>
+                   {/* cells for criteria */}
+                   <TableCell>
+                     <Tooltip title={row["long_description"]} placement="bottom">
+                       <p>{row["description"]}<br /><span className={styles.btw}>(Hover for details)</span></p>
+                     </Tooltip>
+                   </TableCell>
+
+                   {/* row for comments */}
+                   <TableCell align='center' style={{ width: 600 }}>
+                     <Field
+                       name={"Comments[" + index + "]"}
+                       type='input'
+                       rowsMin={4}
+                       value={values.Comments[index]}
+                       onKeyUp={handleChange}
+                       id='outlined-basic'
+                       variant='outlined'
+                       required={true}
+                       as={TextareaAutosize}
+                       className={styles.pms}
+                       disabled={disabled}
+                     />
+                   </TableCell>
+
+                   {/* cells for grades */}
+                   <TableCell style={{ width: 100 }} align='center'>
+                     <Field
+                       name={"Grades[" + index + "]"}
+                       type='number'
+                       value={values.Grades[index]}
+                       onKeyUp={handleChange}
+                       InputProps={{
+                         inputProps: { min: 0, max: row["points"], step: 0.1 },
+                       }}
+                       id='outlined-basic'
+                       variant='outlined'
+                       required={true}
+                       as={TextField}
+                       className={styles.pms}
+                       disabled={disabled}
+                     />
+                     <br></br>/{row["points"]}
+                   </TableCell>
+                 </TableRow>
+               ))}
+               {/* <TableRow>
+                   <TableCell>Comments:</TableCell>
+                   <TableCell align="center" colspan="2">
+                     <Field
+                       name="Overall Comments"
+                       type="input"
+                       label="Overall Comments"
+                       rowsMin={4}
+                       value={values.FinalComment[0]}
+                       id="outlined-basic"
+                       variant="outlined"
+                       required={true}
+                       as={TextareaAutosize}
+                       class={styles.pms}
+                     />
+                   </TableCell>
+                 </TableRow> */}
+             </TableBody>
+             <TableFooter>
+               <TableRow>
+                 <TableCell className={styles.save} style={{ color: "black" }}>
+                   Total Score: {getTotalScore(values.Grades)} / {maxScore}
+                 </TableCell>
+                 <TableCell>
+                   <Button
+                     className={styles.save}
+                     disabled={(!dirty && disabled)}
+                     type='submit'
+                   >
+                     Save
+                   </Button>
+                 </TableCell>
+                 { (dirty) ?
+                   <TableCell
+                     className={styles.save}
+                     style={{ color: "red" }}
+                   >
+                     not saved
+                   </TableCell>
+                 :
+                   <TableCell
+                     className={styles.save}
+                     style={{ color: "green" }}
+                   >
+                     saved
+                   </TableCell>
+                 }
+               </TableRow>
+             </TableFooter>
+           </Table>
+         </TableContainer>
+       </Form>
+     )}
+   </Formik>
+ );
+}
+
 class Submission extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
   render() {
-    var gradingrubric = [];
-    this.props.rubric.map((x) => gradingrubric.push(x));
+    const {rubric,matchingId,disabled} = this.props;
+
+    // shallow cop
+//    var gradingrubric = [...this.props.rubric || []];
 
     return (
       <div className={styles.sub}>
@@ -40,7 +196,7 @@ class Submission extends React.Component {
           </AccordionDetails>
         </Accordion>
         <br />
-        {Grading(gradingrubric, this.props.matchingId, this.props.review, this.props.disabled)}
+        {!rubric || <Grading rubric={rubric} matching={matchingId} disabled={disabled} />}
       </div>
     );
   }
@@ -93,136 +249,6 @@ function getFinalScore(data, rubric) {
     body.reviewBody.scores.push([data.Grades[i], data.Comments[i]]);
   }
   body.reviewBody.comments = data.FinalComment;
+  console.log({finalComment:body.reviewBody.comments});
   return body;
-}
-
-// console.log('what reviews should look like', js.reviews[0])
-function Grading(rubric, matching, review, disabled) {
-  var maxScore = getMaxScore(rubric);
-  return (
-    <Formik
-      enableReinitialize= {true}
-      initialValues={getInitialValues(rubric, review)}
-      onSubmit={(data, { setSubmitting }) => {
-        setSubmitting(true);
-        axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
-          console.log('rubric post:', res);
-          // setSubmitting(false);
-          if (res.status === 201) {
-            document.getElementById("submitted").innerHTML = "Submitted";
-            document.getElementById("submitted").style.display = "";
-          }
-        });
-        // fetch(`/api/peerReviews/${matching}`, {
-        //   method: "PATCH",
-        //   body: JSON.stringify(getFinalScore(data, rubric)),
-        // });
-      }}
-    >
-      {({ values, handleChange, dirty }) => (
-        <Form>
-          <TableContainer component={Paper}>
-            <Table aria-label='spanning table'>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Criteria</TableCell>
-                  <TableCell align='center'>Comments</TableCell>
-                  <TableCell align='center'>Grade</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rubric.map((row, index) => (
-                  <TableRow key={row["description"]}>
-                    {/* cells for criteria */}
-                    <TableCell>
-                      <Tooltip title={row["long_description"]} placement="bottom">
-                        <p>{row["description"]}<br /><span className={styles.btw}>(Hover for details)</span></p>
-                      </Tooltip>
-                    </TableCell>
-
-                    {/* row for comments */}
-                    <TableCell align='center' style={{ width: 600 }}>
-                      <Field
-                        name={"Comments[" + index + "]"}
-                        type='input'
-                        rowsMin={4}
-                        value={values.Comments[index]}
-                        onKeyUp={handleChange}
-                        id='outlined-basic'
-                        variant='outlined'
-                        required={true}
-                        as={TextareaAutosize}
-                        className={styles.pms}
-                        disabled={disabled}
-                      />
-                    </TableCell>
-
-                    {/* cells for grades */}
-                    <TableCell style={{ width: 100 }} align='center'>
-                      <Field
-                        name={"Grades[" + index + "]"}
-                        type='number'
-                        value={values.Grades[index]}
-                        onKeyUp={handleChange}
-                        InputProps={{
-                          inputProps: { min: 0, max: row["points"], step: 0.1 },
-                        }}
-                        id='outlined-basic'
-                        variant='outlined'
-                        required={true}
-                        as={TextField}
-                        className={styles.pms}
-                        disabled={disabled}
-                      />
-                      <br></br>/{row["points"]}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {/* <TableRow>
-                    <TableCell>Comments:</TableCell>
-                    <TableCell align="center" colspan="2">
-                      <Field
-                        name="Overall Comments"
-                        type="input"
-                        label="Overall Comments"
-                        rowsMin={4}
-                        value={values.FinalComment[0]}
-                        id="outlined-basic"
-                        variant="outlined"
-                        required={true}
-                        as={TextareaAutosize}
-                        class={styles.pms}
-                      />
-                    </TableCell>
-                  </TableRow> */}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TableCell className={styles.save} style={{ color: "black" }}>
-                    Total Score: {getTotalScore(values.Grades)} / {maxScore}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      className={styles.save}
-                      disabled={(!dirty && disabled)}
-                      type='submit'
-                    >
-                      Save
-                    </Button>
-                  </TableCell>
-                  <TableCell
-                    id='submitted'
-                    className={styles.save}
-                    style={{ color: "green", display: "none" }}
-                  >
-                    Submitted
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        </Form>
-      )}
-    </Formik>
-  );
 }

@@ -21,7 +21,7 @@ const getData = async url => {
 const PeerReview = (props) => {
   const { userId, courseId, courseName, assignment, roles } = useUserData();
   const [submission, setSubmission] = useState("");
-  const [rubric, setRubric] = useState([]);
+  const [rubric, setRubric] = useState(null);
   const [isDocument, setIsDocument] = useState(false);
   const [review, setReview] = useState();
   const [taReviewReview, setTaReviewReview] = useState({});
@@ -48,7 +48,7 @@ const PeerReview = (props) => {
       console.log('rubric data:',rubricData);
       console.log('matching data:',matchingData);
 
-      const reviewReview = matchingData["reviewReview"];
+      const reviewReview = matchingData.reviewReview;
       console.log('taReviewReview:',reviewReview);
       setTaReviewReview(reviewReview);
 
@@ -99,36 +99,36 @@ const PeerReview = (props) => {
 
   return (
     <div className="Content">
-      <Container name={"Grade Submission " + subId}>
+      {!rubric || <Container name={"Grade Submission " + subId}>
+        { console.log({rubric}) }
         {assignmentCompleted ?
-          <SubmissionCompleted 
-            instructor={instructor} 
-            taReviewReview={taReviewReview} 
-            matchingId={matchingId} 
-            dueDate={reviewDueDateFormatted} 
-            submission={submission} 
-            isDocument={isDocument} 
-            rubric={rubric} 
-            subId={subId} 
-            review={review} 
-            disabled={isDisabled()} 
+          <SubmissionCompleted
+            instructor={instructor}
+            taReviewReview={taReviewReview}
+            matchingId={matchingId}
+            dueDate={reviewDueDateFormatted}
+            submission={submission}
+            isDocument={isDocument}
+            rubric={rubric}
+            subId={subId}
+            review={review}
+            disabled={isDisabled()}
           />
           :
-          <Submission 
-            instructor={instructor} 
-            taReviewReview={taReviewReview} 
-            matchingId={matchingId} 
-            dueDate={reviewDueDateFormatted} 
-            submission={submission} 
-            isDocument={isDocument} 
-            rubric={rubric} 
-            subId={subId} 
-            review={review} 
-            disabled={isDisabled()} 
+          <Submission
+            instructor={instructor}
+            taReviewReview={taReviewReview}
+            matchingId={matchingId}
+            dueDate={reviewDueDateFormatted}
+            submission={submission}
+            isDocument={isDocument}
+            rubric={rubric}
+            subId={subId}
+            review={review}
+            disabled={isDisabled()}
           />
         }
-      </Container>
-
+      </Container>}
       <StudentViewOutline SetIsStudent={props.SetIsStudent} />
     </div>
   );
