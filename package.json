@@ -45,7 +45,7 @@
     "ltijs-sequelize": "^1.0.6",
     "mailslurp-client": "^12.4.4",
     "net": "^1.0.2",
-    "next": "^9.5.5",
+    "next": "^12.1.0",
     "next-connect": "^0.8.1",
     "next-google-fonts": "^1.2.1",
     "next-server": "^9.0.5",
