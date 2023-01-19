@@ -33,8 +33,8 @@ function ListContainer(props) {
           if (information.link) link = information.link;
           if (!x.actionItem) {
             x.actionItem=[
-              ... (!x.rubricId) ? ["no rubric set in canvas"] : [],
-              ... (!x.assignmentDueDate) ? ["no due date set in canvas"] : []
+              ... (!x.rubricId && !x.reviewStatus) ? ["no rubric set in canvas"] : [],
+              ... (!x.assignmentDueDate && !x.reviewStatus) ? ["no due date set in canvas"] : []
             ].join("; ");
 
           }

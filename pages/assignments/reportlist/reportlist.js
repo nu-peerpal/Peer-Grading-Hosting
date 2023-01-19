@@ -86,7 +86,7 @@ const ReviewReports = () => {
           canvasId: submission.canvasId,
           submissionType: submission.submissionType,
           grade: grade,
-          report: report,
+          report: null, //report,
           s3Link: submission.s3Link,
           groupId: submission.groupId,
         }
@@ -111,7 +111,7 @@ const ReviewReports = () => {
         return {
           ...((dbReport[0]) ? {id: dbReport[0].id} : {}), // add old report id if there is one.
           grade: report[1],
-          report: report[2],
+          report: null, //report[2],
           assignmentId: parseInt(assignmentId),
           userId: report[0]
         }

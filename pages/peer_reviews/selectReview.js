@@ -37,7 +37,7 @@ const SelectReview = (props) => {
           data: {...m,matchingId:m.id},
           reviewStatus: parseInt(reviewStatus),
           submissionAlias: i+1,
-          actionItem: "submit peer review by due date"
+          actionItem: (parseInt(reviewStatus) < 6) ? "submit peer review by due date" : null
         }));
 
       setToDoReviews(toDoReviews)
