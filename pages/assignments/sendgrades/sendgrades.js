@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { useUserData } from "../../../components/storeAPI";
 import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
+const _ = require("lodash");
 
 function SendGrades(props) {
   const { userId, courseId, courseName, assignment } = useUserData();
@@ -63,70 +64,62 @@ function SendGrades(props) {
   }
 
   useEffect(() => {
+    console.log({courseId});
     Promise.all([axios.get(`/api/users?courseId=${courseId}&enrollment=StudentEnrollment`),
         axios.get(`/api/submissions?assignmentId=${assignmentId}`),
-        axios.get(`/api/reviewGradesReports?assignmentId=${assignmentId}`),
+        axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=initial`),
         axios.get(`/api/peerReviews?assignmentId=${assignmentId}&matchingType=appeal`),
         axios.get(`/api/groupEnrollments?assignmentId=${assignmentId}`)])
     .then(responseData => {
         let userData = responseData[0].data.data;
         let submissionsData = responseData[1].data.data;
-        let reviewGradesData = responseData[2].data.data;
+        let reviewData = responseData[2].data.data;
         let appealData = responseData[3].data.data;
         let groupData = responseData[4].data.data;
-        setStudents(userData);
-        console.log({userData})
-        console.log({submissionsData})
-        console.log({reviewGradesData})
-        console.log({appealData})
+        console.log({userData});
+        console.log({submissionsData});
+        console.log({reviewData});
+        console.log({appealData});
         console.log({groupData});
-        // match users to submissions
-        userData.forEach(student => {
-            let enrollment = groupData.filter(x => x.userId == student.canvasId);
-            if (enrollment.length > 0) {
-                let submission = submissionsData.filter(sub => sub.canvasId == enrollment[0].submissionId)
-                console.log({submission})
-                if (submission.length == 0) { // empty assignment, didn't turn it in
-                    student.grade = 'not submitted';
-                } else {
-                    let appealsFound = appealData.filter(app => app.submissionId == submission[0].canvasId);
-                    if (appealsFound.length == 0) {
-                        student.grade = submission[0].grade;
-                    } else {
-                        let appealGrade = 0
-                        for (var i = 0; i < appealsFound[0].review.reviewBody.scores.length; i++) {
-                            appealGrade = appealGrade + appealsFound[0].review.reviewBody.scores[i][0];
-                        }
-                        student.grade = appealGrade;
-                    }
 
-                }
-            } else { // user did not submit assignment
-                student.grade = 'not submitted';
-            }
-            // get review grades
-            let userReviews = reviewGradesData.filter(review => review.userId == student.canvasId);
-            console.log({userReviews})
-            if (userReviews.length > 0) {
-                let revGrade;
-                let index = 0;
-                userReviews.forEach((review, i) => {
-                    if (!review.report.includes("(Ungraded)")) {
-                        index = i;
-                    }
-                });
-                console.log({userReviews})
-                if (userReviews[index].report.includes("(Ungraded)")) {
-                    revGrade = ["Ungraded"];
-                } else {
-                    revGrade = userReviews[index].report.match(/\d+\.\d+|\d+\b|\d+(?=\w)/g).map(function (v) {return +v;});
-                    // console.log({revGrade})
-                }
-                student.reviewGrade = revGrade[0];
-            } else {
-                student.reviewGrade = "reviews not submitted"
-            }
+        const submissionForUser = Object.fromEntries(groupData
+          .map(({userId,submissionId}) => [userId,submissionId])
+        );
+
+        const originalGradeForSubmission = Object.fromEntries(submissionsData
+          .map(({canvasId,grade}) => [canvasId,grade])
+        );
+
+        const appealGradeForSubmission = Object.fromEntries(appealData
+          .map(({review,submissionId}) => [
+            submissionId,
+            _.sum(review.reviewBody.scores.map(([score,comment]) => score))
+          ])
+        );
+
+        const gradeForSubmission = {
+          ...originalGradeForSubmission,
+          ...appealGradeForSubmission
+        };
+
+        const reviewGradeForUser = Object.fromEntries(reviewData
+          .filter(({reviewReview}) => reviewReview)
+          .map(({reviewReview,userId}) => [
+            userId,
+            _.sum(reviewReview.reviewBody.map(({points}) => parseFloat(points)))
+          ])
+        );
+
+
+        userData.forEach(student => {
+          const userId = student.canvasId;
+          const submissionId = submissionForUser[userId];
+
+          student.grade = gradeForSubmission[submissionId] || 0;
+          student.reviewGrade = reviewGradeForUser[userId] || 0;
         });
+
+        setStudents(userData);
         setUploadReady(true);
     })
   }, []);
@@ -143,7 +136,7 @@ function SendGrades(props) {
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
-                    <Typography style={{textAlign: "left"}}>{user.firstName + " " + user.lastName} Grade: {user.grade}, Review Grade: {user.reviewGrade}</Typography>
+                    <Typography style={{textAlign: "left"}}>{user.firstName + " " + user.lastName}: Grade: {user.grade}, Review Grade: {user.reviewGrade}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div className={styles.details}>
