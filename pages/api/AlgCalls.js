@@ -1,4 +1,5 @@
 const axios = require("axios");
+const _ = require('lodash');
 
 // ToDo: change input from json to parameters and form json
 //       create filters to replace tuples with arrays
@@ -49,8 +50,9 @@ async function ensureSufficientReviews(graders, reviews, matching) {
   return await callAlg("ensureSufficientReviews",{graders,reviews,matching});
 }
 
-async function submissionReports(graders, reviews, rubric, numRounds = 20, bonus = 1.5) {
-  return await callAlg("submissionReports",{graders,reviews,rubric,numRounds,bonus});
+async function submissionReports(graders, reviews, rubric, numRounds = 20, bonus = 0.05) {
+  const total = _.sum(rubric.map(([pts,desc]) => pts));
+  return await callAlg("submissionReports",{graders,reviews,rubric,numRounds,bonus:total * bonus});
 }
 
 
