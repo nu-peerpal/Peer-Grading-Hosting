@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { FormatColorResetTwoTone } from "@material-ui/icons";
 import ButtonExample from '../../pages/peer_reviews/prbutton'
+import {formatTimestampLikeCanvas} from "../../components/dateUtils";
 // import TAGrading from "../grading/tagrading";
 // import ReviewGradingTable from "../../components/UI/ReviewGradingTable";
 
@@ -30,10 +31,7 @@ const PeerReview = (props) => {
   const router = useRouter()
   const { submissionId, id, rubricId, matchingId, subId, dueDate } = router.query;
 
-  const currentDate = new Date();
-  const currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
-  const reviewDueDate = new Date(dueDate);
-  const reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
+  const reviewDueDateFormatted = formatTimestampLikeCanvas(dueDate);
   const assignmentCompleted = isDisabled();
 
   useEffect(() => {

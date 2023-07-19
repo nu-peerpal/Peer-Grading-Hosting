@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { FormatColorResetTwoTone } from "@material-ui/icons";
+import {formatTimestampLikeCanvas} from "../../components/dateUtils";
 
 const getData = async url => {
     const res = await fetch(url);
@@ -31,12 +32,9 @@ const getData = async url => {
   
     // let presetComments = ReviewGradingTable;
     // console.log('presetComments:',presetComments);
-  
-    // const current = new Date();
-    // const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+
   
     var currentDate = new Date();
-    var currentDateFormatted = currentDate.getFullYear() + '-' + (currentDate.getMonth()+1) + '-' + currentDate.getDate() +' '+ currentDate.getHours()+':'+ currentDate.getMinutes()+':'+ currentDate.getSeconds();
     // const newCurrentDate = "Current Date and Time: "+date;
     // console.log('currentDateFormatted:',currentDateFormatted);
     // console.log('currentDate.getTime():',currentDate.getTime());
@@ -45,7 +43,7 @@ const getData = async url => {
     // console.log('reviewDueDate:',reviewDueDate)
     // console.log('reviewDueDate.getTime():',reviewDueDate.getTime());
   
-    var reviewDueDateFormatted = reviewDueDate.getFullYear() + '-' + (reviewDueDate.getMonth()+1) + '-' + reviewDueDate.getDate() +' '+ reviewDueDate.getHours()+':'+ reviewDueDate.getMinutes()+':'+ reviewDueDate.getSeconds();
+    var reviewDueDateFormatted = formatTimestampLikeCanvas(dueDate);
   
     useEffect(() => {
       (async () => {

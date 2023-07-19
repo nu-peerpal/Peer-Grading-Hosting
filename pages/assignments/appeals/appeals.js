@@ -13,6 +13,7 @@ import StudentViewOutline from '../../../components/studentViewOutline';
 import ReloadMatchings from "../../../components/reloadMatchings";
 const axios = require("axios");
 import SubmitButton from '../../../components/submitButton';
+import {formatTimestampLikeCanvas} from "../../../components/dateUtils";
 
 
 function Appeals(props) {
@@ -27,11 +28,6 @@ function Appeals(props) {
   const [peerReviews, setPeerReviews] = useState([]);
   const [submitSuccess, setSubmitSuccess] = useState(true)
 
-  function formatTimestamp(timestamp) {
-    var d = new Date(timestamp);
-    return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
-
-  }
   useEffect(() => {
     Promise.all([
       axios.get(`/api/assignments/${assignmentId}`),
@@ -41,7 +37,7 @@ function Appeals(props) {
       let peerReviewData = data[1].data.data
       setPeerReviews(peerReviewData);
       if (assignmentData.appealsDueDate) {
-        let formattedDate = formatTimestamp(assignmentData.appealsDueDate);
+        let formattedDate = formatTimestampLikeCanvas(assignmentData.appealsDueDate);
         setLoadedDeadline(formattedDate);
         setExistingDueDate(true);
         console.log('got date:', formattedDate)
