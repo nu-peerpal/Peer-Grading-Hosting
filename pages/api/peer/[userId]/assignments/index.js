@@ -44,7 +44,7 @@ const assignmentsHandler = async (req, res) => {
                                 userId
                             }
                         });
-                        if (enrollments.length > 0 && enrollments[0]?.submissionId) {
+                        if (enrollments.length > 0 && enrollments[0] && enrollments[0].submissionId) {
                             assignment.submissionId = enrollments[0].submissionId;
                         }
                         return assignment;
