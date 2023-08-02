@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import StudentViewOutline from '../components/studentViewOutline';
 import { useUserData } from "../components/storeAPI";
+import {formatRoot} from "../components/apiCallUtils";
 const axios = require("axios");
 
 function Grades(props) {
@@ -16,7 +17,7 @@ function Grades(props) {
       return;
     }
 
-    axios.get(`/api/assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
+    axios.get(formatRoot(props.ISstudent, userId) + `assignments?graded=true&courseId=${courseId}`).then(assignmentData => {
       let unsorted_Assignments = assignmentData.data.data
       unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
       setGradedAssignments(unsorted_Assignments);

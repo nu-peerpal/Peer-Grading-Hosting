@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ListContainer from "../components/listcontainer";
 import { useUserData } from "../components/storeAPI";
 import StudentViewOutline from '../components/studentViewOutline';
+import {formatRoot} from "../components/apiCallUtils";
 const axios = require("axios");
 
 const CompletedAssignments = (props) => {
@@ -15,7 +16,7 @@ const CompletedAssignments = (props) => {
         return;
       }
 //    if (props.ISstudent){
-      axios.get(`/api/assignments?courseId=${courseId}&graded=true`).then(assignmentData => {
+      axios.get(formatRoot(props.ISstudent, userId) + `assignments?courseId=${courseId}&graded=true`).then(assignmentData => {
         console.log({assignmentData});
         let unsorted_Assignments = assignmentData.data.data
         unsorted_Assignments.sort((a,b) => b.assignmentDueDate - a.assignmentDueDate).reverse()
