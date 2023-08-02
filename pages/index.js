@@ -170,11 +170,6 @@ function Dashboard(props) {
           .then(response => {
             const allCanvasAssignments = response.data.data;
 
-            console.log({allCanvasAssignments});
-
-            // let today = new Date();
-            // today.setHours(today.getHours() - 1); // add 1 hour offset
-
             const finishedAssignmentIds = assignments
               .filter(({reviewStatus}) => reviewStatus >= 9)
               .map(({canvasId}) => parseInt(canvasId));

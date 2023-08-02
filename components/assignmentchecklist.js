@@ -7,6 +7,7 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import Switch from '@material-ui/core/Switch';
 import axios from 'axios';
+import {formatTimestampLikeCanvas, formatTimestampWithWeekday} from "./dateUtils";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,11 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function formatTimestamp(timestamp) {
-  var d = new Date(timestamp);
-  return ((d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear());
 
-}
 function getSteps() {
   return [
     ["Initialize: ", { 'link': '/assignments/initialchecklist/initialchecklist' }],
@@ -137,7 +134,7 @@ function assignmentchecklist(props) {
                   {/* TO DO : CHANGE INLINE STYLING */}
                   <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <div style={{ marginRight: '10px' }}>{label[0]}</div>
-                    {formatTimestamp(label[0] == "Assignment Due Date: " ? dueDate : prDueDate)}
+                    {formatTimestampWithWeekday(label[0] === "Assignment Due Date: " ? dueDate : prDueDate)}
                   </div>
                 </StepLabel>
 

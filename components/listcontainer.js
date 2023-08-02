@@ -6,13 +6,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Link from 'next/link'
+import {formatTimestampLikeCanvas} from "./dateUtils";
 
 function Info(props) { // Display list item description
   const dueDate = props.dueDate;
   const info = props.info;
   if (dueDate) {
-    let newDate = new Date(dueDate);
-    let dateText = props.type + " Due: " + (newDate.getMonth()+1)+'-' + newDate.getDate()+'-' + newDate.getFullYear();
+    // let newDate = new Date(dueDate);
+    let dateText = props.type + " Due " + formatTimestampLikeCanvas(dueDate);
     return <TableCell className={styles.info} > {dateText} </TableCell>
   }
   else {

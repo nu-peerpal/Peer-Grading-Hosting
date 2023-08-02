@@ -13,6 +13,7 @@ import { PanoramaFishEye } from "@material-ui/icons";
 import StudentViewOutline from '../../../components/studentViewOutline';
 const axios = require("axios");
 import SubmitButton from '../../../components/submitButton';
+import {formatTimestampLikeCanvas, formatTimestampWithWeekday} from "../../../components/dateUtils";
 
 
 const InitialChecklist = (props) => {
@@ -33,11 +34,6 @@ const InitialChecklist = (props) => {
   const [submitResponse, setSubmitResponse] = React.useState("");
   const [submitSuccess, setSubmitSuccess] = React.useState(true)
   // new info stop
-  let localDate = new Date(dueDate);
-  // const courseId = 1 // hardcoded
-  // const assignmentId = 7
-  // const assignmentName = "Peer Reviews Static"
-  // console.log({rubricOptions});
 
 
   async function uploadRubrics(rawRubrics) {
@@ -193,12 +189,12 @@ const InitialChecklist = (props) => {
               Due Dates
             </div>
             <div className={styles.column__content}>
-              Due date for the original assignment:
+              Original assignment due:
               <div>
-                <p>{(localDate.getMonth() + 1) + '/' + localDate.getDate() + '/' + localDate.getFullYear()}</p>
+                <p>{formatTimestampWithWeekday(dueDate)}</p>
               </div>
               <div style={{marginTop: '25px'}}>
-              Due date for the peer review assignment:
+              Peer review assignment due:
               <form noValidate>
                 <TextField
                   id="datetime-local"
@@ -212,6 +208,7 @@ const InitialChecklist = (props) => {
                   }}
                 />
               </form>
+              <div>{formatTimestampWithWeekday(prDueDate)}</div>
               </div>
 
             </div>
