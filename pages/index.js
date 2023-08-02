@@ -9,6 +9,7 @@ import Grades from "./grades";
 
 const axios = require("axios");
 import _ from "lodash";
+import {formatRoot} from "../components/apiCallUtils";
 
 function Dashboard(props) {
   const [canvasAssignments, setCanvasAssignments] = useState();
@@ -159,7 +160,7 @@ function Dashboard(props) {
       // don't load anything until userData is available
       console.log(`useEffect: found courseId ${courseId}`);
 
-      const assignments = (await axios.get(`/api/assignments?courseId=${courseId}`))
+      const assignments = (await axios.get(formatRoot(props.ISstudent, userId) + `assignments?courseId=${courseId}`))
         .data.data;
 
       // setup canvas courses
