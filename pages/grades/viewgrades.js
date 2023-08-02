@@ -148,7 +148,7 @@ function ViewAssignmentGrade(props) {
                         anonymous="true"
                       />
                       <br />
-                      <ToggleAppeal assignmentId={id} userId={userId} />
+                      <ToggleAppeal assignmentId={id} userId={userId} ISstudent={props.ISstudent} />
                     </div>
                 </AccordionDetails>
               </Accordion>

@@ -10,6 +10,7 @@ import styles from './grades.module.scss';
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
+import {formatRoot} from "../../components/apiCallUtils";
 const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm');
 const axios = require("axios");
@@ -27,7 +28,7 @@ function ToggleAppeal(props) {
   async function setup() {
     try {
       const results = await Promise.all([
-        axios.get(`/api/assignments/${id}`),
+        axios.get(formatRoot(props.ISstudent, userId) + `assignments/${id}`),
         axios.get(`/api/peerReviews?assignmentId=${id}&submitterId=${userId}`)
       ]);
 
