@@ -10,8 +10,16 @@ export const config = {
 
 async function checkAppealDeadline({assignmentId}) {
     const assignment = await db.assignments.findByPk(assignmentId);
+    const now = new Date();
     const appealDeadline = assignment.appealsDueDate;
-    // TODO: If current date < appeal deadline, throw error
+    // TODO: add 59-second grace period?
+    // Might want to implement 59-second grace period as described
+    // in the "Due at End of Minute" section of this document:
+    // https://community.canvaslms.com/t5/Higher-Ed-Canvas-Users/Adjust-All-Assignment-Dates-on-One-Page/ba-p/263117
+    // I believe that this could be implemented by adding 59 seconds to "appealDeadline" here.
+    if (appealDeadline < now) {
+        throw new Error("Past appeal deadline")
+    }
 }
 
 async function getAppeals(submissionId,assignmentId) {
