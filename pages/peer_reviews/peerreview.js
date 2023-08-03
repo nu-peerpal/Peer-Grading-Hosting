@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { FormatColorResetTwoTone } from "@material-ui/icons";
 import {formatTimestampLikeCanvas} from "../../components/dateUtils";
-import {formatPrefix} from "../../components/apiCallUtils";
+import {formatPrefix, formatPrefixAndRoot} from "../../components/apiCallUtils";
 // import TAGrading from "../grading/tagrading";
 // import ReviewGradingTable from "../../components/UI/ReviewGradingTable";
 
@@ -37,7 +37,7 @@ const PeerReview = (props) => {
   useEffect(() => {
     (async () => {
       const [submission, matchingData, rubricData ] = await Promise.all([
-        getData(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`),
+        getData(formatPrefixAndRoot(props.ISstudent, userId, 'submissionsForReview', 'submissions') + `?&submissionId=${submissionId}&assignmentId=${id}`),
         getData(formatPrefix(props.ISstudent, userId) + `peerReviews/${matchingId}`),
         getData(`/api/rubrics/${rubricId}`),
         // getData(`/api/assignments/${assignmentName}`),

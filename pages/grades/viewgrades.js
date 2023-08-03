@@ -56,7 +56,7 @@ function ViewAssignmentGrade(props) {
         console.log({submissionId});
 
         const results = await Promise.all([
-          axios.get(`/api/submissions?submissionId=${submissionId}&assignmentId=${id}`),
+          axios.get(formatPrefix(props.ISstudent, userId) + `submissions?submissionId=${submissionId}&assignmentId=${id}`),
           axios.get(formatPrefixAndRoot(props.ISstudent, userId, 'submissionReviews', 'peerReviews') + `?assignmentId=${id}&submissionId=${submissionId}&done=true`),
           axios.get(formatPrefix(props.ISstudent, userId) + `appeal?submissionId=${submissionId}&assignmentId=${id}`),
           axios.get(`/api/rubrics/${rubricId}`),
