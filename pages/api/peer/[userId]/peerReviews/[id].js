@@ -16,18 +16,23 @@ const peerReviewHandler = async (req, res) => {
 
         switch (req.method) {
             case "GET":
-                if (row.userId !== req.query.userId) { // FIXME: might have to say row.dataValues.userId here instead
+                if (row.dataValues.userId !== req.query.userId) {
                     // Calling user did not do this review,
                     // so make sure that calling user submitted the thing being reviewed
                     const enrollments = await db.group_enrollments.findAll({
                         where: {
                             submissionId: row.submissionId,
-                            userId: row.userId,
+                            userId: req.query.userId,
                         }
                     });
                     if (enrollments.length < 0) {
                         throw new Error("Review is not associated with user requesting it");
                     }
+                    // The calling user is the submitter, not the reviewer, so they should not be able to know the
+                    // reviewer's id
+                    delete row.dataValues.userId;
+                    delete row._previousDataValues.userId;
+                    row._options.attributes = row._options.attributes.filter(attr => attr !== 'userId');
                 }
                 responseHandler.response200(res, row);
                 break;
