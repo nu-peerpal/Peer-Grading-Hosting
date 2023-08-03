@@ -26,6 +26,8 @@ import SubmissionComments from "./SubmissionComments";
 import { palette } from '@material-ui/system';
 const axios = require("axios");
 import _ from "lodash";
+import {formatPrefix} from "../apiCallUtils";
+import {useUserData} from "../storeAPI";
 
 /*
 DOCUMENTATION:
@@ -46,7 +48,7 @@ const TA_INACTIVE_BAR_COLOR = "rgba(255, 198, 47, 0.4)";
 const TA_ACTIVE_BAR_COLOR = "rgba(255, 198, 47, 1.0)";
 const DEFAULT_COMMENT = [];
 
-const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, submission, isDocument, rubric, subId, review, disabled }) => {
+const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, submission, isDocument, rubric, subId, review, disabled, ISstudent }) => {
   var gradingrubric = [];
   rubric.map((x) => gradingrubric.push(x));
 
@@ -213,6 +215,7 @@ const SubmissionCompleted = ({ instructor, taReviewReview, matchingId, dueDate, 
           review={review}
           disabled={disabled}
           taReviewReport={taReviewReport}
+          ISstudent={ISstudent}
         />
     }
 
@@ -339,9 +342,10 @@ function getInitialValues(rubric, review) {
 }
 
 // Sub-component rendered inside of SubmissionCompleted
-const Grading = ({rubric, matching, review, disabled, taReviewReport}) => {
+const Grading = ({rubric, matching, review, disabled, taReviewReport, ISstudent}) => {
   var initialValues = getInitialValues(rubric, review);
   var maxScore = getMaxScore(rubric);
+  const { userId } = useUserData();
 
   return (
     <Formik
@@ -349,7 +353,7 @@ const Grading = ({rubric, matching, review, disabled, taReviewReport}) => {
       initialValues={getInitialValues(rubric, review)}
       onSubmit={(data, { setSubmitting }) => {
         setSubmitting(true);
-        axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+        axios.patch(formatPrefix(ISstudent, userId) + `peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
           console.log('rubric post:', res);
           // setSubmitting(false);
           if (res.status === 200) {

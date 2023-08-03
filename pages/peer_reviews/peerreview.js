@@ -8,8 +8,8 @@ import { useRouter } from 'next/router';
 import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { FormatColorResetTwoTone } from "@material-ui/icons";
-import ButtonExample from '../../pages/peer_reviews/prbutton'
 import {formatTimestampLikeCanvas} from "../../components/dateUtils";
+import {formatPrefix} from "../../components/apiCallUtils";
 // import TAGrading from "../grading/tagrading";
 // import ReviewGradingTable from "../../components/UI/ReviewGradingTable";
 
@@ -38,7 +38,7 @@ const PeerReview = (props) => {
     (async () => {
       const [submission, matchingData, rubricData ] = await Promise.all([
         getData(`/api/submissions?type=peerreview&submissionId=${submissionId}&assignmentId=${id}`),
-        getData(`/api/peerReviews/${matchingId}`),
+        getData(formatPrefix(props.ISstudent, userId) + `peerReviews/${matchingId}`),
         getData(`/api/rubrics/${rubricId}`),
         // getData(`/api/assignments/${assignmentName}`),
       ]);
@@ -111,6 +111,7 @@ const PeerReview = (props) => {
             subId={subId}
             review={review}
             disabled={isDisabled()}
+            ISstudent={props.ISstudent}
           />
           :
           <Submission
@@ -124,6 +125,7 @@ const PeerReview = (props) => {
             subId={subId}
             review={review}
             disabled={isDisabled()}
+            ISstudent={props.ISstudent}
           />
         }
       </Container>}

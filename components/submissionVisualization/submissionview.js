@@ -18,15 +18,18 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
+import {formatPrefix} from "../apiCallUtils";
+import {useUserData} from "../storeAPI";
 const axios = require("axios");
 
 // console.log('what reviews should look like', js.reviews[0])
 function Grading(props) {
   const {rubric, matching, disabled} = props;
   const [reviewData,setReviewData] = useState(null);
+  const { userId } = useUserData();
 
   useEffect(() => {
-    axios.get(`/api/peerReviews/${matching}`).then(res => {
+    axios.get(formatPrefix(props.ISstudent, userId) + `peerReviews/${matching}`).then(res => {
       let review = res.data.data.review;
       setReviewData(getInitialValues(rubric, (review) ? review.reviewBody : null));
     });
@@ -42,7 +45,7 @@ function Grading(props) {
      enableReinitialize= {true}
      initialValues={reviewData}
      onSubmit={(data, actions) => {
-       axios.patch(`/api/peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
+       axios.patch(formatPrefix(props.ISstudent, userId) + `peerReviews/${matching}`,{review: getFinalScore(data, rubric)}).then(res => {
          console.log('review post:', res);
          actions.setSubmitting(false);
          // if (res.status === 201) {
@@ -180,7 +183,7 @@ class Submission extends React.Component {
     this.state = {};
   }
   render() {
-    const {rubric,matchingId,disabled} = this.props;
+    const {rubric,matchingId,disabled,ISstudent} = this.props;
 
     // shallow cop
 //    var gradingrubric = [...this.props.rubric || []];
@@ -196,7 +199,7 @@ class Submission extends React.Component {
           </AccordionDetails>
         </Accordion>
         <br />
-        {!rubric || <Grading rubric={rubric} matching={matchingId} disabled={disabled} />}
+        {!rubric || <Grading rubric={rubric} matching={matchingId} disabled={disabled} ISstudent={ISstudent} />}
       </div>
     );
   }
