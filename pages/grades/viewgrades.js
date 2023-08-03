@@ -37,23 +37,15 @@ function ViewAssignmentGrade(props) {
     const [appealAvailable, setAppealAvailable] = useState(false);
     const [appealButtonText, setAppealButtonText] = useState("Appeal Not Loaded");
     const [appealFormat, setAppealFormat] = useState({});
-  let { id, name, rubricId } = router.query;
+  let { id, name, rubricId, submissionId } = router.query;
 
 
   async function setup() {
     try {
-      const groupDataRes = await axios.get(`/api/groupEnrollments?assignmentId=${id}&userId=${userId}`);
-
-      console.log({groupDataRes});
-
-      const groupData = groupDataRes.data.data;
 
       let userSubmissions = [];
 
-      if (groupData.length) {
-        const submissionId = groupData[0].submissionId;
-
-        console.log({submissionId});
+      if (submissionId) {
 
         const results = await Promise.all([
           axios.get(formatPrefix(props.ISstudent, userId) + `submissions?submissionId=${submissionId}&assignmentId=${id}`),
@@ -62,8 +54,6 @@ function ViewAssignmentGrade(props) {
           axios.get(`/api/rubrics/${rubricId}`),
           axios.get(`/api/users?courseId=${courseId}`)
         ]);
-
-        console.log({results});
 
         const [submissionsRes,reviewsRes,appealRes,rubricRes,usersRes] = results.map(r => r.data.data);
 
