@@ -8,4 +8,8 @@ function formatPrefix(isStudent, userId) {
     return `/api/${isStudent ? `peer/${userId}/` : ''}`
 }
 
-export { formatPrefix }
+function formatPrefixAndRoot(isStudent, userId, studentRoot, nonStudentRoot) {
+    return formatPrefix(isStudent, userId) + (isStudent ? studentRoot : nonStudentRoot)
+}
+
+export { formatPrefix, formatPrefixAndRoot }
