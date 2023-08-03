@@ -89,7 +89,7 @@ function ToggleAppeal(props) {
 
 
     try {
-      const appealResponse = await axios.put(`/api/appeal?userId=${userId}&assignmentId=${id}`);
+      const appealResponse = await axios.put(formatRoot(props.ISstudent, userId) + `appeal?userId=${userId}&assignmentId=${id}`);
       if (appealResponse.status == 201) {
         setIsAppealed(true);
         setAppealButtonText('');
@@ -109,7 +109,7 @@ function ToggleAppeal(props) {
 
     try {
 
-      let res = await axios.delete(`/api/appeal?userId=${userId}&assignmentId=${id}`);
+      let res = await axios.delete(formatRoot(props.ISstudent, userId) + `/api/appeal?userId=${userId}&assignmentId=${id}`);
       if (res.status == 200) {
         setIsAppealed(false);
         setAppealButtonText('');
