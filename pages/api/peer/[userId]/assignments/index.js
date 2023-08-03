@@ -39,7 +39,7 @@ const assignmentsHandler = async (req, res) => {
 
                 let assignments = await db.assignments.findAll({ where: params });
                 // Fake join submissionId using groupEnrollments
-                assignments = await Promise.all(assignments.map(async assignment => {
+                let assignmentsWithSubmissionId = await Promise.all(assignments.map(async assignment => {
                         const enrollments = await db.group_enrollments.findAll({
                             where: {
                                 assignmentId: assignment.id,
@@ -47,12 +47,13 @@ const assignmentsHandler = async (req, res) => {
                             }
                         });
                         if (enrollments.length > 0 && enrollments[0] && enrollments[0].submissionId) {
-                            assignment.submissionId = enrollments[0].submissionId;
+                            assignment.dataValues.submissionId = enrollments[0].submissionId;
+                            assignment._previousDataValues.submissionId = enrollments[0].submissionId;
                         }
                         return assignment;
                     }
                 ));
-                responseHandler.response200(res, assignments);
+                responseHandler.response200(res, assignmentsWithSubmissionId);
                 break;
 
             default:
