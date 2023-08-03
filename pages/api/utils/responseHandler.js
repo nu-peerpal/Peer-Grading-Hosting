@@ -42,6 +42,14 @@ exports.response401 = (res, msg) => {
   return res;
 };
 
+exports.response403 = (res, msg) => {
+  res.status(403).json({
+    status: "fail",
+    message: msg || "forbidden",
+  });
+  return res;
+}
+
 exports.response500 = (res, err) => {
   res.status(500).json({
     status: "fail",
