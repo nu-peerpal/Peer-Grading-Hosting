@@ -43,18 +43,17 @@ const submissionReviewsHandler = async (req, res) => {
                     params.submissionId = groups[0].submissionId;
                 }
 
-                let peerMatchings = await db.peer_matchings.findAll({ where: params });
+                let peerMatchings = await db.peer_matchings.findAll({
+                    where: params,
+                    attributes: {
+                        exclude: ['userId']
+                    }
+                });
 
                 // if scores has length 0 then review is not done.
                 if (req.query.done === "true") {
                     peerMatchings = peerMatchings.filter(({dataValues}) => dataValues.review && dataValues.review.reviewBody.scores.length)
                 }
-
-                peerMatchings.map(matching => {
-                    delete matching.dataValues.userId;
-                    delete matching._previousDataValues.userId;
-                    return matching;
-                })
 
                 responseHandler.response200(res, peerMatchings);
                 break;
