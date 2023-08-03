@@ -51,11 +51,10 @@ function ViewAssignmentGrade(props) {
           axios.get(formatPrefix(props.ISstudent, userId) + `submissions?submissionId=${submissionId}&assignmentId=${id}`),
           axios.get(formatPrefixAndRoot(props.ISstudent, userId, 'submissionReviews', 'peerReviews') + `?assignmentId=${id}&submissionId=${submissionId}&done=true`),
           axios.get(formatPrefix(props.ISstudent, userId) + `appeal?submissionId=${submissionId}&assignmentId=${id}`),
-          axios.get(`/api/rubrics/${rubricId}`),
-          axios.get(`/api/users?courseId=${courseId}`)
+          axios.get(`/api/rubrics/${rubricId}`)
         ]);
 
-        const [submissionsRes,reviewsRes,appealRes,rubricRes,usersRes] = results.map(r => r.data.data);
+        const [submissionsRes,reviewsRes,appealRes,rubricRes] = results.map(r => r.data.data);
 
         const theRubric = rubricRes.rubric;
         console.log({theRubric});
@@ -63,13 +62,11 @@ function ViewAssignmentGrade(props) {
         setSubmissions(submissionsRes);
         setPeerReviews(transformMatchings(
           reviewsRes.filter(({matchingType}) => matchingType === "initial"),
-          theRubric,
-          usersRes
+          theRubric
         ));
         setTaReviews(transformMatchings(
           reviewsRes.filter(({matchingType}) => matchingType !== "initial"),
-          theRubric,
-          usersRes
+          theRubric
         ));
         setAppeal(appealRes);
         setRubric(transformRubric(theRubric));
@@ -130,13 +127,14 @@ function ViewAssignmentGrade(props) {
                         assignmentRubric={rubric}
                         peerMatchings={taReviews}
                         reviewerColumnTitle="TA Review"
+                        pseudonymBase={"TA"}
                       />
                       }
                       <ReviewDisplayTableReadOnly
                         assignmentRubric={rubric}
                         peerMatchings={peerReviews}
                         reviewerColumnTitle="Peer Reviews"
-                        anonymous="true"
+                        pseudonymBase={"Peer"}
                       />
                       <br />
                       <ToggleAppeal assignmentId={id} userId={userId} ISstudent={props.ISstudent} />

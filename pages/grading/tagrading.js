@@ -13,11 +13,8 @@ export const transformRubric = (rubric) =>
   rubric.map((row, index) => ({ maxPoints: row["points"], element: row["description"] }));
 
 
-export const transformMatchings = (matchings, assignmentRubric, users) =>
+export const transformMatchings = (matchings, assignmentRubric) =>
   matchings.map(matching => {
-    const { firstName, lastName } = users.find(
-      user => user.canvasId == matching.userId
-    );
     if (matching.review) {
       const reviewScoreComments = matching.review.reviewBody.scores;
       const transformedReview = reviewScoreComments.map(
@@ -33,8 +30,6 @@ export const transformMatchings = (matchings, assignmentRubric, users) =>
         userId: matching.userId,
         review: transformedReview,
         reviewReview: matching.reviewReview,
-        firstName,
-        lastName,
         matchingId: matching.id
       };
     } else {
@@ -42,8 +37,6 @@ export const transformMatchings = (matchings, assignmentRubric, users) =>
         userId: matching.userId,
         review: matching.review,
         reviewReview: matching.reviewReview,
-        firstName,
-        lastName,
         matchingId: matching.id
       };
     }

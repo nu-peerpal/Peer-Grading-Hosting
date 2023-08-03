@@ -35,8 +35,8 @@ const prod = (lst,identity=1) => {
 const ReviewDisplayTableReadOnly = ({
   assignmentRubric,
   peerMatchings,
-  anonymous=false,
-  reviewerColumnTitle="Peer Reviews"
+  reviewerColumnTitle="Peer Reviews",
+  pseudonymBase = "Peer"
 }) => {
 
   const classes = useStyles();
@@ -78,7 +78,7 @@ const ReviewDisplayTableReadOnly = ({
           return (
             <TableRow key={`submission-review-row-${index}`}>
               <TableCell>
-                {(anonymous) ? `Peer ${index+1}` : `${firstName} ${lastName}`}
+                {`${pseudonymBase} ${index+1}`}
               </TableCell>
 
               {/* show points per section */}
