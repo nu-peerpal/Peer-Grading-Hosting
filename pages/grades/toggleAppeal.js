@@ -29,7 +29,7 @@ function ToggleAppeal(props) {
     try {
       const results = await Promise.all([
         axios.get(formatPrefix(props.ISstudent, userId) + `assignments/${id}`),
-        axios.get(`/api/peerReviews?assignmentId=${id}&submitterId=${userId}`)
+        axios.get(formatPrefix(props.ISstudent, userId) + `peerReviews?assignmentId=${id}&submitterId=${userId}`)
       ]);
 
       const [assignmentRes,allReviews] = results.map(r => r.data.data);

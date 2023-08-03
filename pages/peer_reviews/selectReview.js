@@ -6,6 +6,7 @@ import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
 const axios = require("axios");
 import _ from "lodash";
+import {formatPrefix} from "../../components/apiCallUtils";
 
 const SelectReview = (props) => {
   const router = useRouter();
@@ -14,7 +15,7 @@ const SelectReview = (props) => {
   const { name, id, dueDate, rubricId, reviewStatus } = router.query;
   useEffect(() => {
     (async () => {
-        let res = await axios.get(`/api/peerReviews?userId=${userId}&assignmentId=${id}`);
+        let res = await axios.get(formatPrefix(props.ISstudent, userId) + `peerReviews?userId=${userId}&assignmentId=${id}`);
         // console.log({resData})
         const peerMatchings = res.data.data;
         peerMatchings.sort(function(a, b){return a.id-b.id})
