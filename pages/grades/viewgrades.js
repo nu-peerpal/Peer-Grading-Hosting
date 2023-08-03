@@ -18,7 +18,7 @@ const axios = require("axios");
 const _ = require("lodash");
 
 import {transformRubric, transformMatchings} from "../grading/tagrading";
-import {formatRoot} from "../../components/apiCallUtils";
+import {formatPrefix} from "../../components/apiCallUtils";
 
 function ViewAssignmentGrade(props) {
     const router = useRouter();
@@ -58,7 +58,7 @@ function ViewAssignmentGrade(props) {
         const results = await Promise.all([
           axios.get(`/api/submissions?submissionId=${submissionId}&assignmentId=${id}`),
           axios.get(`/api/peerReviews?assignmentId=${id}&submissionId=${submissionId}&done=true`),
-          axios.get(formatRoot(props.ISstudent, userId) + `appeal?submissionId=${submissionId}&assignmentId=${id}`),
+          axios.get(formatPrefix(props.ISstudent, userId) + `appeal?submissionId=${submissionId}&assignmentId=${id}`),
           axios.get(`/api/rubrics/${rubricId}`),
           axios.get(`/api/users?courseId=${courseId}`)
         ]);

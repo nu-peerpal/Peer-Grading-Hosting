@@ -10,7 +10,7 @@ import styles from './grades.module.scss';
 import StudentViewOutline from '../../components/studentViewOutline';
 import { useUserData } from "../../components/storeAPI";
 import { useRouter } from 'next/router';
-import {formatRoot} from "../../components/apiCallUtils";
+import {formatPrefix} from "../../components/apiCallUtils";
 const ReactMarkdown = require('react-markdown');
 const gfm = require('remark-gfm');
 const axios = require("axios");
@@ -28,7 +28,7 @@ function ToggleAppeal(props) {
   async function setup() {
     try {
       const results = await Promise.all([
-        axios.get(formatRoot(props.ISstudent, userId) + `assignments/${id}`),
+        axios.get(formatPrefix(props.ISstudent, userId) + `assignments/${id}`),
         axios.get(`/api/peerReviews?assignmentId=${id}&submitterId=${userId}`)
       ]);
 
@@ -89,7 +89,7 @@ function ToggleAppeal(props) {
 
 
     try {
-      const appealResponse = await axios.put(formatRoot(props.ISstudent, userId) + `appeal?userId=${userId}&assignmentId=${id}`);
+      const appealResponse = await axios.put(formatPrefix(props.ISstudent, userId) + `appeal?userId=${userId}&assignmentId=${id}`);
       if (appealResponse.status == 201) {
         setIsAppealed(true);
         setAppealButtonText('');
@@ -109,7 +109,7 @@ function ToggleAppeal(props) {
 
     try {
 
-      let res = await axios.delete(formatRoot(props.ISstudent, userId) + `/api/appeal?userId=${userId}&assignmentId=${id}`);
+      let res = await axios.delete(formatPrefix(props.ISstudent, userId) + `appeal?userId=${userId}&assignmentId=${id}`);
       if (res.status == 200) {
         setIsAppealed(false);
         setAppealButtonText('');

@@ -4,8 +4,8 @@
 * or
 * - /api/
 *  */
-function formatRoot(isStudent, userId) {
+function formatPrefix(isStudent, userId) {
     return `/api/${isStudent ? `peer/${userId}/` : ''}`
 }
 
-export { formatRoot }
+export { formatPrefix }
