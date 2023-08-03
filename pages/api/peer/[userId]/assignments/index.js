@@ -1,3 +1,5 @@
+import {studentRequest} from "../../../utils/peerHandler";
+
 const db = require("../../../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../../../utils/responseHandler");
@@ -61,4 +63,6 @@ const assignmentsHandler = async (req, res) => {
     }
 };
 
-export default assignmentsHandler;
+const studentAssignmentsHandler = async (req, res) => studentRequest(req, res, assignmentsHandler);
+
+export default studentAssignmentsHandler;

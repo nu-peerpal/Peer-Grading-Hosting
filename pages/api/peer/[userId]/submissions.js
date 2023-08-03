@@ -1,3 +1,5 @@
+import {studentRequest} from "../../utils/peerHandler";
+
 const db = require("../../../../models/index.js");
 const responseHandler = require("../../utils/responseHandler");
 
@@ -45,4 +47,6 @@ const submissionsHandler = async (req, res) => {
     }
 };
 
-export default submissionsHandler;
+const studentSubmissionsHandler = async (req, res) => studentRequest(req, res, submissionsHandler);
+
+export default studentSubmissionsHandler;

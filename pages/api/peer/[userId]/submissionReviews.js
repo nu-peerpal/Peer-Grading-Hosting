@@ -1,3 +1,5 @@
+import {studentRequest} from "../../utils/peerHandler";
+
 const db = require("../../../../models/index.js");
 const Op = db.Sequelize.Op;
 const responseHandler = require("../../utils/responseHandler");
@@ -9,7 +11,7 @@ export const config = {
     },
 }
 
-export default async (req, res) => {
+const submissionReviewsHandler = async (req, res) => {
     try {
         switch (req.method) {
             case "GET":
@@ -58,3 +60,7 @@ export default async (req, res) => {
         responseHandler.response400(res, err);
     }
 };
+
+const studentSubmissionReviewsHandler = async (req, res) => studentRequest(req, res, submissionReviewsHandler);
+
+export default studentSubmissionReviewsHandler;

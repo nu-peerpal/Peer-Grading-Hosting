@@ -1,3 +1,5 @@
+import {studentRequest} from "../../utils/peerHandler";
+
 const db = require("../../../../models/index.js");
 const responseHandler = require("../../utils/responseHandler");
 
@@ -8,7 +10,7 @@ export const config = {
     },
 }
 
-export default async (req, res) => {
+const assignedReviewsHandler = async (req, res) => {
     try {
         switch (req.method) {
             case "GET":
@@ -30,3 +32,7 @@ export default async (req, res) => {
         responseHandler.response400(res, err);
     }
 };
+
+const studentAssignedReviewsHandler = async (req, res) => studentRequest(req, res, assignedReviewsHandler);
+
+export default studentAssignedReviewsHandler;

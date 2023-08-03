@@ -1,5 +1,6 @@
 import db from "../../../../../models";
 import responseHandler from "../../../utils/responseHandler";
+import {studentRequest} from "../../../utils/peerHandler";
 
 export const config = {
     api: {
@@ -7,7 +8,7 @@ export const config = {
     },
 }
 
-export default async (req, res) => {
+const peerReviewHandler = async (req, res) => {
     const table = db["peer_matchings"];
 
     try {
@@ -54,3 +55,7 @@ export default async (req, res) => {
         responseHandler.response400(res, err);
     }
 };
+
+const studentPeerReviewHandler = async (req, res) => studentRequest(req, res, peerReviewHandler);
+
+export default studentPeerReviewHandler;

@@ -1,3 +1,5 @@
+import {studentRequest} from "../../utils/peerHandler";
+
 const db = require("../../../../models/index.js");
 const responseHandler = require("../../utils/responseHandler");
 const _ = require("lodash");
@@ -47,7 +49,7 @@ async function getSubmissionId(userId,assignmentId) {
     return (submissions.length) ? submissions[0].submissionId : undefined;
 }
 
-export default async (req, res) => {
+const appealHandler = async (req, res) => {
     try {
         const {assignmentId,userId} = req.query;
         var {submissionId} = req.query;
@@ -174,3 +176,7 @@ export default async (req, res) => {
         responseHandler.response400(res, err);
     }
 };
+
+const studentAppealHandler = async (req, res) => studentRequest(req, res, appealHandler);
+
+export default studentAppealHandler;
