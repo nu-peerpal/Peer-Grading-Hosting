@@ -50,6 +50,12 @@ const submissionReviewsHandler = async (req, res) => {
                     peerMatchings = peerMatchings.filter(({dataValues}) => dataValues.review && dataValues.review.reviewBody.scores.length)
                 }
 
+                peerMatchings.map(matching => {
+                    delete matching.dataValues.userId;
+                    delete matching._previousDataValues.userId;
+                    return matching;
+                })
+
                 responseHandler.response200(res, peerMatchings);
                 break;
 
