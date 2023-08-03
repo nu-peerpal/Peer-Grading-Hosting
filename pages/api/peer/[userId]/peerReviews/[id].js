@@ -16,7 +16,7 @@ const peerReviewHandler = async (req, res) => {
 
         switch (req.method) {
             case "GET":
-                if (row.dataValues.userId !== req.query.userId) {
+                if (row.dataValues.userId != req.query.userId) {
                     // Calling user did not do this review,
                     // so make sure that calling user submitted the thing being reviewed
                     const enrollments = await db.group_enrollments.findAll({
@@ -38,7 +38,7 @@ const peerReviewHandler = async (req, res) => {
                 break;
 
             case "PATCH":
-                if (row.userId !== req.query.userId) {
+                if (row.dataValues.userId != req.query.userId) {
                     // Calling user is not assigned to this review, so they should not be allowed to modify it
                     throw new Error("Caller does not have permission to complete or modify this review");
                 }
