@@ -25,10 +25,24 @@ const AUTH_HOURS = 16;
 
 
 const translateUser = async (canvasId) => {
-  const result = await db["users"].findAll({where: {canvasId}});
   // YOU ARE HERE
 }
 
+const toPeerPalCourseId = async (provider) => {
+  params = {};
+  params.canvasCourseId = provider.body.custom_canvas_course_id;
+  params.canvasAPIDomain = provider.body.custom_canvas_api_domain;
+  let peerPalCourseId = await db.course_id_map.findOne({ where: params, });
+  return peerPalCourseId.peerPalCourseID
+}
+
+const toPeerPalUserId = async (provider) => {
+  params = {};
+  params.canvasUserId = provider.body.custom_canvas_user_id;
+  params.canvasAPIDomain = provider.body.custom_canvas_api_domain;
+  let peerPalUserID = await db.course_id_map.findOne({ where: params, });
+  return peerPalUserID.peerPalCourseId
+}
 const response401 = (res, msg = "unauthorized access") => {
   res.status(401).json({
     status: "fail",
@@ -74,6 +88,10 @@ app
           }
         }
 
+        // take a map from provder.body.custom_canvas_course_id
+        //                 provider.body.custom_canvas_api_domain: '3.143.165.187',
+ 
+
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret);
         // req.connection.encrypted = true;
@@ -83,8 +101,8 @@ app
           if (is_valid) {
             console.log({providerBody:provider.body});
             //copying all the useful data from the provider to what will be stored for the user
-            userData.user_id = provider.body.custom_canvas_user_id;
-            userData.context_id = provider.body.custom_canvas_course_id;
+            userData.user_id = toPeerPalUserId(provider)
+            userData.context_id = toPeerPalCourseId(provider)
             userData.context_name = provider.context_title;
             userData.instructor = provider.instructor;
             userData.ta = provider.ta;
