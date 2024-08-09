@@ -1,19 +1,24 @@
 module.exports = (sequelize, Sequelize) => {
-  const UserIDMap = sequelize.define("useridmap", {
-    canvasUserId: {
-      type: Sequelize.STRING,
+  const UserIdMap = sequelize.define("useridmap", {
+    peerPalUserId: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    canvasCourseId: {
+    canvasUserId: {
       type: Sequelize.STRING,
     },
     canvasAPIDomain: {
       type: Sequelize.STRING,
-    },
-    peerPalUserId: {
-      type : Sequelize.STRING,
     }
+  }, {
+    indexes: [{
+      unique: true,
+      fields: ['canvasUserId', 'canvasAPIDomain'],
+      name: 'unique_canvas_id'
+    }]
   });
 
 
-  return UserIDMap;
+  return UserIdMap;
 };

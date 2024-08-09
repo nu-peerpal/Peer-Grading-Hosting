@@ -17,6 +17,7 @@ const _ = require("lodash");
 const jsonParser = bodyParser.json();
 const consumer_key = ""
 const consumer_secret = process.env.CANVAS_SECRET;
+const canvas_host = process.env.CANVAS_HOST;
 const AUTH_HOURS = 16;
 
 // // LTI server stuff
@@ -28,21 +29,60 @@ const translateUser = async (canvasId) => {
   // YOU ARE HERE
 }
 
+
 const toPeerPalCourseId = async (provider) => {
-  params = {};
-  params.canvasCourseId = provider.body.custom_canvas_course_id;
-  params.canvasAPIDomain = provider.body.custom_canvas_api_domain;
-  let peerPalCourseId = await db.course_id_map.findOne({ where: params, });
-  return peerPalCourseId.peerPalCourseID
+  console.log("COURSEID MAP ***");
+  const params = {
+    canvasCourseId: String(provider.body.custom_canvas_course_id),
+    canvasAPIDomain: String(canvas_host)
+  };
+
+  const [courseMap, created] = await db.course_id_map.findOrCreate({
+    where: {
+      canvasCourseId: params.canvasCourseId,
+      canvasAPIDomain: params.canvasAPIDomain
+    },
+    defaults: {
+      // if the record doesn't exist and is being created,
+      // you might want other defaults here as well
+      canvasCourseId: params.canvasCourseId,
+      canvasAPIDomain: params.canvasAPIDomain
+    }
+  });
+
+  console.log("FINISHED");
+  if (created) {
+    console.log('created new courseidmap entry', courseMap.get({ plain: true }));
+  } else {
+    console.log('accessed', courseMap.get({ plain: true }));
+  }
+
+  return courseMap.peerPalCourseId;
 }
 
 const toPeerPalUserId = async (provider) => {
-  params = {};
-  params.canvasUserId = provider.body.custom_canvas_user_id;
-  params.canvasAPIDomain = provider.body.custom_canvas_api_domain;
-  let peerPalUserID = await db.course_id_map.findOne({ where: params, });
-  return peerPalUserID.peerPalCourseId
+  const params = {
+    canvasUserId: String(provider.body.custom_canvas_user_id),
+    canvasAPIDomain: String(canvas_host)
+  };
+  const [userMap, created] = await db.user_id_map.findOrCreate({
+    where: {
+      canvasUserId: params.canvasUserId,
+      canvasAPIDomain: params.canvasAPIDomain
+    }, 
+    defaults : {
+      canvasUserId: params.canvasUserId,
+      canvasAPIDomain: params.canvasAPIDomain
+    }
+  });
+  if (created){
+    console.log('created new useridmap entry', userMap.get({plain:true}));
+  } else {
+    console.log('accessed', userMap.get({plain:true}));
+  }
+  return userMap.peerPalUserId;
 }
+
 const response401 = (res, msg = "unauthorized access") => {
   res.status(401).json({
     status: "fail",
@@ -51,6 +91,59 @@ const response401 = (res, msg = "unauthorized access") => {
 
   return res;
 };
+
+function validateRequest(provider, req) {
+  return new Promise((resolve, reject) => {
+      provider.valid_request(req, (err, is_valid) => {
+          if (err) {
+              reject(err);
+          } else if (is_valid) {
+              resolve(true);
+          } else {
+              reject(new Error("Request is not valid."));
+          }
+      });
+  });
+}
+
+async function handleLTIRequest(req, res, provider) {
+  try {
+      // Await the validation of the LTI request
+      await validateRequest(provider, req);
+
+      // If validation passes, proceed with fetching user and course IDs
+      const peerpal_user_id = await toPeerPalUserId(provider);
+      const peerpal_course_id = await toPeerPalCourseId(provider);
+      const userData = {
+          user_id: peerpal_user_id,
+          context_id: peerpal_course_id,
+          context_name: provider.context_title,
+          instructor: provider.instructor,
+          ta: provider.ta,
+          student: provider.student,
+          admin: provider.admin,
+          assignment: req.body.custom_canvas_assignment_id,
+          assignment_name: provider.custom_canvas_assignment_title
+      };
+
+      // Set cookies and store data in key-value store
+      var nonce = Object.keys(provider.nonceStore.used)[0];
+      res.cookie('authToken', nonce, AUTH_HOURS * 1000 * 60 * 60);
+      res.cookie('userData', JSON.stringify(userData));
+      await keyv.set(nonce, userData, AUTH_HOURS * 1000 * 60 * 60);
+      req.userData = userData;
+
+      // Proceed with the request handling
+      handle(req, res);
+      return userData;
+  } catch (error) {
+      console.error('Error processing LTI request:', error);
+      res.cookie('userData', "{}");
+      req.userData = null;
+      res.status(500).send("Failed to process request");
+  }
+}
+
 
 
 
@@ -63,11 +156,6 @@ app
     server.use(bodyParser.json({limit: '300kb'}));
     server.use(cookieParser());
     server.enable('trust proxy');
-
-    //connecting to database, connect function defined in /models/index.js
-  //  (async () => {
-  //    await db.connect();
-  //  })();
 
     server.post("*", async function(req, res, next) {
       try {
@@ -94,15 +182,20 @@ app
 
         //Otherwise, check if the request has valid LTI credentials and authenticate the user if that's the case
         var provider = new lti.Provider(consumer_key, consumer_secret);
+        userData = await handleLTIRequest(req, res, provider);
         // req.connection.encrypted = true;
         // console.log('lti provider:',provider)
-        console.log('lti request.body: ',req.body);
-        provider.valid_request(req, (err, is_valid) => {
+        /*
+        provider.valid_request(req, async (err, is_valid) => {
           if (is_valid) {
             console.log({providerBody:provider.body});
             //copying all the useful data from the provider to what will be stored for the user
-            userData.user_id = toPeerPalUserId(provider)
-            userData.context_id = toPeerPalCourseId(provider)
+            //userData.user_id = peerpal_user_id;
+            //userData.context_id =  peerpal_course_id;
+            const peerpal_user_id = await toPeerPalUserId(provider);
+            const peerpal_course_id = await toPeerPalCourseId(provider);
+            userData.user_id = peerpal_user_id;
+            userData.context_id =  peerpal_course_id;
             userData.context_name = provider.context_title;
             userData.instructor = provider.instructor;
             userData.ta = provider.ta;
@@ -122,6 +215,7 @@ app
             req.userData = null;
           }
         });
+        */
         //only add the userData if it was modified. That way, future handlers just have to check if userData exists to check authentication status
 //        if (Object.keys(userData).length > 0) {
         req.userData = userData;
@@ -132,7 +226,6 @@ app
           return response401(res);
         }
 
-        console.log("DOING NEXT");
         return handle(req, res);
     } catch(err) {
       console.log('POST',{err});

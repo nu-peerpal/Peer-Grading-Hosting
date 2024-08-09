@@ -1,6 +1,11 @@
 
 module.exports = (sequelize, Sequelize) => {
-  const CourseIDMap = sequelize.define("courseidmap", {
+  const CourseIdMap = sequelize.define("courseidmap", {
+    peerPalCourseId: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     canvasCourseId: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -8,22 +13,16 @@ module.exports = (sequelize, Sequelize) => {
     canvasAPIDomain: {
       type: Sequelize.STRING,
       allowNull: false,
-    },
-    peerPalCourseID: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    canvasId: {
-      type: Sequelize.STRING,
-    },
-    courseName: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    canvasKey: {
-      type: Sequelize.STRING,
-    },
-  });
+    }
+  },
+    {
+      indexes: [{
+        unique: true,
+        fields: ['canvasCourseId', 'canvasAPIDomain'],
+        name: 'unique_canvas_id'
+      }]
+    }
+  );
 
-  return CourseIDMap;
+  return CourseIdMap;
 };
