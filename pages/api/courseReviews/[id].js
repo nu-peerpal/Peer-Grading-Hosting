@@ -9,9 +9,15 @@ export const config = {
 }
 
 export default async (req, res) => {
-  //INNER JOIN peer_matchings and assignments tables and filtering based on courseId  
+
+  // if userId is specified, filter by userId
+  var filterUserId = {};
+  if (req.query.userId) filterUserId.userId = req.query.userId;
+
+  //INNER JOIN peer_matchings and assignments tables and filtering based on courseId & potentially userID
   let peerMatchingsFiltered = await db.peer_matchings.findAll({ 
     attributes: ["review", "reviewReview", "assignmentId", "userId", "submissionId", "matchingType"],
+    where: filterUserId,
     include: [{
       model: db.assignments,
       required: true,
