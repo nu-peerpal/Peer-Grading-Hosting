@@ -28,10 +28,11 @@ export default async (req, res) => {
               'Authorization': `Bearer ${token}`
             }
           })
-          const filteredSubmissions = response.data.filter(submission => {
-            return (submission.workflow_state == 'submitted' || submission.workflow_state == 'graded');
-          })
-          // console.log('filtered submissions: ',filteredSubmissions);
+          console.log('raw submissions: ',response.data.map(({workflow_state}) => workflow_state));
+
+          const filteredSubmissions = response.data.filter(
+            ({workflow_state}) => (workflow_state == 'submitted')
+          );
 
           const submissions = filteredSubmissions.map(submission => {
             var submissionBody = submission.body
